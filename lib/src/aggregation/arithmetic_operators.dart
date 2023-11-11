@@ -1,45 +1,57 @@
+import 'package:mongo_db_query/src/base/operator_expression.dart';
+
+import '../base/common/operators_def.dart';
+import '../base/expression_content.dart';
+import '../query_expression/query_expression.dart';
+import 'ae_list.dart';
 import 'aggregation_base.dart';
 
 /// `$abs` operator
 ///
 /// Returns the absolute value of an [expr]
-class Abs extends Operator {
+class Abs extends OperatorExpression {
   /// Creates an `$abs` operator expression
-  Abs(expr) : super('abs', expr);
+  //Abs(expr) : super('abs', expr); ** OLD
+  Abs(ExpressionContent expr) : super(op$abs, expr);
 }
 
 /// `$add` operator
 ///
 /// Adds numbers together or adds numbers and a date. If one of the arguments is
 /// a date, `$add` treats the other arguments as milliseconds to add to the date.
-class Add extends Operator {
+class Add extends OperatorExpression {
   /// Creates an `$add` operator expression
-  Add(List args) : super('add', AEList(args));
+  //Add(List args) : super('add', AEList(args)); ** OLD
+  Add(List args) : super(op$add, valueToContent(args));
 }
 
 /// `$ceil` operator
 ///
 /// Returns the smallest integer greater than or equal to the specified number.
-class Ceil extends Operator {
+class Ceil extends OperatorExpression {
   /// Creates `$ceil` operator expression
-  Ceil(expr) : super('ceil', expr);
+  //Ceil(expr) : super('ceil', expr); ** OLD
+  Ceil(ExpressionContent expr) : super(op$ceil, expr);
 }
 
 /// `$divide` operator
 ///
 /// Divides one number by another and returns the result.
-class Divide extends Operator {
+class Divide extends OperatorExpression {
   /// Creates `$divide` operator expression
-  Divide(dividend, divisor) : super('divide', AEList([dividend, divisor]));
+  //Divide(dividend, divisor) : super('divide', AEList([dividend, divisor])); OLD
+  Divide(dividend, divisor)
+      : super(op$divide, valueToContent([dividend, divisor]));
 }
 
 /// `$exp` operator
 ///
 /// Raises Euler’s number (i.e. `e` ) to the specified exponent and returns the
 /// result.
-class Exp extends Operator {
+class Exp extends OperatorExpression {
   /// Creates `$exp` operator expression
-  Exp(expr) : super('exp', expr);
+  //Exp(expr) : super('exp', expr); ** OLD
+  Exp(expr) : super(op$exp, valueToContent(expr));
 }
 
 /// `$floor` operator

@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 
 import '../base/expression_content.dart';
+import 'ae_list.dart';
 import 'aggregation_base.dart';
 
 /// `$cmp` operator

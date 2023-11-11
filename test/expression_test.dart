@@ -11,11 +11,11 @@ void main() {
   group('Expression', () {
     test('Expression', () {
       var e = Expression(op$eq, ValueExpression.create(5));
-      expect(e.raw, {r'$eq': 5});
+      expect(e.build, {r'$eq': 5});
     });
     test('Operator Expression', () {
       var e = Expression(op$eq, ValueExpression.create(null));
-      expect(e.raw, {r'$eq': null});
+      expect(e.build, {r'$eq': null});
       expect(e.key, op$eq);
     });
 
@@ -26,7 +26,7 @@ void main() {
             Expression(op$eq, ValueExpression.create(5)),
             OperatorExpression(op$eq, ValueExpression.create(null))
           ]));
-      expect(e.raw, {
+      expect(e.build, {
         r'$or': [
           {r'$eq': 5},
           {r'$eq': null}
@@ -37,7 +37,7 @@ void main() {
     test('Field Expression', () {
       var e = FieldExpression(
           'field', OperatorExpression(op$eq, ValueExpression.create(null)));
-      expect(e.raw, {
+      expect(e.build, {
         'field': {r'$eq': null}
       });
       expect(e.fieldName, 'field');
@@ -89,7 +89,7 @@ void main() {
     test('Set Value', () {
       var e = MapExpression(FieldExpression(
               'field', OperatorExpression(r'$eq', ValueExpression.create(8)))
-          .raw);
+          .build());
       var me = OperatorExpression('field', ValueExpression.create(5));
       e.mergeExpression(me);
       expect(e.rawContent, {'field': 5});
@@ -97,7 +97,7 @@ void main() {
     test('Merge Map Expression', () {
       var e = MapExpression(FieldExpression(
               'field', OperatorExpression(r'$eq', ValueExpression.create(8)))
-          .raw);
+          .build());
       var me = FieldExpression(
           'field', OperatorExpression(r'$gt', ValueExpression.create(7)));
 
@@ -109,7 +109,7 @@ void main() {
     test('Merge Map Expression 2', () {
       var e = MapExpression(FieldExpression(
               'field', OperatorExpression(r'$eq', ValueExpression.create(8)))
-          .raw);
+          .build());
       e.mergeExpression(FieldExpression(
           'field', OperatorExpression(r'$eq', ValueExpression.create(2))));
       var me = FieldExpression(

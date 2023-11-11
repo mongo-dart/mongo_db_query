@@ -9,7 +9,7 @@ void main() {
 
   test('add', () {
     expect(Add([TestExpr(), 1]).build(), {
-      '\$add': ['\$field', 1]
+      r'$add': [r'$field', 1]
     });
   });
 
@@ -91,6 +91,5 @@ class TestExpr implements ExpressionContent {
   String build() => '\$field';
 
   @override
-  // TODO: implement rawContent
-  get rawContent => throw UnimplementedError();
+  get rawContent => '\$field';
 }

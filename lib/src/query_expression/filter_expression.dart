@@ -108,7 +108,7 @@ class FilterExpression extends MapExpression {
         }
       }
     }
-    content.addAll(actualContainer?.raw ?? emptyMongoDocument);
+    content.addAll(actualContainer?.build() ?? emptyMongoDocument);
   }
 
   void addDocument(MongoDocument document) {

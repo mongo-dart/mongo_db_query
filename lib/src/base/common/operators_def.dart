@@ -78,3 +78,12 @@ const op$Bit = r'$bit';
 const opBitAnd = 'and';
 const opBitOr = 'or';
 const opBitXor = 'xor';
+
+// *********************** AGGREGATION **********************
+
+// **** Arithmentic
+const op$abs = r'$abs';
+const op$add = r'$add';
+const op$ceil = r'$ceil';
+const op$divide = r'$divide';
+const op$exp = r'$exp';

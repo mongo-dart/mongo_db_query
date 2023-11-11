@@ -1,8 +1,7 @@
-import 'builder.dart';
-
-abstract class ExpressionContent implements Builder {
+abstract class ExpressionContent {
   const ExpressionContent();
   dynamic get rawContent;
-  @override
+
+  @Deprecated('Use rawContent')
   dynamic build() => rawContent;
 }

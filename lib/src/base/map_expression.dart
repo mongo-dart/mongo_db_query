@@ -63,7 +63,7 @@ class MapExpression extends ExpressionContainer {
   /// Set an Expression
   /// clears the original content and add the expression
   /// as expressionKey : expressionContent (as map)
-  void setExpression(Expression operatorExp) => setMap(operatorExp.raw);
+  void setExpression(Expression operatorExp) => setMap(operatorExp.build());
 
   /// Add a Map
   /// Add a map content to the actual content.
@@ -83,7 +83,7 @@ class MapExpression extends ExpressionContainer {
   /// Add an Expression -
   /// Add an expression key-value pair to the actual content.
   /// If they key alreay exists, its value is substituted
-  void addExpression(Expression operatorExp) => addMap(operatorExp.raw);
+  void addExpression(Expression operatorExp) => addMap(operatorExp.build());
 
   /// Add a key-value pair
   /// If the key already exists, the value is substituted
@@ -116,7 +116,7 @@ class MapExpression extends ExpressionContainer {
     if (content is MongoDocument) {
       contentMap = content;
     } else if (content is Expression) {
-      contentMap = content.raw;
+      contentMap = content.build();
     } else if (content is MapExpression) {
       contentMap = content.rawContent;
     } else if (content is MapEntry) {
@@ -145,7 +145,7 @@ class MapExpression extends ExpressionContainer {
     if (origin is Map) {
       contentMap = {...origin, ...contentMap};
     } else if (origin is Expression) {
-      contentMap = {...origin.raw, ...contentMap};
+      contentMap = {...origin.build(), ...contentMap};
     } else if (origin is MapExpression) {
       contentMap = {...origin.rawContent, ...contentMap};
     } else if (origin is MapEntry) {

@@ -94,14 +94,14 @@ class ListExpression extends ExpressionContainer {
   List get rawContent => [
         for (var element in values)
           element is Expression
-              ? element.raw
+              ? element.build
               : (element is ExpressionContent ? element.rawContent : element)
       ];
 
   MongoDocument get content2map => {
         for (var element in values)
           if (element is Expression)
-            ...element.raw
+            ...(element.build())
           else if (element is MongoDocument)
             ...element
           else if (element is MapExpression)

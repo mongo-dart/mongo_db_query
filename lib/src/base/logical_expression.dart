@@ -57,8 +57,12 @@ class AndExpression extends LogicalExpression {
   }
 
   @override
-  MongoDocument get raw =>
-      {if (content.canBeSimplified) ...content.content2map else ...super.raw};
+  MongoDocument build() => {
+        if (content.canBeSimplified)
+          ...content.content2map
+        else
+          ...super.build()
+      };
 }
 
 class OrExpression extends LogicalExpression {

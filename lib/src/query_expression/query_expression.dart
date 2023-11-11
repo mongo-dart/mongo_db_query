@@ -20,6 +20,19 @@ import 'sort_expression.dart';
 
 QueryExpression get where => QueryExpression();
 
+ExpressionContent valueToContent(dynamic value) {
+  if (value is ExpressionContent) {
+    return value;
+  } else if (value is MongoDocument) {
+    return MapExpression(value);
+  } else if (value is List) {
+    return ListExpression(value);
+  } else if (value is Set) {
+    return SetExpression(value);
+  }
+  return ValueExpression.create(value);
+}
+
 class QueryExpression {
   static final RegExp objectIdRegexp = RegExp('.ObjectId...([0-9a-f]{24})....');
 
@@ -37,19 +50,6 @@ class QueryExpression {
   /// Inserts a raw document as filter
   void raw(MongoDocument document) => filter.addDocument(document);
 
-  ExpressionContent _valueToContent(dynamic value) {
-    if (value is ExpressionContent) {
-      return value;
-    } else if (value is MongoDocument) {
-      return MapExpression(value);
-    } else if (value is List) {
-      return ListExpression(value);
-    } else if (value is Set) {
-      return SetExpression(value);
-    }
-    return ValueExpression.create(value);
-  }
-
   // ***************************************************
   // ***************** Parenthesis
   // ***************************************************
@@ -62,17 +62,17 @@ class QueryExpression {
 
   /// Matches values that are equal to a specified value.
   void $eq(String fieldName, value) => filter.addFieldOperator(FieldExpression(
-      fieldName, OperatorExpression(op$eq, _valueToContent(value))));
+      fieldName, OperatorExpression(op$eq, valueToContent(value))));
 
   void id(value) => $eq(field_id, value);
 
   /// Matches values that are greater than a specified value.
   void $gt(String fieldName, value) => filter.addFieldOperator(FieldExpression(
-      fieldName, OperatorExpression(op$gt, _valueToContent(value))));
+      fieldName, OperatorExpression(op$gt, valueToContent(value))));
 
   /// Matches values that are greater than or equal to a specified value.
   void $gte(String fieldName, value) => filter.addFieldOperator(FieldExpression(
-      fieldName, OperatorExpression(op$gte, _valueToContent(value))));
+      fieldName, OperatorExpression(op$gte, valueToContent(value))));
 
   /// Matches any of the values specified in an array.
   void $in(String fieldName, List values) =>
@@ -81,15 +81,15 @@ class QueryExpression {
 
   /// Matches values that are less than a specified value.
   void $lt(String fieldName, value) => filter.addFieldOperator(FieldExpression(
-      fieldName, OperatorExpression(op$lt, _valueToContent(value))));
+      fieldName, OperatorExpression(op$lt, valueToContent(value))));
 
   /// Matches values that are less than or equal to a specified value.
   void $lte(String fieldName, value) => filter.addFieldOperator(FieldExpression(
-      fieldName, OperatorExpression(op$lte, _valueToContent(value))));
+      fieldName, OperatorExpression(op$lte, valueToContent(value))));
 
   /// Matches all values that are not equal to a specified value.
   void $ne(String fieldName, value) => filter.addFieldOperator(FieldExpression(
-      fieldName, OperatorExpression(op$ne, _valueToContent(value))));
+      fieldName, OperatorExpression(op$ne, valueToContent(value))));
 
   /// Matches none of the values specified in an array.
   void $nin(String fieldName, List values) =>
@@ -126,11 +126,11 @@ class QueryExpression {
   /// $exists matches the documents that contain the field,
   /// including documents where the field value is null.
   void $exists(String fieldName) => filter.addFieldOperator(FieldExpression(
-      fieldName, OperatorExpression(op$exists, _valueToContent(true))));
+      fieldName, OperatorExpression(op$exists, valueToContent(true))));
 
   ///  notExist reTurns only the documents that do not contain the field.
   void notExists(String fieldName) => filter.addFieldOperator(FieldExpression(
-      fieldName, OperatorExpression(op$exists, _valueToContent(false))));
+      fieldName, OperatorExpression(op$exists, valueToContent(false))));
 
   /// $type selects documents where the value of the field is an instance
   /// of the specified BSON type(s). Querying by data type is useful
@@ -167,7 +167,7 @@ class QueryExpression {
   /// specified JSON Schema.
   // TODO check if String or Map are required
   void $jsonSchema(String schemaObject) => filter.addOperator(
-      OperatorExpression(op$jsonSchema, _valueToContent(schemaObject)));
+      OperatorExpression(op$jsonSchema, valueToContent(schemaObject)));
 
   /// Select documents where the value of a field divided by a divisor
   /// has the specified remainder (i.e. perform a modulo operation to
@@ -195,7 +195,7 @@ class QueryExpression {
         fieldName,
         MapExpression({
           op$regex:
-              _valueToContent(escapePattern ? RegExp.escape(pattern) : pattern),
+              valueToContent(escapePattern ? RegExp.escape(pattern) : pattern),
           if (options.isNotEmpty) op$options: options
         })));
   }
@@ -221,7 +221,7 @@ class QueryExpression {
   /// Reference the document in the JavaScript expression or function
   /// using either this or obj .
   void $where(String function) => filter
-      .addOperator(OperatorExpression(op$where, _valueToContent(function)));
+      .addOperator(OperatorExpression(op$where, valueToContent(function)));
 
   // ***************************************************
   // ***************** Geo Spatial
@@ -286,8 +286,8 @@ class QueryExpression {
           fieldName, OperatorExpression(op$elemMatch, ListExpression(values))));
 
   void $size(String fieldName, int numElements) =>
-      filter.addFieldOperator(FieldExpression(fieldName,
-          OperatorExpression(op$size, _valueToContent(numElements))));
+      filter.addFieldOperator(FieldExpression(
+          fieldName, OperatorExpression(op$size, valueToContent(numElements))));
 
   /*  void match(String fieldName, String pattern,
           {bool? multiLine,
@@ -306,14 +306,14 @@ class QueryExpression {
       {bool minInclude = true, bool maxInclude = false}) {
     var mapExp = MapExpression.empty();
     if (minInclude) {
-      mapExp.addExpression(OperatorExpression(op$gte, _valueToContent(min)));
+      mapExp.addExpression(OperatorExpression(op$gte, valueToContent(min)));
     } else {
-      mapExp.addExpression(OperatorExpression(op$gt, _valueToContent(min)));
+      mapExp.addExpression(OperatorExpression(op$gt, valueToContent(min)));
     }
     if (maxInclude) {
-      mapExp.addExpression(OperatorExpression(op$lte, _valueToContent(max)));
+      mapExp.addExpression(OperatorExpression(op$lte, valueToContent(max)));
     } else {
-      mapExp.addExpression(OperatorExpression(op$lt, _valueToContent(max)));
+      mapExp.addExpression(OperatorExpression(op$lt, valueToContent(max)));
     }
     filter.addFieldOperator(FieldExpression(fieldName, mapExp));
   }
@@ -335,7 +335,7 @@ class QueryExpression {
   /// taking a query predicate.
   void $comment(String commentStr) {
     filter.addOperator(
-        OperatorExpression(op$comment, _valueToContent(commentStr)));
+        OperatorExpression(op$comment, valueToContent(commentStr)));
   }
   // TODO Missing $rand
   // TODO Missing $natural
