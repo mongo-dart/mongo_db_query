@@ -53,8 +53,5 @@ class TestExpr implements ExpressionContent {
   String get rawContent => 'test';
 
   @override
-  build() {
-    // TODO: implement build
-    throw UnimplementedError();
-  }
+  dynamic build() => rawContent;
 }

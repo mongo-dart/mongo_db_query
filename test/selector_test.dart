@@ -16,28 +16,21 @@ void main() {
     var selector = where..id(id);
     //expect(selector.map is Map, isTrue);
     expect(selector.filter.build().length, greaterThan(0));
-    expect(
-        selector.filter.build(),
-        equals({
-          r'$query': {'_id': id}
-        }));
+    expect(selector.filter.build(), {
+      '_id': {r'$eq': id}
+    });
   });
 
   test('testSelectorBuilderRawMap', () {
-    var selector = where
-      ..raw({
-        r'$query': {'name': 'joe'}
-      });
+    var selector = where..raw({'name': 'joe'});
 
     var id = ObjectId();
     selector.id(id);
-    //expect(selector.map is Map, isTrue);
-    expect(selector.filter.build().length, 1);
+    expect(selector.filter.build(), isMap);
+    expect(selector.filter.build().length, 2);
     expect(selector.filter.build(), {
-      r'$and': [
-        {'name': 'joe'},
-        {'_id': id}
-      ]
+      'name': 'joe',
+      '_id': {r'$eq': id}
     });
   });
 
@@ -46,43 +39,36 @@ void main() {
       ..$gt('my_field', 995)
       ..sortBy('my_field');
     expect(selector.filter.build(), {
-      r'$query': {
-        'my_field': {r'$gt': 995}
-      },
-      'orderby': {'my_field': 1}
+      'my_field': {r'$gt': 995}
     });
+    expect(selector.sortExp.build(), {'my_field': 1});
     selector = where
       ..inRange('my_field', 700, 703, minInclude: false)
       ..sortBy('my_field');
     expect(selector.filter.build(), {
-      r'$query': {
-        'my_field': {r'$gt': 700, r'$lt': 703}
-      },
-      'orderby': {'my_field': 1}
+      'my_field': {r'$gt': 700, r'$lt': 703}
     });
+    expect(selector.sortExp.build(), {'my_field': 1});
     selector = where
       ..$eq('my_field', 17)
       ..selectFields(['str_field']);
-    expect(selector.filter.build(), {'my_field': 17});
-    expect(selector.fields, {'str_field': 1});
+    expect(selector.filter.build(), {
+      'my_field': {r'$eq': 17}
+    });
+    expect(selector.fields.build(), {'str_field': 1});
 
     selector = where
       ..$regex('address', 'john.doe@nowhere.com', escapePattern: true);
     expect(selector.filter.build(), {
-      r'$query': {
-        'address': {r'$regex': RegExp('john\\.doe@nowhere\\.com')}
-      }
+      'address': {r'$regex': RegExp('john\\.doe@nowhere\\.com').pattern}
     });
 
     selector = where
       ..sortBy('a')
       ..skip(300);
-    expect(
-        selector.filter.build(),
-        equals({
-          '\$query': {},
-          'orderby': {'a': 1}
-        }));
+    expect(selector.filter.build(), equals({}));
+    expect(selector.sortExp.build(), {'a': 1});
+    expect(selector.getSkip(), 300);
     /*  selector = where.hint('bar').hint('baz', descending: true).explain();
     expect(
         selector.filter.build(),
@@ -99,190 +85,142 @@ void main() {
     var selector = where
       ..$gt('a', 995)
       ..$eq('b', 'bbb');
-    expect(
-        selector.filter.build(),
-        equals({
-          r'$query': {
-            '\$and': [
-              {
-                'a': {r'$gt': 995}
-              },
-              {'b': 'bbb'}
-            ]
-          }
-        }));
+    expect(selector.filter.build(), {
+      'a': {r'$gt': 995},
+      'b': {r'$eq': 'bbb'}
+    });
     selector = where
       ..$gt('a', 995)
       ..$lt('a', 1000);
-    expect(
-        selector.filter.build(),
-        equals({
-          r'$query': {
-            '\$and': [
-              {
-                'a': {r'$gt': 995}
-              },
-              {
-                'a': {r'$lt': 1000}
-              }
-            ]
-          }
-        }));
+    expect(selector.filter.build(), {
+      'a': {r'$gt': 995, r'$lt': 1000}
+    });
     selector = where
       ..$gt('a', 995)
-      ..and(where
-        ..$lt('b', 1000)
-        ..or(where..$gt('c', 2000)));
+      //..and
+      ..open
+      ..$lt('b', 1000)
+      ..$or
+      ..$gt('c', 2000)
+      ..close;
     expect(selector.filter.build(), {
-      '\$query': {
-        '\$and': [
-          {
-            'a': {'\$gt': 995}
-          },
-          {
-            '\$or': [
-              {
-                'b': {'\$lt': 1000}
-              },
-              {
-                'c': {'\$gt': 2000}
-              }
-            ]
-          }
-        ]
-      }
+      'a': {'\$gt': 995},
+      '\$or': [
+        {
+          'b': {'\$lt': 1000}
+        },
+        {
+          'c': {'\$gt': 2000}
+        }
+      ]
     });
     selector = where
+      ..open
       ..$lt('b', 1000)
-      ..or(where..$gt('c', 2000))
-      ..and(where..$gt('a', 995));
-    expect(selector.filter.build(), {
-      '\$query': {
-        '\$and': [
-          {
-            '\$or': [
-              {
-                'b': {'\$lt': 1000}
-              },
-              {
-                'c': {'\$gt': 2000}
-              }
-            ]
-          },
-          {
-            'a': {'\$gt': 995}
-          }
-        ]
-      }
-    });
-    selector = where
-      ..$lt('b', 1000)
-      ..or(where..$gt('c', 2000))
+      ..$or
+      ..$gt('c', 2000)
+      ..close
+      ..$and
       ..$gt('a', 995);
     expect(selector.filter.build(), {
-      '\$query': {
-        '\$and': [
-          {
-            '\$or': [
-              {
-                'b': {'\$lt': 1000}
-              },
-              {
-                'c': {'\$gt': 2000}
-              }
-            ]
-          },
-          {
-            'a': {'\$gt': 995}
-          }
-        ]
-      }
+      '\$or': [
+        {
+          'b': {'\$lt': 1000}
+        },
+        {
+          'c': {'\$gt': 2000}
+        }
+      ],
+      'a': {'\$gt': 995}
     });
     selector = where
       ..$lt('b', 1000)
-      ..or(where..$gt('c', 2000))
-      ..or(where..$gt('a', 995));
+      ..$or
+      ..$gt('c', 2000)
+      ..$gt('a', 995);
     expect(selector.filter.build(), {
-      '\$query': {
-        '\$or': [
-          {
-            'b': {'\$lt': 1000}
-          },
-          {
-            'c': {'\$gt': 2000}
-          },
-          {
-            'a': {'\$gt': 995}
-          }
-        ]
-      }
+      '\$or': [
+        {
+          'b': {'\$lt': 1000}
+        },
+        {
+          'c': {'\$gt': 2000},
+          'a': {'\$gt': 995}
+        }
+      ]
+    });
+    selector = where
+      ..$lt('b', 1000)
+      ..$or
+      ..$gt('c', 2000)
+      ..$or
+      ..$gt('a', 995);
+    expect(selector.filter.build(), {
+      '\$or': [
+        {
+          'b': {'\$lt': 1000}
+        },
+        {
+          'c': {'\$gt': 2000}
+        },
+        {
+          'a': {'\$gt': 995}
+        }
+      ]
     });
     selector = where
       ..$eq('price', 1.99)
-      ..and(where
-        ..$lt('qty', 20)
-        ..or(where..$eq('sale', true)));
+      ..$and
+      ..open
+      ..$lt('qty', 20)
+      ..$or
+      ..$eq('sale', true);
     expect(selector.filter.build(), {
-      '\$query': {
-        '\$and': [
-          {'price': 1.99},
-          {
-            '\$or': [
-              {
-                'qty': {'\$lt': 20}
-              },
-              {'sale': true}
-            ]
-          }
-        ]
-      }
+      'price': {r'$eq': 1.99},
+      '\$or': [
+        {
+          'qty': {'\$lt': 20}
+        },
+        {
+          'sale': {r'$eq': true}
+        }
+      ]
     });
     selector = where
       ..$eq('price', 1.99)
-      ..and(where..$lt('qty', 20))
-      ..and(where..$eq('sale', true));
+      ..$and
+      ..$lt('qty', 20)
+      ..$and
+      ..$eq('sale', true);
     expect(selector.filter.build(), {
-      '\$query': {
-        '\$and': [
-          {'price': 1.99},
-          {
-            'qty': {'\$lt': 20}
-          },
-          {'sale': true}
-        ]
-      }
+      'price': {r'$eq': 1.99},
+      'qty': {'\$lt': 20},
+      'sale': {r'$eq': true}
     });
     selector = where
       ..$eq('price', 1.99)
       ..$lt('qty', 20)
       ..$eq('sale', true);
     expect(selector.filter.build(), {
-      '\$query': {
-        '\$and': [
-          {'price': 1.99},
-          {
-            'qty': {'\$lt': 20}
-          },
-          {'sale': true}
-        ]
-      }
+      'price': {r'$eq': 1.99},
+      'qty': {'\$lt': 20},
+      'sale': {r'$eq': true}
     });
     selector = where
       ..$eq('foo', 'bar')
-      ..or(where..$eq('foo', null))
+      ..$or
+      ..$eq('foo', null)
       ..$eq('name', 'jack');
     expect(selector.filter.build(), {
-      r'$query': {
-        r'$and': [
-          {
-            r'$or': [
-              {'foo': 'bar'},
-              {'foo': null}
-            ]
-          },
-          {'name': 'jack'}
-        ]
-      }
+      r'$or': [
+        {
+          'foo': {r'$eq': 'bar'}
+        },
+        {
+          'foo': {r'$eq': null},
+          'name': {r'$eq': 'jack'}
+        }
+      ]
     });
   });
 
@@ -339,15 +277,15 @@ void main() {
   });
   test('testGetQueryString', () {
     var selector = where..$eq('foo', 'bar');
-    expect(selector.getQueryString(), r'{"$query":{"foo":"bar"}}');
+    expect(selector.getQueryString(), r'{"foo":{"$eq":"bar"}}');
     selector = where..$lt('foo', 2);
-    expect(selector.getQueryString(), r'{"$query":{"foo":{"$lt":2}}}');
+    expect(selector.getQueryString(), r'{"foo":{"$lt":2}}');
     var id = ObjectId();
     selector = where..id(id);
-    expect(selector.getQueryString(), '{"\$query":{"_id":"${id.oid}"}}');
-//  var dbPointer = new DbRef('Dummy',id);
-//  selector = where.eq('foo',dbPointer);
-//  expect(selector.getQueryString(),'{"\$query":{"foo":$dbPointer}}');
+    expect(selector.getQueryString(), '{"_id":{"\$eq":"${id.oid}"}}');
+    var dbPointer = DBPointer('Dummy', id);
+    selector = where..$eq('foo', dbPointer);
+    expect(selector.getQueryString(), '{"foo":{"\$eq":"$dbPointer"}}');
   });
 
   test('sortByMetaTextScore', () {
@@ -358,15 +296,16 @@ void main() {
       ..$eq('\$text', {'\$search': searchText})
       ..selectMetaTextScore('score');
 
-    expect(selector.getQueryString(),
-        r'{"$query":{"$text":{"$search":"sText"}},"orderby":{"fName":1}}');
+    expect(selector.getQueryString(), r'{"$text":{"$eq":{"$search":"sText"}}}');
+    expect(selector.sortExp.build(), {fieldName: 1});
   });
 
   test('copyWith_clone', () {
     var selector = where
       ..$eq('field', 'value')
       ..$gt('num_field', 5)
-      ..and(where..$nearSphere('geo_obj', Geometry.point([35.0, 35.0])));
+      ..and
+      ..$nearSphere('geo_obj', Geometry.point([35.0, 35.0]));
 
     var copied = QueryExpression.copyWith(selector);
 
@@ -389,21 +328,19 @@ void main() {
     expect(
         selector.filter.build(),
         equals({
-          r'$query': {
-            'geo_field': {
-              r'$nearSphere': {
-                r'$geometry': {
-                  'type': 'Polygon',
-                  'coordinates': [
-                    [0, 0],
-                    [1, 8],
-                    [12, 30],
-                    [0, 0]
-                  ]
-                },
-                r'$minDistance': 500,
-                r'$maxDistance': 1000
-              }
+          'geo_field': {
+            r'$nearSphere': {
+              r'$geometry': {
+                'type': 'Polygon',
+                'coordinates': [
+                  [0, 0],
+                  [1, 8],
+                  [12, 30],
+                  [0, 0]
+                ]
+              },
+              r'$minDistance': 500,
+              r'$maxDistance': 1000
             }
           }
         }));
@@ -411,11 +348,11 @@ void main() {
 
   test('Match', () {
     var selector = where..$regex('testField', 'john.doe@noone.com');
-    expect(selector.filter.build()[r'$query']['testField'][r'$regex'].pattern,
+    expect(selector.filter.build()['testField'][r'$regex'],
         RegExp('john.doe@noone.com').pattern);
     selector = where
       ..$regex('testField', 'john.doe@noone.com', escapePattern: true);
-    expect(selector.filter.build()[r'$query']['testField'][r'$regex'].pattern,
+    expect(selector.filter.build()['testField'][r'$regex'],
         RegExp(r'john\.doe@noone\.com').pattern);
   });
   test('geoIntersects', () {
@@ -432,18 +369,16 @@ void main() {
     expect(
         selector.filter.build(),
         equals({
-          r'$query': {
-            'geo_field': {
-              r'$geoIntersects': {
-                r'$geometry': {
-                  'type': 'Polygon',
-                  'coordinates': [
-                    [0, 0],
-                    [1, 8],
-                    [12, 30],
-                    [0, 0]
-                  ]
-                }
+          'geo_field': {
+            r'$geoIntersects': {
+              r'$geometry': {
+                'type': 'Polygon',
+                'coordinates': [
+                  [0, 0],
+                  [1, 8],
+                  [12, 30],
+                  [0, 0]
+                ]
               }
             }
           }
@@ -464,18 +399,16 @@ void main() {
     expect(
         selector.filter.build(),
         equals({
-          r'$query': {
-            'geo_field': {
-              r'$geoWithin': {
-                r'$geometry': {
-                  'type': 'Polygon',
-                  'coordinates': [
-                    [0, 0],
-                    [1, 8],
-                    [12, 30],
-                    [0, 0]
-                  ]
-                }
+          'geo_field': {
+            r'$geoWithin': {
+              r'$geometry': {
+                'type': 'Polygon',
+                'coordinates': [
+                  [0, 0],
+                  [1, 8],
+                  [12, 30],
+                  [0, 0]
+                ]
               }
             }
           }
@@ -490,14 +423,12 @@ void main() {
     expect(
         selector.filter.build(),
         equals({
-          r'$query': {
-            'geo_field': {
-              r'$geoWithin': {
-                r'$box': [
-                  [5, 8],
-                  [8.8, 10.5]
-                ]
-              }
+          'geo_field': {
+            r'$geoWithin': {
+              r'$box': [
+                [5, 8],
+                [8.8, 10.5]
+              ]
             }
           }
         }));
@@ -510,14 +441,12 @@ void main() {
     expect(
         selector.filter.build(),
         equals({
-          r'$query': {
-            'geo_field': {
-              r'$geoWithin': {
-                r'$center': [
-                  [5, 8],
-                  50.2
-                ]
-              }
+          'geo_field': {
+            r'$geoWithin': {
+              r'$center': [
+                [5, 8],
+                50.2
+              ]
             }
           }
         }));

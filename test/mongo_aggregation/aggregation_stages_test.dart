@@ -193,9 +193,10 @@ void main() {
             SortByCount(Field('tags'))
           ],
           'categorizedByPrice': [
-            Match(where
-              ..$exists('price')
-              ..filter.build()),
+            Match((where
+                  ..$exists('price')
+                  ..filter)
+                .rawFilter),
             Bucket(
                 groupBy: Field('price'),
                 boundaries: [0, 150, 200, 300, 400],
@@ -333,12 +334,15 @@ void main() {
 
   test('match', () {
     expect(
-        Match(where
-              ..$eq('author', 'dave')
-              ..filter.build())
+        Match((where
+                  ..$eq('author', 'dave')
+                  ..filter)
+                .rawFilter)
             .build(),
         {
-          '\$match': {'author': 'dave'}
+          '\$match': {
+            'author': {r'$eq': 'dave'}
+          }
         });
     expect(Match(Expr(Eq(Field('author'), 'dave'))).build(), {
       '\$match': {
@@ -430,7 +434,9 @@ void main() {
             'as': 'reportingHierarchy',
             'depthField': 'depth',
             'maxDepth': 5,
-            'restrictSearchWithMatch': {'field': 'value'}
+            'restrictSearchWithMatch': {
+              'field': {r'$eq': 'value'}
+            }
           }
         });
   });
@@ -493,7 +499,9 @@ void main() {
             },
             'distanceField': 'dist.calculated',
             'maxDistance': 2,
-            'query': {'category': 'Parks'},
+            'query': {
+              'category': {r'$eq': 'Parks'}
+            },
             'includeLocs': 'dist.location',
             'spherical': true
           }

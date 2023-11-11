@@ -170,6 +170,24 @@ void main() {
       ],
     });
   });
+  test('testQueryComposition 5a', () {
+    var selector = where
+      ..$lt('b', 1000)
+      ..$or
+      ..$gt('c', 2000)
+      ..$and
+      ..$lt('c', 995);
+    expect(selector.filter.rawContent, {
+      r'$or': [
+        {
+          'b': {r'$lt': 1000}
+        },
+        {
+          'c': {r'$gt': 2000, r'$lt': 995}
+        }
+      ],
+    });
+  });
 
   test('testQueryComposition 6', () {
     var selector = where

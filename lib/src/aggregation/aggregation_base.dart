@@ -47,10 +47,7 @@ class AEList extends Iterable implements ExpressionContent {
       .toList();
 
   @override
-  build() {
-    // TODO: implement build
-    throw UnimplementedError();
-  }
+  dynamic build() => rawContent;
 }
 
 /// Iterator for [AEList]
