@@ -160,9 +160,9 @@ class SetWindowFields extends AggregationStage {
 
   static AEObject _getOutputDocument(output) {
     if (output is Output) {
-      return AEObject(output.build());
+      return AEObject(output.rawContent);
     } else if (output is List<Output>) {
-      return AEObject({for (Output element in output) ...element.build()});
+      return AEObject({for (Output element in output) ...element.rawContent});
     } else if (output is Map<String, dynamic>) {
       return AEObject(output);
     } else {

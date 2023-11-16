@@ -79,8 +79,5 @@ void main() {
 
 class TestExpr implements ExpressionContent {
   @override
-  String build() => '\$field';
-
-  @override
   get rawContent => '\$field';
 }

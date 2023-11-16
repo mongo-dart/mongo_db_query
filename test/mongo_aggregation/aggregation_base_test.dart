@@ -28,23 +28,25 @@ void main() {
   });
 
   test('AEList filter null elements', () {
-    expect(AEList([1, 'string', null, 2]).build(),
+    expect(AEList([1, 'string', null, 2]).rawContent,
         containsAllInOrder([1, 'string', 2]));
   });
 
   test('AEObject filter null values', () {
     expect(
-        AEObject({'num': 1, 'string': 'value', 'null': null, 'two': 2}).build(),
+        AEObject({'num': 1, 'string': 'value', 'null': null, 'two': 2})
+            .rawContent,
         {'num': 1, 'string': 'value', 'two': 2});
   });
 
   test('AElist#build', () {
-    expect(AEList([1, TestExpr(), 'string']).build(),
+    expect(AEList([1, TestExpr(), 'string']).rawContent,
         containsAllInOrder([1, 'test', 'string']));
   });
 
   test('AEObject#build', () {
-    expect(AEObject({'num': 1, 'expr': TestExpr(), 'string': 'value'}).build(),
+    expect(
+        AEObject({'num': 1, 'expr': TestExpr(), 'string': 'value'}).rawContent,
         {'num': 1, 'expr': 'test', 'string': 'value'});
   });
 }
@@ -52,7 +54,4 @@ void main() {
 class TestExpr implements ExpressionContent {
   @override
   String get rawContent => 'test';
-
-  @override
-  dynamic build() => rawContent;
 }

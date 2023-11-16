@@ -53,8 +53,6 @@ class AEObject extends Iterable<MapEntry<String, dynamic>>
   Map<String, dynamic> get rawContent =>
       Map.fromEntries(_iterable).map((argName, argValue) => MapEntry(argName,
           argValue is ExpressionContent ? argValue.rawContent : argValue));
-  @override
-  build() => rawContent;
 }
 
 /// Returns `true` if value is not null
@@ -171,8 +169,6 @@ abstract class AggregationStage implements ExpressionContent {
   final Object _content;
   AggregationStage(this._name, this._content);
 
-  @override
-  Map<String, Object> build() => rawContent;
   @override
   Map<String, Object> get rawContent => {
         '\$$_name':
