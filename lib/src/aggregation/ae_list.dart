@@ -31,7 +31,7 @@ class AEList extends Iterable implements ExpressionContent {
   AEIterator get iterator => AEIterator(_iterable);
   @override
   List get rawContent => _iterable
-      .map((expr) => expr is ExpressionContent ? expr.build() : expr)
+      .map((expr) => expr is ExpressionContent ? expr.rawContent : expr)
       .toList();
 
   @override

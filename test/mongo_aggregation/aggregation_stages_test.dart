@@ -147,19 +147,19 @@ void main() {
   });
 
   test('granularity', () {
-    expect(Granularity.r5.build(), 'R5');
-    expect(Granularity.r10.build(), 'R10');
-    expect(Granularity.r20.build(), 'R20');
-    expect(Granularity.r40.build(), 'R40');
-    expect(Granularity.r80.build(), 'R80');
-    expect(Granularity.e6.build(), 'E6');
-    expect(Granularity.e12.build(), 'E12');
-    expect(Granularity.e24.build(), 'E24');
-    expect(Granularity.e48.build(), 'E48');
-    expect(Granularity.e96.build(), 'E96');
-    expect(Granularity.e192.build(), 'E192');
-    expect(Granularity.g125.build(), '1-2-5');
-    expect(Granularity.powersof2.build(), 'POWERSOF2');
+    expect(Granularity.r5.rawContent, 'R5');
+    expect(Granularity.r10.rawContent, 'R10');
+    expect(Granularity.r20.rawContent, 'R20');
+    expect(Granularity.r40.rawContent, 'R40');
+    expect(Granularity.r80.rawContent, 'R80');
+    expect(Granularity.e6.rawContent, 'E6');
+    expect(Granularity.e12.rawContent, 'E12');
+    expect(Granularity.e24.rawContent, 'E24');
+    expect(Granularity.e48.rawContent, 'E48');
+    expect(Granularity.e96.rawContent, 'E96');
+    expect(Granularity.e192.rawContent, 'E192');
+    expect(Granularity.g125.rawContent, '1-2-5');
+    expect(Granularity.powersof2.rawContent, 'POWERSOF2');
   });
 
   test('bucketAuto', () {
@@ -487,7 +487,7 @@ void main() {
                 maxDistance: 2,
                 query: where
                   ..$eq('category', 'Parks')
-                  ..filter.build(),
+                  ..filter.rawContent,
                 includeLocs: 'dist.location',
                 spherical: true)
             .build(),

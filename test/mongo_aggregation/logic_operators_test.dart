@@ -4,19 +4,19 @@ import 'package:test/test.dart';
 
 void main() {
   test('and', () {
-    expect(And([TestExpr(), false]).build(), {
+    expect(And([TestExpr(), false]).rawContent, {
       '\$and': ['\$field', false]
     });
   });
 
   test('or', () {
-    expect(Or([TestExpr(), false]).build(), {
+    expect(Or([TestExpr(), false]).rawContent, {
       '\$or': ['\$field', false]
     });
   });
 
   test('not', () {
-    expect(Not(TestExpr()).build(), {'\$not': '\$field'});
+    expect(Not(TestExpr()).rawContent, {'\$not': '\$field'});
   });
 }
 
@@ -25,6 +25,5 @@ class TestExpr implements ExpressionContent {
   String build() => '\$field';
 
   @override
-  // TODO: implement rawContent
-  get rawContent => throw UnimplementedError();
+  get rawContent => '\$field';
 }

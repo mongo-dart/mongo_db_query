@@ -28,59 +28,59 @@ void main() {
   });
 
   test('floor', () {
-    expect(Floor(TestExpr()).build(), {'\$floor': '\$field'});
+    expect(Floor(TestExpr()).rawContent, {'\$floor': '\$field'});
   });
 
   test('ln', () {
-    expect(Ln(TestExpr()).build(), {'\$ln': '\$field'});
+    expect(Ln(TestExpr()).rawContent, {'\$ln': '\$field'});
   });
 
   test('log', () {
-    expect(Log(TestExpr(), 2).build(), {
+    expect(Log(TestExpr(), 2).rawContent, {
       '\$log': ['\$field', 2]
     });
   });
 
   test('log10', () {
-    expect(Log10(TestExpr()).build(), {'\$log10': '\$field'});
+    expect(Log10(TestExpr()).rawContent, {'\$log10': '\$field'});
   });
 
   test('mod', () {
-    expect(Mod(TestExpr(), 2).build(), {
+    expect(Mod(TestExpr(), 2).rawContent, {
       '\$mod': ['\$field', 2]
     });
   });
 
   test('multiply', () {
-    expect(Multiply([TestExpr(), 3]).build(), {
+    expect(Multiply([TestExpr(), 3]).rawContent, {
       '\$multiply': ['\$field', 3]
     });
   });
 
   test('pow', () {
-    expect(Pow(TestExpr(), 3).build(), {
+    expect(Pow(TestExpr(), 3).rawContent, {
       '\$pow': ['\$field', 3]
     });
   });
 
   test('round', () {
-    expect(Round(TestExpr(), 3).build(), {
+    expect(Round(TestExpr(), 3).rawContent, {
       '\$round': ['\$field', 3]
     });
   });
 
   test('sqrt', () {
-    expect(Sqrt(TestExpr()).build(), {'\$sqrt': '\$field'});
+    expect(Sqrt(TestExpr()).rawContent, {'\$sqrt': '\$field'});
   });
 
   test('subtract', () {
-    expect(Subtract(TestExpr(), 3).build(), {
+    expect(Subtract(TestExpr(), 3).rawContent, {
       '\$subtract': ['\$field', 3]
     });
   });
 
   test('trunc', () {
-    expect(Trunc(TestExpr(), 3).build(), {
+    expect(Trunc(TestExpr(), 3).rawContent, {
       '\$trunc': ['\$field', 3]
     });
   });

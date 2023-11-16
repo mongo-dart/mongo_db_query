@@ -5,26 +5,26 @@ import 'package:test/test.dart';
 
 void main() {
   test('field', () {
-    expect(Field('field').build(), '\$field');
+    expect(Field('field').rawContent, '\$field');
   });
 
   test('literal', () {
-    expect(Literal('\$value').build(), {'\$literal': '\$value'});
+    expect(Literal('\$value').rawContent, {'\$literal': '\$value'});
   });
 
   test('variable', () {
-    expect(Var('variable').build(), '\$\$variable');
+    expect(Var('variable').rawContent, '\$\$variable');
   });
 
   test('system variables', () {
-    expect(Var.now.build(), '\$\$NOW');
-    expect(Var.clusterTime.build(), '\$\$CLUSTER_TIME');
-    expect(Var.root.build(), '\$\$ROOT');
-    expect(Var.current.build(), '\$\$CURRENT');
-    expect(Var.remove.build(), '\$\$REMOVE');
-    expect(Var.discend.build(), '\$\$DISCEND');
-    expect(Var.prune.build(), '\$\$PRUNE');
-    expect(Var.keep.build(), '\$\$KEEP');
+    expect(Var.now.rawContent, '\$\$NOW');
+    expect(Var.clusterTime.rawContent, '\$\$CLUSTER_TIME');
+    expect(Var.root.rawContent, '\$\$ROOT');
+    expect(Var.current.rawContent, '\$\$CURRENT');
+    expect(Var.remove.rawContent, '\$\$REMOVE');
+    expect(Var.discend.rawContent, '\$\$DISCEND');
+    expect(Var.prune.rawContent, '\$\$PRUNE');
+    expect(Var.keep.rawContent, '\$\$KEEP');
   });
 
   test('AEList filter null elements', () {

@@ -56,7 +56,7 @@ class Output extends AEObject {
       {List? documents, List? range, String? unit})
       : super.internal(({
           fieldName: {
-            ...operator.build(),
+            ...operator.rawContent,
             if (documents != null || range != null || unit != null)
               spWindow: {
                 if (documents != null) spDocuments: AEList(documents),
