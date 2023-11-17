@@ -3,44 +3,42 @@ import 'package:mongo_db_query/src/base/operator_expression.dart';
 import '../base/common/operators_def.dart';
 import '../base/expression_content.dart';
 import '../query_expression/query_expression.dart';
-import 'ae_list.dart';
-import 'aggregation_base.dart';
 
 /// `$abs` operator
 ///
 /// Returns the absolute value of an [expr]
-class Abs extends OperatorExpression {
+class $Abs extends OperatorExpression {
   /// Creates an `$abs` operator expression
   //Abs(expr) : super('abs', expr); ** OLD
-  Abs(ExpressionContent expr) : super(op$abs, expr);
+  $Abs(ExpressionContent expr) : super(op$abs, expr);
 }
 
 /// `$add` operator
 ///
 /// Adds numbers together or adds numbers and a date. If one of the arguments is
 /// a date, `$add` treats the other arguments as milliseconds to add to the date.
-class Add extends OperatorExpression {
+class $Add extends OperatorExpression {
   /// Creates an `$add` operator expression
   //Add(List args) : super('add', AEList(args)); ** OLD
-  Add(List args) : super(op$add, valueToContent(args));
+  $Add(List args) : super(op$add, valueToContent(args));
 }
 
 /// `$ceil` operator
 ///
 /// Returns the smallest integer greater than or equal to the specified number.
-class Ceil extends OperatorExpression {
+class $Ceil extends OperatorExpression {
   /// Creates `$ceil` operator expression
   //Ceil(expr) : super('ceil', expr); ** OLD
-  Ceil(ExpressionContent expr) : super(op$ceil, expr);
+  $Ceil(ExpressionContent expr) : super(op$ceil, expr);
 }
 
 /// `$divide` operator
 ///
 /// Divides one number by another and returns the result.
-class Divide extends OperatorExpression {
+class $Divide extends OperatorExpression {
   /// Creates `$divide` operator expression
   //Divide(dividend, divisor) : super('divide', AEList([dividend, divisor])); OLD
-  Divide(dividend, divisor)
+  $Divide(dividend, divisor)
       : super(op$divide, valueToContent([dividend, divisor]));
 }
 
@@ -48,87 +46,96 @@ class Divide extends OperatorExpression {
 ///
 /// Raises Euler’s number (i.e. `e` ) to the specified exponent and returns the
 /// result.
-class Exp extends OperatorExpression {
+class $Exp extends OperatorExpression {
   /// Creates `$exp` operator expression
   //Exp(expr) : super('exp', expr); ** OLD
-  Exp(expr) : super(op$exp, valueToContent(expr));
+  $Exp(expr) : super(op$exp, valueToContent(expr));
 }
 
 /// `$floor` operator
 ///
 /// Returns the largest integer less than or equal to the specified number.
-class Floor extends Operator {
+class $Floor extends OperatorExpression {
   /// Creates `$floor` operator expression
-  Floor(expr) : super('floor', expr);
+  //Floor(expr) : super('floor', expr); ** OLD
+  $Floor(expr) : super(op$floor, valueToContent(expr));
 }
 
 /// `$ln` operator
 ///
 /// Calculates the natural logarithm `ln` of a number and returns the result as
 /// a double.
-class Ln extends Operator {
+class $Ln extends OperatorExpression {
   /// Creates `$ln` operator expression
-  Ln(expr) : super('ln', expr);
+  //Ln(expr) : super('ln', expr); ** OfflineAudioCompletionEvent
+  $Ln(expr) : super(op$ln, valueToContent(expr));
 }
 
 /// `$log` operator
 ///
 /// Calculates the `log` of an [expr] in the specified [base] and returns the
 /// result as a double.
-class Log extends Operator {
+class $Log extends OperatorExpression {
   /// Creates `$log` operator expression
-  Log(expr, base) : super('log', AEList([expr, base]));
+  //Log(expr, base) : super('log', AEList([expr, base]));
+  $Log(expr, base) : super(op$log, valueToContent([expr, base]));
 }
 
 /// `$log10` operator
 ///
 /// Calculates the `log` base 10 of an [expr] and returns the result as a
 /// double.
-class Log10 extends Operator {
+class $Log10 extends OperatorExpression {
   /// Creates `$log10` operator expression
-  Log10(expr) : super('log10', expr);
+  //Log10(expr) : super('log10', expr);
+  $Log10(expr) : super(op$log10, valueToContent(expr));
 }
 
 /// `$mod` operator
 ///
 /// Divides one number by another and returns the remainder.
-class Mod extends Operator {
+class $Mod extends OperatorExpression {
   /// Creates `$mod` operator expression
-  Mod(dividend, divisor) : super('mod', AEList([dividend, divisor]));
+  //Mod(dividend, divisor) : super('mod', AEList([dividend, divisor]));
+  $Mod(dividend, divisor) : super(op$mod, valueToContent([dividend, divisor]));
 }
 
 /// `$multiply` operator
 ///
 /// Multiplies numbers together and returns the result. Pass the arguments to
 /// `$multiply` in an array.
-class Multiply extends Operator {
+class $Multiply extends OperatorExpression {
   /// Creates `$multiply` operator expression
-  Multiply(List args) : super('multiply', AEList(args));
+  //Multiply(List args) : super('multiply', AEList(args));
+  $Multiply(List args) : super(op$multiply, valueToContent(args));
 }
 
 /// `$pow` operator
 ///
 /// Raises an [expr] to the specified [exponent] and returns the result.
-class Pow extends Operator {
+class $Pow extends OperatorExpression {
   /// Creates `$pow` operator expression
-  Pow(expr, exponent) : super('pow', AEList([expr, exponent]));
+  //Pow(expr, exponent) : super('pow', AEList([expr, exponent]));
+  $Pow(expr, exponent) : super(op$pow, valueToContent([expr, exponent]));
 }
 
 /// `$round` operator
 ///
 /// Rounds an [expr] to to a whole integer or to a specified decimal [place].
-class Round extends Operator {
+class $Round extends OperatorExpression {
   /// Creates `$round` operator expression
-  Round(expr, [place]) : super('round', AEList([expr, place]));
+  //Round(expr, [place]) : super('round', AEList([expr, place]));
+  $Round(expr, [place]) : super(op$round, valueToContent([expr, place]));
 }
 
 /// `$sqrt` operator
 ///
 /// Calculates the square root of a positive number and returns the result as a
 /// double.
-class Sqrt extends Operator {
+class $Sqrt extends OperatorExpression {
   /// Creates `$sqrt` operator expression
-  Sqrt(expr) : super('sqrt', expr);
+  // Sqrt(expr) : super('sqrt', expr);
+  $Sqrt(expr) : super(op$sqrt, valueToContent(expr));
 }
 
 /// `$subtract` operator
@@ -136,16 +143,19 @@ class Sqrt extends Operator {
 /// Subtracts two numbers to return the difference, or two dates to return the
 /// difference in milliseconds, or a date and a number in milliseconds to return
 /// the resulting date.
-class Subtract extends Operator {
+class $Subtract extends OperatorExpression {
   /// Creates `$subtract` operator expression
-  Subtract(minuend, subtrahend)
-      : super('subtract', AEList([minuend, subtrahend]));
+  //Subtract(minuend, subtrahend)
+  //    : super('subtract', AEList([minuend, subtrahend]));
+  $Subtract(minuend, subtrahend)
+      : super(op$subtract, valueToContent([minuend, subtrahend]));
 }
 
 /// `$trunc` operator
 ///
 /// Truncates an [expr] to a whole integer or to a specified decimal [place].
-class Trunc extends Operator {
+class $Trunc extends OperatorExpression {
   /// Creates `$trunc` operator expression
-  Trunc(expr, [place]) : super('trunc', AEList([expr, place]));
+  //Trunc(expr, [place]) : super('trunc', AEList([expr, place]));
+  $Trunc(expr, [place]) : super(op$trunc, valueToContent([expr, place]));
 }

@@ -193,10 +193,7 @@ void main() {
             SortByCount(Field('tags'))
           ],
           'categorizedByPrice': [
-            Match((where
-                  ..$exists('price')
-                  ..filter)
-                .rawFilter),
+            Match((where..$exists('price')).rawFilter),
             Bucket(
                 groupBy: Field('price'),
                 boundaries: [0, 150, 200, 300, 400],
@@ -266,7 +263,7 @@ void main() {
           'day': DayOfMonth(Field('date')),
           'year': Year(Field('date'))
         }, fields: {
-          'totalPrice': Sum(Multiply([Field('price'), Field('quantity')])),
+          'totalPrice': Sum($Multiply([Field('price'), Field('quantity')])),
           'averageQuantity': Avg(Field('quantity')),
           'count': Sum(1)
         }).build(),
@@ -295,7 +292,7 @@ void main() {
     final nullId = BsonNull();
     expect(
         Group(id: nullId, fields: {
-          'totalPrice': Sum(Multiply([Field('price'), Field('quantity')])),
+          'totalPrice': Sum($Multiply([Field('price'), Field('quantity')])),
           'averageQuantity': Avg(Field('quantity')),
           'count': Sum(1)
         }).build(),
