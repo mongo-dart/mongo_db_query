@@ -14,7 +14,7 @@ void main() {
                 second: 0,
                 millisecond: 0,
                 timezone: 'Europe/Moscow')
-            .build(),
+            .rawContent,
         {
           '\$dateFromParts': {
             'year': 2019,
@@ -40,7 +40,7 @@ void main() {
                 second: 0,
                 millisecond: 0,
                 timezone: 'Europe/Moscow')
-            .build(),
+            .rawContent,
         {
           '\$dateFromParts': {
             'isoWeekYear': 2019,
@@ -63,7 +63,7 @@ void main() {
                 timezone: 'Europe/Moscow',
                 onError: TestExpr(),
                 onNull: TestExpr())
-            .build(),
+            .rawContent,
         {
           '\$dateFromString': {
             'dateString': '06-15-2018',
@@ -78,7 +78,7 @@ void main() {
   test('dateToParts', () {
     expect(
         DateToParts(TestExpr(), timezone: 'Europe/Moscow', iso8601: true)
-            .build(),
+            .rawContent,
         {
           '\$dateToParts': {
             'date': '\$field',
@@ -89,93 +89,89 @@ void main() {
   });
 
   test('dayOfMonth', () {
-    expect(DayOfMonth(TestExpr(), timezone: 'Europe/Moscow').build(), {
+    expect(DayOfMonth(TestExpr(), timezone: 'Europe/Moscow').rawContent, {
       '\$dayOfMonth': {'date': '\$field', 'timezone': 'Europe/Moscow'}
     });
   });
 
   test('dayOfWeek', () {
-    expect(DayOfWeek(TestExpr(), timezone: 'Europe/Moscow').build(), {
+    expect(DayOfWeek(TestExpr(), timezone: 'Europe/Moscow').rawContent, {
       '\$dayOfWeek': {'date': '\$field', 'timezone': 'Europe/Moscow'}
     });
   });
 
   test('dayOfYear', () {
-    expect(DayOfYear(TestExpr(), timezone: 'Europe/Moscow').build(), {
+    expect(DayOfYear(TestExpr(), timezone: 'Europe/Moscow').rawContent, {
       '\$dayOfYear': {'date': '\$field', 'timezone': 'Europe/Moscow'}
     });
   });
 
   test('hour', () {
-    expect(Hour(TestExpr(), timezone: 'Europe/Moscow').build(), {
+    expect(Hour(TestExpr(), timezone: 'Europe/Moscow').rawContent, {
       '\$hour': {'date': '\$field', 'timezone': 'Europe/Moscow'}
     });
   });
 
   test('isoDayOfWeek', () {
-    expect(IsoDayOfWeek(TestExpr(), timezone: 'Europe/Moscow').build(), {
+    expect(IsoDayOfWeek(TestExpr(), timezone: 'Europe/Moscow').rawContent, {
       '\$isoDayOfWeek': {'date': '\$field', 'timezone': 'Europe/Moscow'}
     });
   });
 
   test('isoWeek', () {
-    expect(IsoWeek(TestExpr(), timezone: 'Europe/Moscow').build(), {
+    expect(IsoWeek(TestExpr(), timezone: 'Europe/Moscow').rawContent, {
       '\$isoWeek': {'date': '\$field', 'timezone': 'Europe/Moscow'}
     });
   });
 
   test('isoWeekYear', () {
-    expect(IsoWeekYear(TestExpr(), timezone: 'Europe/Moscow').build(), {
+    expect(IsoWeekYear(TestExpr(), timezone: 'Europe/Moscow').rawContent, {
       '\$isoWeekYear': {'date': '\$field', 'timezone': 'Europe/Moscow'}
     });
   });
 
   test('millisecond', () {
-    expect(Millisecond(TestExpr(), timezone: 'Europe/Moscow').build(), {
+    expect(Millisecond(TestExpr(), timezone: 'Europe/Moscow').rawContent, {
       '\$millisecond': {'date': '\$field', 'timezone': 'Europe/Moscow'}
     });
   });
 
   test('minute', () {
-    expect(Minute(TestExpr(), timezone: 'Europe/Moscow').build(), {
+    expect(Minute(TestExpr(), timezone: 'Europe/Moscow').rawContent, {
       '\$minute': {'date': '\$field', 'timezone': 'Europe/Moscow'}
     });
   });
 
   test('month', () {
-    expect(Month(TestExpr(), timezone: 'Europe/Moscow').build(), {
+    expect(Month(TestExpr(), timezone: 'Europe/Moscow').rawContent, {
       '\$month': {'date': '\$field', 'timezone': 'Europe/Moscow'}
     });
   });
 
   test('second', () {
-    expect(Second(TestExpr(), timezone: 'Europe/Moscow').build(), {
+    expect(Second(TestExpr(), timezone: 'Europe/Moscow').rawContent, {
       '\$second': {'date': '\$field', 'timezone': 'Europe/Moscow'}
     });
   });
 
   test('week', () {
-    expect(Week(TestExpr(), timezone: 'Europe/Moscow').build(), {
+    expect(Week(TestExpr(), timezone: 'Europe/Moscow').rawContent, {
       '\$week': {'date': '\$field', 'timezone': 'Europe/Moscow'}
     });
   });
 
   test('year', () {
-    expect(Year(TestExpr(), timezone: 'Europe/Moscow').build(), {
+    expect(Year(TestExpr(), timezone: 'Europe/Moscow').rawContent, {
       '\$year': {'date': '\$field', 'timezone': 'Europe/Moscow'}
     });
   });
 
   test('toDate', () {
-    expect(ToDate(TestExpr()).build(), {'\$toDate': '\$field'});
+    expect(ToDate(TestExpr()).rawContent, {'\$toDate': '\$field'});
   });
 }
 
 class TestExpr implements ExpressionContent {
   @override
-  String build() => '\$field';
-
-  @override
-  // TODO: implement rawContent
-  get rawContent => throw UnimplementedError();
+  get rawContent => '\$field';
 }

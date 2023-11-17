@@ -15,7 +15,7 @@ abstract class Operator extends ExpressionContent {
   Operator(this._name, this._args);
   @override
   Map<String, dynamic> get rawContent =>
-      {'\$$_name': _args is ExpressionContent ? _args.build() : _args};
+      {'\$$_name': _args is ExpressionContent ? _args.rawContent : _args};
 }
 
 /// Basic accumulation operator
@@ -52,9 +52,7 @@ class AEObject extends Iterable<MapEntry<String, dynamic>>
   @override
   Map<String, dynamic> get rawContent =>
       Map.fromEntries(_iterable).map((argName, argValue) => MapEntry(argName,
-          argValue is ExpressionContent ? argValue.build() : argValue));
-  @override
-  build() => rawContent;
+          argValue is ExpressionContent ? argValue.rawContent : argValue));
 }
 
 /// Returns `true` if value is not null
@@ -172,11 +170,8 @@ abstract class AggregationStage implements ExpressionContent {
   AggregationStage(this._name, this._content);
 
   @override
-  Map<String, Object> build() => rawContent;
-  @override
   Map<String, Object> get rawContent => {
-        '\$$_name': _content is ExpressionContent
-            ? (_content as ExpressionContent).build()
-            : _content
+        '\$$_name':
+            _content is ExpressionContent ? _content.rawContent : _content
       };
 }

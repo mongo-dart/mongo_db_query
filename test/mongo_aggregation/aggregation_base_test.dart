@@ -5,46 +5,48 @@ import 'package:test/test.dart';
 
 void main() {
   test('field', () {
-    expect(Field('field').build(), '\$field');
+    expect(Field('field').rawContent, '\$field');
   });
 
   test('literal', () {
-    expect(Literal('\$value').build(), {'\$literal': '\$value'});
+    expect(Literal('\$value').rawContent, {'\$literal': '\$value'});
   });
 
   test('variable', () {
-    expect(Var('variable').build(), '\$\$variable');
+    expect(Var('variable').rawContent, '\$\$variable');
   });
 
   test('system variables', () {
-    expect(Var.now.build(), '\$\$NOW');
-    expect(Var.clusterTime.build(), '\$\$CLUSTER_TIME');
-    expect(Var.root.build(), '\$\$ROOT');
-    expect(Var.current.build(), '\$\$CURRENT');
-    expect(Var.remove.build(), '\$\$REMOVE');
-    expect(Var.discend.build(), '\$\$DISCEND');
-    expect(Var.prune.build(), '\$\$PRUNE');
-    expect(Var.keep.build(), '\$\$KEEP');
+    expect(Var.now.rawContent, '\$\$NOW');
+    expect(Var.clusterTime.rawContent, '\$\$CLUSTER_TIME');
+    expect(Var.root.rawContent, '\$\$ROOT');
+    expect(Var.current.rawContent, '\$\$CURRENT');
+    expect(Var.remove.rawContent, '\$\$REMOVE');
+    expect(Var.discend.rawContent, '\$\$DISCEND');
+    expect(Var.prune.rawContent, '\$\$PRUNE');
+    expect(Var.keep.rawContent, '\$\$KEEP');
   });
 
   test('AEList filter null elements', () {
-    expect(AEList([1, 'string', null, 2]).build(),
+    expect(AEList([1, 'string', null, 2]).rawContent,
         containsAllInOrder([1, 'string', 2]));
   });
 
   test('AEObject filter null values', () {
     expect(
-        AEObject({'num': 1, 'string': 'value', 'null': null, 'two': 2}).build(),
+        AEObject({'num': 1, 'string': 'value', 'null': null, 'two': 2})
+            .rawContent,
         {'num': 1, 'string': 'value', 'two': 2});
   });
 
   test('AElist#build', () {
-    expect(AEList([1, TestExpr(), 'string']).build(),
+    expect(AEList([1, TestExpr(), 'string']).rawContent,
         containsAllInOrder([1, 'test', 'string']));
   });
 
   test('AEObject#build', () {
-    expect(AEObject({'num': 1, 'expr': TestExpr(), 'string': 'value'}).build(),
+    expect(
+        AEObject({'num': 1, 'expr': TestExpr(), 'string': 'value'}).rawContent,
         {'num': 1, 'expr': 'test', 'string': 'value'});
   });
 }
@@ -52,7 +54,4 @@ void main() {
 class TestExpr implements ExpressionContent {
   @override
   String get rawContent => 'test';
-
-  @override
-  dynamic build() => rawContent;
 }

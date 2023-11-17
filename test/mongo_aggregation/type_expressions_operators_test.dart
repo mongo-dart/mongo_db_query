@@ -10,7 +10,7 @@ void main() {
                 to: 'string',
                 onError: TestExpr(),
                 onNull: TestExpr())
-            .build(),
+            .rawContent,
         {
           '\$convert': {
             'input': '\$field',
@@ -22,39 +22,35 @@ void main() {
   });
 
   test('toBool', () {
-    expect(ToBool(TestExpr()).build(), {'\$toBool': '\$field'});
+    expect(ToBool(TestExpr()).rawContent, {'\$toBool': '\$field'});
   });
 
   test('toDecimal', () {
-    expect(ToDecimal(TestExpr()).build(), {'\$toDecimal': '\$field'});
+    expect(ToDecimal(TestExpr()).rawContent, {'\$toDecimal': '\$field'});
   });
 
   test('toDouble', () {
-    expect(ToDouble(TestExpr()).build(), {'\$toDouble': '\$field'});
+    expect(ToDouble(TestExpr()).rawContent, {'\$toDouble': '\$field'});
   });
 
   test('toInt', () {
-    expect(ToInt(TestExpr()).build(), {'\$toInt': '\$field'});
+    expect(ToInt(TestExpr()).rawContent, {'\$toInt': '\$field'});
   });
 
   test('toLong', () {
-    expect(ToLong(TestExpr()).build(), {'\$toLong': '\$field'});
+    expect(ToLong(TestExpr()).rawContent, {'\$toLong': '\$field'});
   });
 
   test('toObjectId', () {
-    expect(ToObjectId(TestExpr()).build(), {'\$toObjectId': '\$field'});
+    expect(ToObjectId(TestExpr()).rawContent, {'\$toObjectId': '\$field'});
   });
 
   test('type', () {
-    expect(Type(TestExpr()).build(), {'\$type': '\$field'});
+    expect(Type(TestExpr()).rawContent, {'\$type': '\$field'});
   });
 }
 
 class TestExpr implements ExpressionContent {
   @override
-  String build() => '\$field';
-
-  @override
-  // TODO: implement rawContent
-  get rawContent => throw UnimplementedError();
+  get rawContent => '\$field';
 }

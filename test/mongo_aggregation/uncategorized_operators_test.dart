@@ -4,11 +4,11 @@ import 'package:test/test.dart';
 
 void main() {
   test('expr', () {
-    expect(Expr(TestExpr()).build(), {'\$expr': '\$field'});
+    expect(Expr(TestExpr()).rawContent, {'\$expr': '\$field'});
   });
 
   test('let', () {
-    expect(Let(vars: {'var': TestExpr()}, inExpr: TestExpr()).build(), {
+    expect(Let(vars: {'var': TestExpr()}, inExpr: TestExpr()).rawContent, {
       '\$let': {
         'vars': {'var': '\$field'},
         'in': '\$field'
@@ -19,9 +19,5 @@ void main() {
 
 class TestExpr implements ExpressionContent {
   @override
-  String build() => '\$field';
-
-  @override
-  // TODO: implement rawContent
-  get rawContent => throw UnimplementedError();
+  get rawContent => '\$field';
 }

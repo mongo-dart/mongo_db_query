@@ -28,7 +28,7 @@ void main() {
   });
 
   test('floor', () {
-    expect($Floor(TestExpr()).build(), {'\$floor': '\$field'});
+    expect($Floor(TestExpr()).rawContent, {'\$floor': '\$field'});
   });
 
   test('ln', () {
@@ -87,9 +87,6 @@ void main() {
 }
 
 class TestExpr implements ExpressionContent {
-  @override
-  String build() => '\$field';
-
   @override
   get rawContent => '\$field';
 }

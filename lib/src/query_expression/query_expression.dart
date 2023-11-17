@@ -161,7 +161,7 @@ class QueryExpression {
 
   void $expr(Operator aggregationExpression) =>
       filter.addOperator(OperatorExpression(
-          op$expr, MapExpression(aggregationExpression.build())));
+          op$expr, MapExpression(aggregationExpression.rawContent)));
 
   /// The $jsonSchema operator matches documents that satisfy the
   /// specified JSON Schema.
@@ -232,7 +232,7 @@ class QueryExpression {
       filter.addFieldOperator(FieldExpression(
           fieldName,
           OperatorExpression(
-              op$geoIntersects, MapExpression(coordinate.build()))));
+              op$geoIntersects, MapExpression(coordinate.rawContent))));
 
   /// Selects documents with geospatial data that exists entirely
   /// within a specified shape.
@@ -240,7 +240,7 @@ class QueryExpression {
   /// Available ShapeOperator instances: Box , Center, CenterSphere, Geometry
   void $geoWithin(String fieldName, ShapeOperator shape) =>
       filter.addFieldOperator(FieldExpression(fieldName,
-          OperatorExpression(op$geoWithin, MapExpression(shape.build()))));
+          OperatorExpression(op$geoWithin, MapExpression(shape.rawContent))));
 
   /// Specifies a point for which a geospatial query returns the documents
   /// from nearest to farthest.
@@ -267,7 +267,7 @@ class QueryExpression {
               MapExpression({
                 if (minDistance != null) op$minDistance: minDistance,
                 if (maxDistance != null) op$maxDistance: maxDistance
-              }..addAll(point.build())))));
+              }..addAll(point.rawContent)))));
 
   // ***************************************************
   // ***************** Array Query Operator

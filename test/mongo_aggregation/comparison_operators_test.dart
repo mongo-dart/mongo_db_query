@@ -4,43 +4,43 @@ import 'package:test/test.dart';
 
 void main() {
   test('cmp', () {
-    expect(Cmp(TestExpr(), 5).build(), {
+    expect(Cmp(TestExpr(), 5).rawContent, {
       '\$cmp': ['\$field', 5]
     });
   });
 
   test('eq', () {
-    expect(Eq(TestExpr(), 5).build(), {
+    expect(Eq(TestExpr(), 5).rawContent, {
       '\$eq': ['\$field', 5]
     });
   });
 
   test('gt', () {
-    expect(Gt(TestExpr(), 5).build(), {
+    expect(Gt(TestExpr(), 5).rawContent, {
       '\$gt': ['\$field', 5]
     });
   });
 
   test('gte', () {
-    expect(Gte(TestExpr(), 5).build(), {
+    expect(Gte(TestExpr(), 5).rawContent, {
       '\$gte': ['\$field', 5]
     });
   });
 
   test('lt', () {
-    expect(Lt(TestExpr(), 5).build(), {
+    expect(Lt(TestExpr(), 5).rawContent, {
       '\$lt': ['\$field', 5]
     });
   });
 
   test('lte', () {
-    expect(Lte(TestExpr(), 5).build(), {
+    expect(Lte(TestExpr(), 5).rawContent, {
       '\$lte': ['\$field', 5]
     });
   });
 
   test('ne', () {
-    expect(Ne(TestExpr(), 5).build(), {
+    expect(Ne(TestExpr(), 5).rawContent, {
       '\$ne': ['\$field', 5]
     });
   });
@@ -48,14 +48,14 @@ void main() {
   test('cond', () {
     expect(
         Cond(ifExpr: TestExpr(), thenExpr: TestExpr(), elseExpr: TestExpr())
-            .build(),
+            .rawContent,
         {
           '\$cond': ['\$field', '\$field', '\$field']
         });
   });
 
   test('ifNull', () {
-    expect(IfNull(TestExpr(), 'replacement').build(), {
+    expect(IfNull(TestExpr(), 'replacement').rawContent, {
       '\$ifNull': ['\$field', 'replacement']
     });
   });
@@ -65,7 +65,7 @@ void main() {
         Switch(
                 branches: [Case(caseExpr: TestExpr(), thenExpr: 'expr')],
                 defaultExpr: 'default')
-            .build(),
+            .rawContent,
         {
           '\$switch': {
             'branches': [
@@ -79,9 +79,5 @@ void main() {
 
 class TestExpr implements ExpressionContent {
   @override
-  String build() => '\$field';
-
-  @override
-  // TODO: implement rawContent
-  get rawContent => throw UnimplementedError();
+  get rawContent => '\$field';
 }

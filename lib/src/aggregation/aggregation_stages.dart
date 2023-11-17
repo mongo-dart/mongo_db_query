@@ -160,9 +160,9 @@ class SetWindowFields extends AggregationStage {
 
   static AEObject _getOutputDocument(output) {
     if (output is Output) {
-      return AEObject(output.build());
+      return AEObject(output.rawContent);
     } else if (output is List<Output>) {
-      return AEObject({for (Output element in output) ...element.build()});
+      return AEObject({for (Output element in output) ...element.rawContent});
     } else if (output is Map<String, dynamic>) {
       return AEObject(output);
     } else {
@@ -1064,7 +1064,7 @@ class GraphLookup extends AggregationStage {
 
   static AEObject _getRestrictSearchWithMatch(restrictSearchWithMatch) {
     if (restrictSearchWithMatch is QueryExpression) {
-      return AEObject(restrictSearchWithMatch.filter.build());
+      return AEObject(restrictSearchWithMatch.filter.rawContent);
     } else if (restrictSearchWithMatch is Map<String, dynamic>) {
       return AEObject(restrictSearchWithMatch);
     } else {
@@ -1328,7 +1328,7 @@ class GeoNear extends AggregationStage {
         super(
             'geoNear',
             AEObject({
-              'near': near.build()[r'$geometry'],
+              'near': near.rawContent[r'$geometry'],
               'distanceField': distanceField,
               if (maxDistance != null) 'maxDistance': maxDistance,
               if (minDistance != null) 'minDistance': minDistance,
@@ -1342,7 +1342,7 @@ class GeoNear extends AggregationStage {
 
   static AEObject _getQuery(query) {
     if (query is QueryExpression) {
-      return AEObject(query.filter.build());
+      return AEObject(query.filter.rawContent);
     } else if (query is Map<String, dynamic>) {
       return AEObject(query);
     } else {
