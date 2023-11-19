@@ -94,7 +94,7 @@ class ListExpression extends ExpressionContainer {
   List get rawContent => [
         for (var element in values)
           element is Expression
-              ? element.build
+              ? element.build()
               : (element is ExpressionContent ? element.rawContent : element)
       ];
 

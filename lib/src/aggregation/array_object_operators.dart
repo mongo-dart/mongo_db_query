@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+import '../base/common/operators_def.dart';
+import '../query_expression/query_expression.dart';
 import 'ae_list.dart';
 import 'aggregation_base.dart';
 
@@ -285,13 +287,19 @@ class Zip extends Operator {
 /// { $mergeObjects: [ <document1>, <document2>, ... ] }
 /// ```
 /// The <document> can be any valid expression that resolves to a document.
-class MergeObjects extends Accumulator {
+class $mergeObjects extends Accumulator {
   /// Creates `$mergeObjects` operator expression
-  MergeObjects(objects)
+  /*  $mergeObjects(objects)
       : super(
             'mergeObjects',
             objects is List
                 ? AEList(objects.map(
                     (obj) => obj is Map<String, dynamic> ? AEObject(obj) : obj))
-                : objects);
+                : objects); */
+  $mergeObjects(objects)
+      : super(
+            op$mergeObjects,
+            valueToContent(objects is List
+                ? [for (var object in objects) valueToContent(object)]
+                : objects));
 }

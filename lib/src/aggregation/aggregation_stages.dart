@@ -1,6 +1,6 @@
+import '../base/common/operators_def.dart';
 import '../base/expression_content.dart';
 import '../query_expression/query_expression.dart';
-import 'ae_list.dart';
 import 'aggregation_base.dart';
 import 'common.dart';
 import 'support_classes/geometry_obj.dart';
@@ -38,9 +38,11 @@ import 'support_classes/output.dart';
 /// }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/addFields/
-class AddFields extends AggregationStage {
+class $addFields extends AggregationStage {
   /// Creates `$addFields` aggregation stage
-  AddFields(Map<String, dynamic> fields) : super('addFields', AEObject(fields));
+  //AddFields(Map<String, dynamic> fields) : super('addFields', AEObject(fields));
+  $addFields(Map<String, dynamic> fields)
+      : super(st$addFields, valueToContent(fields));
 }
 
 /// `$set` aggregation stage
@@ -80,9 +82,10 @@ class AddFields extends AggregationStage {
 /// }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/set/
-class SetStage extends AggregationStage {
+class $set extends AggregationStage {
   /// Creates `$set` aggregation stage
-  SetStage(Map<String, dynamic> fields) : super('set', AEObject(fields));
+  //$set(Map<String, dynamic> fields) : super('set', AEObject(fields));
+  $set(Map<String, dynamic> fields) : super(st$set, valueToContent(fields));
 }
 
 /// `$setWindowFields` aggregation stage
@@ -130,7 +133,7 @@ class SetStage extends AggregationStage {
 ///  }
 /// ```
 /// https://www.mongodb.com/docs/manual/reference/operator/aggregation/setWindowFields/
-class SetWindowFields extends AggregationStage {
+class $setWindowFields extends AggregationStage {
   /// Creates `$setWindowFields` aggregation stage
   ///
   /// * [partitionBy] Optional - Specifies an expression to group the documents.
@@ -145,26 +148,39 @@ class SetWindowFields extends AggregationStage {
   ///   Each field is set to the result returned by the window operator.
   ///   The field can either an Output object, a list of Output Objects or a
   ///   document containing the explicit description of the output required
-  SetWindowFields({
+/*   $setWindowFields({
     partitionBy,
     Map<String, int>? sortBy,
     defaultId,
     required dynamic output,
   }) : super(
-            stSetWindowFields,
+            st$setWindowFields,
             AEObject({
               if (partitionBy != null) spPartitionBy: partitionBy,
               if (sortBy != null) spSortBy: AEObject(sortBy),
               'output': _getOutputDocument(output),
+            })); */
+  $setWindowFields(
+      {partitionBy,
+      Map<String, int>? sortBy,
+      defaultId,
+      required dynamic output})
+      : super(
+            st$setWindowFields,
+            valueToContent({
+              if (partitionBy != null) spPartitionBy: partitionBy,
+              if (sortBy != null) spSortBy: valueToContent(sortBy),
+              'output': _getOutputDocument(output),
             }));
 
-  static AEObject _getOutputDocument(output) {
+  static ExpressionContent _getOutputDocument(output) {
     if (output is Output) {
-      return AEObject(output.rawContent);
+      return valueToContent(output.rawContent);
     } else if (output is List<Output>) {
-      return AEObject({for (Output element in output) ...element.rawContent});
+      return valueToContent(
+          {for (Output element in output) ...element.rawContent});
     } else if (output is Map<String, dynamic>) {
-      return AEObject(output);
+      return valueToContent(output);
     } else {
       throw Exception(
           'output parm must be Map<String,dynamic>, Output or List<Output>');
@@ -191,9 +207,9 @@ class SetWindowFields extends AggregationStage {
 /// { $unset: [ "isbn", "author.first", "copies.warehouse" ] }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/unset/
-class Unset extends AggregationStage {
+class $Unset extends AggregationStage {
   /// Creates `$unset` aggreagation stage
-  Unset(List<String> fields) : super('unset', fields);
+  $Unset(List<String> fields) : super(st$unset, valueToContent(fields));
 }
 
 /// `$bucket` aggregation stage
@@ -241,7 +257,7 @@ class Unset extends AggregationStage {
 /// }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/bucket/
-class Bucket extends AggregationStage {
+class $bucket extends AggregationStage {
   /// Creates `$bucket` aggregation stage
   ///
   /// * [groupBy] - An expression to group documents by. To specify a field
@@ -274,7 +290,7 @@ class Bucket extends AggregationStage {
   /// * [output] - Optional. A document that specifies the fields to include in
   /// the output documents in addition to the _id field. To specify the field
   /// to include, you must use accumulator expressions.
-  Bucket(
+  /*  $bucket(
       {required ExpressionContent groupBy,
       required List boundaries,
       defaultId,
@@ -286,6 +302,19 @@ class Bucket extends AggregationStage {
               'boundaries': AEList(boundaries),
               if (defaultId != null) 'default': defaultId,
               if (output != null) 'output': AEObject(output)
+            })); */
+  $bucket(
+      {required ExpressionContent groupBy,
+      required List boundaries,
+      defaultId,
+      Map<String, Accumulator>? output})
+      : super(
+            st$bucket,
+            valueToContent({
+              'groupBy': groupBy,
+              'boundaries': valueToContent(boundaries),
+              if (defaultId != null) 'default': defaultId,
+              if (output != null) 'output': valueToContent(output)
             }));
 }
 
@@ -305,7 +334,7 @@ class Bucket extends AggregationStage {
 /// field is included by default when the output is not specified.
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/
-class BucketAuto extends AggregationStage {
+class $bucketAuto extends AggregationStage {
   /// Creates `$bucketAuto` aggregation stage
   ///
   /// * [groupBy] - An expression to group documents by. To specify a field path
@@ -318,7 +347,7 @@ class BucketAuto extends AggregationStage {
   /// * [granularity] - Optional. A [Granularity] that specifies the preferred
   /// number series to use to ensure that the calculated boundary edges end on
   /// preferred round numbers or their powers of 10.
-  BucketAuto(
+  /*  $bucketAuto(
       {required ExpressionContent groupBy,
       required int buckets,
       Map<String, Accumulator>? output,
@@ -330,10 +359,23 @@ class BucketAuto extends AggregationStage {
               'buckets': buckets,
               if (output != null) 'output': AEObject(output),
               if (granularity != null) 'granularity': granularity
+            })); */
+  $bucketAuto(
+      {required ExpressionContent groupBy,
+      required int buckets,
+      Map<String, Accumulator>? output,
+      Granularity? granularity})
+      : super(
+            st$bucketAuto,
+            valueToContent({
+              'groupBy': groupBy,
+              'buckets': buckets,
+              if (output != null) 'output': valueToContent(output),
+              if (granularity != null) 'granularity': granularity
             }));
 }
 
-/// Granularity for [BucketAuto]
+/// Granularity for [$bucketAuto]
 ///
 /// Granularity ensures that the boundaries of all buckets adhere to a specified
 /// preferred number series. Using a preferred number series provides more
@@ -443,13 +485,13 @@ class Granularity extends Const {
 /// documents input to the stage.
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/count/
-class Count extends AggregationStage {
+class $count extends AggregationStage {
   /// Creates `$count` aggregation stage
   ///
   /// [fieldName] - is the name of the output field which has the count as its
   /// value. [fieldName] must be a non-empty string and must not contain the `.`
   /// character.
-  Count(String fieldName) : super('count', fieldName);
+  $count(String fieldName) : super(st$count, valueToContent(fieldName));
 }
 
 /// `$facet` aggregation stage
@@ -534,13 +576,20 @@ class Count extends AggregationStage {
 /// }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/facet/
-class Facet extends AggregationStage {
+class $facet extends AggregationStage {
   /// Creates `$facet` aggregation stage
-  Facet(Map<String, List<AggregationStage>> pipelines)
+  /* $facet(Map<String, List<AggregationStage>> pipelines)
       : super(
             'facet',
             AEObject(pipelines
-                .map((field, stages) => MapEntry(field, AEList(stages)))));
+                .map((field, stages) => MapEntry(field, AEList(stages))))); */
+  $facet(Map<String, List<AggregationStage>> pipelines)
+      : super(
+            st$facet,
+            valueToContent({
+              for (var pipeline in pipelines.entries)
+                pipeline.key: valueToContent(pipeline.value)
+            }));
 }
 
 /// `$replaceRoot` aggregation stage
@@ -593,14 +642,16 @@ class Facet extends AggregationStage {
 /// }}
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/replaceRoot/
-class ReplaceRoot extends AggregationStage {
+class $replaceRoot extends AggregationStage {
   /// Creates `$replaceRoot` aggrregation stage
   ///
   /// The [replacement] document can be any valid expression that resolves to
   /// a document. The stage errors and fails if [replacement] is not
   /// a document.
-  ReplaceRoot(replacement)
-      : super('replaceRoot', AEObject({'newRoot': replacement}));
+  /*  $replaceRoot(replacement)
+      : super('replaceRoot', AEObject({'newRoot': replacement})); */
+  $replaceRoot(replacement)
+      : super(st$replaceRoot, valueToContent(replacement));
 }
 
 /// `$replaceWith` aggregation stage
@@ -657,12 +708,14 @@ class ReplaceRoot extends AggregationStage {
 /// }}
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/replaceWith/
-class ReplaceWith extends AggregationStage {
+class $replaceWith extends AggregationStage {
   /// Creates `$replaceWith` aggregation stage
   ///
   /// The [replacement] document can be any valid expression that resolves to a
   /// document.
-  ReplaceWith(replacement) : super('replaceWith', replacement);
+  /*  $replaceWith(replacement) : super('replaceWith', replacement); */
+  $replaceWith(replacement)
+      : super(st$replaceWith, valueToContent(replacement));
 }
 
 /// `$group` aggregation stage
@@ -790,13 +843,21 @@ class ReplaceWith extends AggregationStage {
 /// { $group : { _id : "$author", books: { $push: "$$ROOT" } } }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/group/
-class Group extends AggregationStage {
+class $group extends AggregationStage {
   /// Creates `$group` aggregation stage
-  Group({required id, Map<String, Accumulator> fields = const {}})
+  /*  $Group({required id, Map<String, Accumulator> fields = const {}})
       : super(
             'group',
             AEObject({'_id': id is Map<String, dynamic> ? AEObject(id) : id}
-              ..addAll(fields)));
+              ..addAll(fields))); */
+  $group({required id, Map<String, Accumulator> fields = const {}})
+      : super(
+            st$group,
+            valueToContent({
+              '_id': valueToContent(id),
+              for (var field in fields.entries)
+                field.key: valueToContent(field.value)
+            }));
 }
 
 /// `$match` aggregation stage
@@ -830,13 +891,14 @@ class Group extends AggregationStage {
 /// {$match: {$expr: {$eq: ['$author', 'dave']}}}
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/match/
-class Match extends AggregationStage {
+class $match extends AggregationStage {
   /// Creates `$match` aggreagtion stage
   ///
   /// [query] can be either a [SelectorBuilder] query part
   /// (`selectorBuilder.map['\$query']`) or an aggregation expression wrapped
   /// in [Expr]
-  Match(query) : super('match', query);
+  /*  $match(query) : super('match', query); */
+  $match(query) : super(st$match, valueToContent(query));
 }
 
 /// `$lookup` aggregation stage
@@ -921,7 +983,7 @@ class Match extends AggregationStage {
 /// }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/
-class Lookup extends AggregationStage {
+class $lookup extends AggregationStage {
   /// Creates ordinary `$lookup` stage
   ///
   /// * [from] - Specifies the collection in the same database to perform the join
@@ -940,7 +1002,7 @@ class Lookup extends AggregationStage {
   /// documents. The new array field contains the matching documents from the
   /// from collection. If the specified name already exists in the input
   /// document, the existing field is overwritten.
-  Lookup(
+/*   $lookup(
       {required String from,
       required String localField,
       required String foreignField,
@@ -948,6 +1010,19 @@ class Lookup extends AggregationStage {
       : super(
             'lookup',
             AEObject({
+              'from': from,
+              'localField': localField,
+              'foreignField': foreignField,
+              'as': as
+            })); */
+  $lookup(
+      {required String from,
+      required String localField,
+      required String foreignField,
+      required String as})
+      : super(
+            st$lookup,
+            valueToContent({
               'from': from,
               'localField': localField,
               'foreignField': foreignField,
@@ -983,17 +1058,17 @@ class Lookup extends AggregationStage {
   /// documents. The new array field contains the matching documents from the
   /// from collection. If the specified name already exists in the input
   /// document, the existing field is overwritten.
-  Lookup.withPipeline(
+  $lookup.withPipeline(
       {required String from,
       required Map<String, dynamic> let,
       required List<AggregationStage> pipeline,
       required String as})
       : super(
-            'lookup',
-            AEObject({
+            st$lookup,
+            valueToContent({
               'from': from,
-              'let': AEObject(let),
-              'pipeline': AEList(pipeline),
+              'let': valueToContent(let),
+              'pipeline': valueToContent(pipeline),
               'as': as
             }));
 }
@@ -1037,8 +1112,8 @@ class Lookup extends AggregationStage {
 /// ```
 ///
 ///
-class GraphLookup extends AggregationStage {
-  GraphLookup(
+class $graphLookup extends AggregationStage {
+  /*  $graphLookup(
       {required String from,
       required String startWith,
       required String connectFromField,
@@ -1060,13 +1135,37 @@ class GraphLookup extends AggregationStage {
               if (restrictSearchWithMatch != null)
                 'restrictSearchWithMatch':
                     _getRestrictSearchWithMatch(restrictSearchWithMatch)
+            })); */
+  $graphLookup(
+      {required String from,
+      required String startWith,
+      required String connectFromField,
+      required String connectToField,
+      required String as,
+      int? maxDepth,
+      String? depthField,
+      restrictSearchWithMatch})
+      : super(
+            st$graphLookup,
+            valueToContent({
+              'from': from,
+              'startWith': '\$$startWith',
+              'connectFromField': connectFromField,
+              'connectToField': connectToField,
+              'as': as,
+              if (maxDepth != null) 'maxDepth': maxDepth,
+              if (depthField != null) 'depthField': depthField,
+              if (restrictSearchWithMatch != null)
+                'restrictSearchWithMatch':
+                    _getRestrictSearchWithMatch(restrictSearchWithMatch)
             }));
 
-  static AEObject _getRestrictSearchWithMatch(restrictSearchWithMatch) {
+  static ExpressionContent _getRestrictSearchWithMatch(
+      restrictSearchWithMatch) {
     if (restrictSearchWithMatch is QueryExpression) {
-      return AEObject(restrictSearchWithMatch.filter.rawContent);
+      return valueToContent(restrictSearchWithMatch.filter.rawContent);
     } else if (restrictSearchWithMatch is Map<String, dynamic>) {
-      return AEObject(restrictSearchWithMatch);
+      return valueToContent(restrictSearchWithMatch);
     } else {
       throw Exception(
           'restrictSearchWithMatch must be Map<String,dynamic> or SelectorBuilder');
@@ -1095,7 +1194,7 @@ class GraphLookup extends AggregationStage {
 /// {$unwind : {path: "$sizes"}}
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/
-class Unwind extends AggregationStage {
+class $unwind extends AggregationStage {
   /// Creates `$unwind` aggregation stage
   ///
   /// * [field] - Field path to an array field.
@@ -1105,11 +1204,22 @@ class Unwind extends AggregationStage {
   /// `null`, missing, or an empty array, `$unwind` outputs the document. If
   /// `false`, `$unwind` does not output a document if the path is `null`,
   /// missing, or an empty array. The default value is `false`.
-  Unwind(Field field,
+  /*  $unwind(Field field,
       {String? includeArrayIndex, bool? preserveNullAndEmptyArrays})
       : super(
             'unwind',
             AEObject({
+              'path': field,
+              if (includeArrayIndex != null)
+                'includeArrayIndex': includeArrayIndex,
+              if (preserveNullAndEmptyArrays != null)
+                'preserveNullAndEmptyArrays': preserveNullAndEmptyArrays
+            })); */
+  $unwind(Field field,
+      {String? includeArrayIndex, bool? preserveNullAndEmptyArrays})
+      : super(
+            st$unwind,
+            valueToContent({
               'path': field,
               if (includeArrayIndex != null)
                 'includeArrayIndex': includeArrayIndex,
@@ -1125,7 +1235,7 @@ class Unwind extends AggregationStage {
 /// Passes along the documents with the requested fields to the next stage in
 /// the pipeline. The specified fields can be existing fields from the input
 /// documents or newly computed fields.
-class Project extends AggregationStage {
+class $project extends AggregationStage {
   /// Creates `$project` aggreagtion stage
   ///
   /// [specification] have the following forms:
@@ -1158,8 +1268,10 @@ class Project extends AggregationStage {
   /// { $project : { _id: 0, title : 1 , author : 1 } }
   /// ```
   /// https://docs.mongodb.com/manual/reference/operator/aggregation/project/
-  Project(Map<String, dynamic> specification)
-      : super('project', AEObject(specification));
+  /*  $project(Map<String, dynamic> specification)
+      : super('project', AEObject(specification)); */
+  $project(Map<String, dynamic> specification)
+      : super(st$project, valueToContent(specification));
 }
 
 /// `$skip` aggregation stage
@@ -1170,12 +1282,12 @@ class Project extends AggregationStage {
 /// passes the remaining documents to the next stage in the pipeline.
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/skip/
-class Skip extends AggregationStage {
+class $skip extends AggregationStage {
   /// Creates `$skip` aggregation stage
   ///
   /// [count] - positive integer that specifies the maximum number of documents
   /// to skip.
-  Skip(int count) : super('skip', count);
+  $skip(int count) : super(st$skip, valueToContent(count));
 }
 
 /// `$limit` aggregation stage
@@ -1185,12 +1297,12 @@ class Skip extends AggregationStage {
 /// Limits the number of documents passed to the next stage in the pipeline.
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/limit/
-class Limit extends AggregationStage {
+class $limit extends AggregationStage {
   /// Creates `$limit` aggregation stage
   ///
   /// [count] - a positive integer that specifies the maximum number of
   /// documents to pass along.
-  Limit(int count) : super('limit', count);
+  $limit(int count) : super(st$limit, valueToContent(count));
 }
 
 /// `$sort` aggregation stage
@@ -1213,7 +1325,7 @@ class Limit extends AggregationStage {
 /// { $sort : { age : -1, posts: 1 } }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/sort/
-class Sort extends AggregationStage {
+class $sort extends AggregationStage {
   /// Creates `$sort` aggregation stage
   ///
   /// [specification] - a document that specifies the field(s) to sort by and
@@ -1222,8 +1334,10 @@ class Sort extends AggregationStage {
   ///
   /// * 1 to specify ascending order.
   /// * -1 to specify descending order.
-  Sort(Map<String, dynamic> specification)
-      : super('sort', AEObject(specification));
+  /*  $sort(Map<String, dynamic> specification)
+      : super('sort', AEObject(specification)); */
+  $sort(Map<String, dynamic> specification)
+      : super(st$sort, valueToContent(specification));
 }
 
 /// `$sortByCount`
@@ -1240,7 +1354,7 @@ class Sort extends AggregationStage {
 /// The documents are sorted by count in descending order.
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/
-class SortByCount extends AggregationStage {
+class $sortByCount extends AggregationStage {
   /// Creates `$sortByCount` aggregation stage
   ///
   /// [expression] - expression to group by. You can specify any expression
@@ -1271,7 +1385,8 @@ class SortByCount extends AggregationStage {
   /// ```
   /// { $sortByCount: { $mergeObjects: [ "$employee", "$business" ] } }
   /// ```
-  SortByCount(expression) : super('sortByCount', expression);
+/*   $sortByCount(expression) : super('sortByCount', expression);*/
+  $sortByCount(expression) : super(st$sortByCount, valueToContent(expression));
 }
 
 /// `$geoNear`
@@ -1312,8 +1427,8 @@ class SortByCount extends AggregationStage {
 /// ```
 ///
 ///
-class GeoNear extends AggregationStage {
-  GeoNear(
+class $geoNear extends AggregationStage {
+  /*  $geoNear(
       {required Geometry near,
       required String distanceField,
       num? maxDistance,
@@ -1338,13 +1453,39 @@ class GeoNear extends AggregationStage {
                 'distanceMultiplier': distanceMultiplier,
               if (includeLocs != null) 'includeLocs': includeLocs,
               if (key != null) 'key': key
+            })); */
+  $geoNear(
+      {required Geometry near,
+      required String distanceField,
+      num? maxDistance,
+      num? minDistance,
+      bool? spherical,
+      dynamic query,
+      num? distanceMultiplier,
+      String? includeLocs,
+      String? key})
+      : assert(near.type == GeometryObjectType.Point,
+            r"$geoNear 'near' field must be Point"),
+        super(
+            st$geoNear,
+            valueToContent({
+              'near': near.rawContent[r'$geometry'],
+              'distanceField': distanceField,
+              if (maxDistance != null) 'maxDistance': maxDistance,
+              if (minDistance != null) 'minDistance': minDistance,
+              if (spherical != null) 'spherical': spherical,
+              if (query != null) 'query': _getQuery(query),
+              if (distanceMultiplier != distanceMultiplier)
+                'distanceMultiplier': distanceMultiplier,
+              if (includeLocs != null) 'includeLocs': includeLocs,
+              if (key != null) 'key': key
             }));
 
-  static AEObject _getQuery(query) {
+  static ExpressionContent _getQuery(query) {
     if (query is QueryExpression) {
-      return AEObject(query.filter.rawContent);
+      return valueToContent(query.filter.rawContent);
     } else if (query is Map<String, dynamic>) {
-      return AEObject(query);
+      return valueToContent(query);
     } else {
       throw Exception(
           'restrictSearchWithMatch must be Map<String,dynamic> or SelectorBuilder');
@@ -1393,7 +1534,7 @@ class GeoNear extends AggregationStage {
 /// }
 /// ```
 /// https://www.mongodb.com/docs/manual/reference/operator/aggregation/unionWith/
-class UnionWith extends AggregationStage {
+class $unionWith extends AggregationStage {
   /// Creates `$UnionWith` stage with it's own pipeline
   ///
   /// * [coll] - The collection or view whose pipeline results you
@@ -1425,11 +1566,18 @@ class UnionWith extends AggregationStage {
   /// documents. The new array field contains the matching documents from the
   /// from collection. If the specified name already exists in the input
   /// document, the existing field is overwritten.
-  UnionWith({required String coll, List<AggregationStage>? pipeline})
+  /* $unionWith({required String coll, List<AggregationStage>? pipeline})
       : super(
             'unionWith',
             AEObject({
               'coll': coll,
               if (pipeline != null) 'pipeline': AEList(pipeline),
+            })); */
+  $unionWith({required String coll, List<AggregationStage>? pipeline})
+      : super(
+            st$unionWith,
+            valueToContent({
+              'coll': coll,
+              if (pipeline != null) 'pipeline': valueToContent(pipeline),
             }));
 }

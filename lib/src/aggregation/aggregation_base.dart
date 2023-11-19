@@ -1,6 +1,8 @@
 import 'package:meta/meta.dart';
+import 'package:mongo_db_query/src/base/operator_expression.dart';
 
 import '../base/expression_content.dart';
+import '../base/field_expression.dart';
 import 'ae_list.dart';
 
 /// Aggregation expression
@@ -19,7 +21,7 @@ abstract class Operator extends ExpressionContent {
 }
 
 /// Basic accumulation operator
-abstract class Accumulator extends Operator {
+abstract class Accumulator extends OperatorExpression {
   Accumulator(super.name, super.expr);
 }
 
@@ -164,14 +166,7 @@ class Var extends ExpressionContent {
 }
 
 /// Aggregation stage base
-abstract class AggregationStage implements ExpressionContent {
-  final String _name;
-  final Object _content;
-  AggregationStage(this._name, this._content);
-
-  @override
-  Map<String, Object> get rawContent => {
-        '\$$_name':
-            _content is ExpressionContent ? _content.rawContent : _content
-      };
+abstract class AggregationStage extends FieldExpression {
+  AggregationStage(super.fieldName, super.value);
+  String get stageName => entry.key;
 }

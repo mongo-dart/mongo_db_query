@@ -6,10 +6,10 @@ import 'package:test/test.dart' hide Skip;
 void main() {
   test('addFields', () {
     expect(
-        AddFields({
-          'totalHomework': Sum(Field('homework')),
-          'totalQuiz': Sum(Field('quiz'))
-        }).rawContent,
+        $addFields({
+          'totalHomework': $sum(Field('homework')),
+          'totalQuiz': $sum(Field('quiz'))
+        }).build(),
         {
           '\$addFields': {
             'totalHomework': {'\$sum': '\$homework'},
@@ -20,10 +20,10 @@ void main() {
 
   test('set', () {
     expect(
-        SetStage({
-          'totalHomework': Sum(Field('homework')),
-          'totalQuiz': Sum(Field('quiz'))
-        }).rawContent,
+        $set({
+          'totalHomework': $sum(Field('homework')),
+          'totalQuiz': $sum(Field('quiz'))
+        }).build(),
         {
           '\$set': {
             'totalHomework': {'\$sum': '\$homework'},
@@ -34,11 +34,11 @@ void main() {
 
   test('setWindowFields', () {
     expect(
-        SetWindowFields(
+        $setWindowFields(
             partitionBy: {r'$year': r"$orderDate"},
             sortBy: {'orderDate': 1},
-            output: Output('cumulativeQuantityForYear', Sum(r'$quantity'),
-                documents: ["unbounded", "current"])).rawContent,
+            output: Output('cumulativeQuantityForYear', $sum(r'$quantity'),
+                documents: ["unbounded", "current"])).build(),
         {
           r'$setWindowFields': {
             'partitionBy': {r'$year': r"$orderDate"},
@@ -54,12 +54,12 @@ void main() {
           }
         });
     expect(
-        SetWindowFields(
+        $setWindowFields(
                 partitionBy: r'$state',
                 sortBy: {'orderDate': 1},
-                output: Output('recentOrders', Push(r'$orderDate'),
+                output: Output('recentOrders', $push(r'$orderDate'),
                     range: ["unbounded", -10], unit: "month"))
-            .rawContent,
+            .build(),
         {
           r'$setWindowFields': {
             'partitionBy': r"$state",
@@ -76,8 +76,8 @@ void main() {
           }
         });
     expect(
-        SetWindowFields(output: Output('recentOrders', Avg(r'$orderDate')))
-            .rawContent,
+        $setWindowFields(output: Output('recentOrders', $avg(r'$orderDate')))
+            .build(),
         {
           r'$setWindowFields': {
             'output': {
@@ -88,16 +88,16 @@ void main() {
           }
         });
     expect(
-        SetWindowFields(partitionBy: {
+        $setWindowFields(partitionBy: {
           r'$year': r'$orderDate'
         }, sortBy: {
           'orderDate': 1
         }, output: [
-          Output('cumulativeQuantityForYear', Sum(r'$quantity'),
+          Output('cumulativeQuantityForYear', $sum(r'$quantity'),
               documents: ["unbounded", "current"]),
-          Output('maximumQuantityForYear', Max(r'$quantity'),
+          Output('maximumQuantityForYear', $max(r'$quantity'),
               documents: ["unbounded", "unbounded"])
-        ]).rawContent,
+        ]).build(),
         {
           r'$setWindowFields': {
             'partitionBy': {r'$year': r'$orderDate'},
@@ -121,19 +121,19 @@ void main() {
   });
 
   test('unset', () {
-    expect(Unset(['isbn', 'author.first', 'copies.warehouse']).rawContent, {
+    expect($Unset(['isbn', 'author.first', 'copies.warehouse']).build(), {
       '\$unset': ['isbn', 'author.first', 'copies.warehouse']
     });
   });
 
   test('bucket', () {
     expect(
-        Bucket(
+        $bucket(
                 groupBy: Field('price'),
                 boundaries: [0, 200, 400],
                 defaultId: 'Other',
-                output: {'count': Sum(1), 'titles': Push(Field('title'))})
-            .rawContent,
+                output: {'count': $sum(1), 'titles': $push(Field('title'))})
+            .build(),
         {
           '\$bucket': {
             'groupBy': '\$price',
@@ -165,11 +165,11 @@ void main() {
 
   test('bucketAuto', () {
     expect(
-        BucketAuto(
+        $bucketAuto(
             groupBy: Field('_id'),
             buckets: 5,
             granularity: Granularity.r5,
-            output: {'count': Sum(1)}).rawContent,
+            output: {'count': $sum(1)}).build(),
         {
           '\$bucketAuto': {
             'groupBy': '\$_id',
@@ -183,28 +183,28 @@ void main() {
   });
 
   test('count', () {
-    expect(Count('myCount').rawContent, {'\$count': 'myCount'});
+    expect($count('myCount').build(), {'\$count': 'myCount'});
   });
 
   test('facet', () {
     expect(
-        Facet({
+        $facet({
           'categorizedByTags': [
-            Unwind(Field('tags')),
-            SortByCount(Field('tags'))
+            $unwind(Field('tags')),
+            $sortByCount(Field('tags'))
           ],
           'categorizedByPrice': [
-            Match((where..$exists('price')).rawFilter),
-            Bucket(
+            $match((where..$exists('price')).rawFilter),
+            $bucket(
                 groupBy: Field('price'),
                 boundaries: [0, 150, 200, 300, 400],
                 defaultId: 'Other',
-                output: {'count': Sum(1), 'titles': Push(Field('title'))})
+                output: {'count': $sum(1), 'titles': $push(Field('title'))})
           ],
           'categorizedByYears(Auto)': [
-            BucketAuto(groupBy: Field('year'), buckets: 4)
+            $bucketAuto(groupBy: Field('year'), buckets: 4)
           ]
-        }).rawContent,
+        }).build(),
         {
           '\$facet': {
             'categorizedByTags': [
@@ -241,12 +241,12 @@ void main() {
   });
 
   test('replaceWith', () {
-    expect(ReplaceWith(Field('name')).rawContent, {'\$replaceWith': '\$name'});
+    expect($replaceWith(Field('name')).build(), {'\$replaceWith': '\$name'});
     expect(
-        ReplaceWith(MergeObjects([
+        $replaceWith($mergeObjects([
           {'_id': Field('_id'), 'first': '', 'last': ''},
           Field('name')
-        ])).rawContent,
+        ])).build(),
         {
           '\$replaceWith': {
             '\$mergeObjects': [
@@ -259,15 +259,15 @@ void main() {
 
   test('group', () {
     expect(
-        Group(id: {
+        $group(id: {
           'month': Month(Field('date')),
           'day': DayOfMonth(Field('date')),
           'year': Year(Field('date'))
         }, fields: {
-          'totalPrice': Sum($Multiply([Field('price'), Field('quantity')])),
-          'averageQuantity': Avg(Field('quantity')),
-          'count': Sum(1)
-        }).rawContent,
+          'totalPrice': $sum($Multiply([Field('price'), Field('quantity')])),
+          'averageQuantity': $avg(Field('quantity')),
+          'count': $sum(1)
+        }).build(),
         {
           '\$group': {
             '_id': {
@@ -292,11 +292,11 @@ void main() {
         });
     final nullId = BsonNull();
     expect(
-        Group(id: nullId, fields: {
-          'totalPrice': Sum($Multiply([Field('price'), Field('quantity')])),
-          'averageQuantity': Avg(Field('quantity')),
-          'count': Sum(1)
-        }).rawContent,
+        $group(id: nullId, fields: {
+          'totalPrice': $sum($Multiply([Field('price'), Field('quantity')])),
+          'averageQuantity': $avg(Field('quantity')),
+          'count': $sum(1)
+        }).build(),
         {
           '\$group': {
             '_id': nullId,
@@ -309,12 +309,12 @@ void main() {
             'count': {'\$sum': 1}
           }
         });
-    expect(Group(id: Field('item')).rawContent, {
+    expect($group(id: Field('item')).build(), {
       '\$group': {'_id': '\$item'}
     });
     expect(
-        Group(id: Field('author'), fields: {'books': Push(Field('title'))})
-            .rawContent,
+        $group(id: Field('author'), fields: {'books': $push(Field('title'))})
+            .build(),
         {
           '\$group': {
             '_id': '\$author',
@@ -322,8 +322,7 @@ void main() {
           }
         });
     expect(
-        Group(id: Field('author'), fields: {'books': Push(Var.root)})
-            .rawContent,
+        $group(id: Field('author'), fields: {'books': $push(Var.root)}).build(),
         {
           '\$group': {
             '_id': '\$author',
@@ -334,17 +333,17 @@ void main() {
 
   test('match', () {
     expect(
-        Match((where
+        $match((where
                   ..$eq('author', 'dave')
                   ..filter)
                 .rawFilter)
-            .rawContent,
+            .build(),
         {
           '\$match': {
             'author': {r'$eq': 'dave'}
           }
         });
-    expect(Match(Expr(Eq(Field('author'), 'dave'))).rawContent, {
+    expect($match(Expr(Eq(Field('author'), 'dave'))).build(), {
       '\$match': {
         '\$expr': {
           '\$eq': ['\$author', 'dave']
@@ -355,12 +354,12 @@ void main() {
 
   test('lookup', () {
     expect(
-        Lookup(
+        $lookup(
                 from: 'inventory',
                 localField: 'item',
                 foreignField: 'sku',
                 as: 'inventory_docs')
-            .rawContent,
+            .build(),
         {
           '\$lookup': {
             'from': 'inventory',
@@ -370,21 +369,22 @@ void main() {
           }
         });
     expect(
-        Lookup.withPipeline(
+        $lookup
+            .withPipeline(
                 from: 'warehouses',
                 let: {
                   'order_item': Field('item'),
                   'order_qty': Field('ordered')
                 },
                 pipeline: [
-                  Match(Expr(And([
+                  $match(Expr(And([
                     Eq(Field('stock_item'), Var('order_item')),
                     Gte(Field('instock'), Var('order_qty'))
                   ]))),
-                  Project({'stock_item': 0, '_id': 0})
+                  $project({'stock_item': 0, '_id': 0})
                 ],
                 as: 'stockdata')
-            .rawContent,
+            .build(),
         {
           '\$lookup': {
             'from': 'warehouses',
@@ -415,7 +415,7 @@ void main() {
 
   test('graphLookup', () {
     expect(
-        GraphLookup(
+        $graphLookup(
                 from: 'employees',
                 startWith: 'reportsTo',
                 connectFromField: 'reportsTo',
@@ -424,7 +424,7 @@ void main() {
                 depthField: 'depth',
                 maxDepth: 5,
                 restrictSearchWithMatch: where..$eq('field', 'value'))
-            .rawContent,
+            .build(),
         {
           r'$graphLookup': {
             'from': 'employees',
@@ -441,37 +441,37 @@ void main() {
         });
   });
   test('unwind', () {
-    expect(Unwind(Field('sizes')).rawContent, {
+    expect($unwind(Field('sizes')).build(), {
       '\$unwind': {'path': '\$sizes'}
     });
   });
 
   test('project', () {
-    expect(Project({'_id': 0, 'title': 1, 'author': 1}).rawContent, {
+    expect($project({'_id': 0, 'title': 1, 'author': 1}).build(), {
       '\$project': {'_id': 0, 'title': 1, 'author': 1}
     });
   });
 
   test('skip', () {
-    expect(Skip(5).rawContent, {'\$skip': 5});
+    expect($skip(5).build(), {'\$skip': 5});
   });
 
   test('limit', () {
-    expect(Limit(5).rawContent, {'\$limit': 5});
+    expect($limit(5).build(), {'\$limit': 5});
   });
 
   test('sort', () {
-    expect(Sort({'age': -1, 'posts': 1}).rawContent, {
+    expect($sort({'age': -1, 'posts': 1}).build(), {
       '\$sort': {'age': -1, 'posts': 1}
     });
   });
 
   test('sortByCount', () {
-    expect(SortByCount(Field('employee')).rawContent,
+    expect($sortByCount(Field('employee')).build(),
         {'\$sortByCount': '\$employee'});
     expect(
-        SortByCount(MergeObjects([Field('employee'), Field('business')]))
-            .rawContent,
+        $sortByCount($mergeObjects([Field('employee'), Field('business')]))
+            .build(),
         {
           '\$sortByCount': {
             '\$mergeObjects': ['\$employee', '\$business']
@@ -481,7 +481,7 @@ void main() {
 
   test('geoNear', () {
     expect(
-        GeoNear(
+        $geoNear(
                 near: Geometry.point([-73.99279, 40.719296]),
                 distanceField: 'dist.calculated',
                 maxDistance: 2,
@@ -490,7 +490,7 @@ void main() {
                   ..filter.rawContent,
                 includeLocs: 'dist.location',
                 spherical: true)
-            .rawContent,
+            .build(),
         {
           r'$geoNear': {
             'near': {
@@ -507,11 +507,11 @@ void main() {
           }
         });
 
-    expect(SortByCount(Field('employee')).rawContent,
+    expect($sortByCount(Field('employee')).build(),
         {'\$sortByCount': '\$employee'});
     expect(
-        SortByCount(MergeObjects([Field('employee'), Field('business')]))
-            .rawContent,
+        $sortByCount($mergeObjects([Field('employee'), Field('business')]))
+            .build(),
         {
           '\$sortByCount': {
             '\$mergeObjects': ['\$employee', '\$business']
@@ -520,12 +520,12 @@ void main() {
   });
   test('unionWith', () {
     expect(
-        UnionWith(
+        $unionWith(
           coll: 'warehouses',
           pipeline: [
-            Project({'state': 1, '_id': 0})
+            $project({'state': 1, '_id': 0})
           ],
-        ).rawContent,
+        ).build(),
         {
           r'$unionWith': {
             'coll': 'warehouses',
@@ -537,13 +537,13 @@ void main() {
           }
         });
     expect(
-        UnionWith(coll: 'warehouses', pipeline: [
-          Match(Expr(And([
+        $unionWith(coll: 'warehouses', pipeline: [
+          $match(Expr(And([
             Eq(Field('stock_item'), Var('order_item')),
             Gte(Field('instock'), Var('order_qty'))
           ]))),
-          Project({'stock_item': 0, '_id': 0})
-        ]).rawContent,
+          $project({'stock_item': 0, '_id': 0})
+        ]).build(),
         {
           r'$unionWith': {
             'coll': 'warehouses',

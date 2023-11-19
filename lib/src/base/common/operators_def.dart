@@ -98,3 +98,40 @@ const op$round = r'$round';
 const op$sqrt = r'$sqrt';
 const op$subtract = r'$subtract';
 const op$trunc = r'$trunc';
+
+// **** Accumulator
+//const op$addToSet = r'$addToSet';
+const op$avg = r'$avg';
+const op$first = r'$first';
+const op$last = r'$last';
+//const op$max = r'$max';
+const op$mergeObjects = r'$mergeObjects';
+//const op$min = r'$min';
+//const op$push = r'$push';
+const op$stdDevPop = r'$stdDevPop';
+const op$stdDevSamp = r'$stdDevSamp';
+const op$sum = r'$sum';
+
+// **** Stages
+const st$addFields = r'$addFields';
+const st$bucket = r'$bucket';
+const st$bucketAuto = r'$bucketAuto';
+const st$count = r'$count';
+const st$facet = r'$facet';
+const st$geoNear = r'$geoNear';
+const st$graphLookup = r'$graphLookup';
+const st$limit = r'$limit';
+const st$lookup = r'$lookup';
+const st$match = r'$match';
+const st$group = r'$group';
+const st$project = r'$project';
+const st$replaceRoot = r'$replaceRoot';
+const st$replaceWith = r'$replaceWith';
+const st$set = r'$set';
+const st$setWindowFields = r'$setWindowFields';
+const st$skip = r'$skip';
+const st$sort = r'$sort';
+const st$sortByCount = r'$sortByCount';
+const st$unionWith = r'$unionWith';
+const st$unset = r'$unset';
+const st$unwind = r'$unwind';

@@ -1,6 +1,3 @@
-// Stages
-const stSetWindowFields = 'setWindowFields';
-
 // Stage parms
 const spOutput = 'output';
 const spPartitionBy = 'partitionBy';

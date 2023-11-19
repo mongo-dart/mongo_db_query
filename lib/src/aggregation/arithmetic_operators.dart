@@ -55,10 +55,10 @@ class $Exp extends OperatorExpression {
 /// `$floor` operator
 ///
 /// Returns the largest integer less than or equal to the specified number.
-class $Floor extends OperatorExpression {
+class $floor extends OperatorExpression {
   /// Creates `$floor` operator expression
   //Floor(expr) : super('floor', expr); ** OLD
-  $Floor(expr) : super(op$floor, valueToContent(expr));
+  $floor(expr) : super(op$floor, valueToContent(expr));
 }
 
 /// `$ln` operator

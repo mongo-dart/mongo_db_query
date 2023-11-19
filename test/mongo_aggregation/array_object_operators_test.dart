@@ -155,12 +155,12 @@ void main() {
   });
 
   test('mergeObjects', () {
-    expect(MergeObjects(TestExpr()).rawContent, {'\$mergeObjects': '\$field'});
+    expect($mergeObjects(TestExpr()).build(), {'\$mergeObjects': '\$field'});
     expect(
-        MergeObjects([
+        $mergeObjects([
           TestExpr(),
           {'a': TestExpr(), 'b': 2}
-        ]).rawContent,
+        ]).build(),
         {
           '\$mergeObjects': [
             '\$field',

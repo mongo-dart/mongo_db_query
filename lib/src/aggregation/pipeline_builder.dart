@@ -20,5 +20,5 @@ class AggregationPipelineBuilder implements Builder {
   /// query
   @override
   List<Map<String, dynamic>> build() =>
-      stages.map((stage) => stage.rawContent).toList();
+      [for (var stage in stages) stage.build()];
 }

@@ -21,7 +21,7 @@ class MapExpression extends ExpressionContainer {
   MongoDocument get rawContent => {
         for (var entry in valueMap.entries)
           if (entry.value is Expression)
-            entry.key: entry.value.raw
+            entry.key: entry.value.build()
           else if (entry.value is ExpressionContent)
             entry.key: entry.value.rawContent
           else

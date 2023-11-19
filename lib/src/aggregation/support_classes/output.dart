@@ -1,8 +1,10 @@
+import 'package:mongo_db_query/src/base/map_expression.dart';
+
 import '../ae_list.dart';
 import '../aggregation_base.dart';
 import '../common.dart';
 
-/// Creates an "output" document for the setWinowsDield stage
+/// Creates an "output" document for the setWindowsFields stage
 /// * [fieldName] -Specifies the field to append to the documents in the
 ///   output returned by the $setWindowFields stage. Each field is set to
 ///   the result returned by the window operator.
@@ -51,12 +53,12 @@ import '../common.dart';
 ///   - "millisecond"
 ///
 ///   If omitted, default numeric range window boundaries are used.
-class Output extends AEObject {
+class Output extends MapExpression {
   Output(String fieldName, Accumulator operator,
       {List? documents, List? range, String? unit})
-      : super.internal(({
+      : super({
           fieldName: {
-            ...operator.rawContent,
+            ...operator.build(),
             if (documents != null || range != null || unit != null)
               spWindow: {
                 if (documents != null) spDocuments: AEList(documents),
@@ -64,5 +66,5 @@ class Output extends AEObject {
                 if (unit != null) spUnit: unit
               }
           }
-        }));
+        });
 }

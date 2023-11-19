@@ -28,7 +28,7 @@ void main() {
   });
 
   test('floor', () {
-    expect($Floor(TestExpr()).rawContent, {'\$floor': '\$field'});
+    expect($floor(TestExpr()).build(), {r'$floor': r'$field'});
   });
 
   test('ln', () {

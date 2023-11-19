@@ -12,13 +12,13 @@ class Expression<T extends ExpressionContent> extends ExpressionContent
   T get content => entry.value;
 
   @override
-  MongoDocument build() => {
-        entry.key: content is Expression
-            ? (content as Expression).build()
-            : content.rawContent
-      };
-  @override
-  dynamic get rawContent => content is Expression
+  MongoDocument build() => {key: _rawContent};
+
+  dynamic get _rawContent => content is Expression
       ? (content as Expression).build()
       : content.rawContent;
+
+  @override
+  @Deprecated('Do not call rawContent for an expression, call build()')
+  dynamic get rawContent => _rawContent;
 }
