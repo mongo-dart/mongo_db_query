@@ -38,10 +38,10 @@ void main() {
 
   test('push', () {
     expect($push(TestExpr()).build(), {'\$push': '\$field'});
-    expect($push.list([TestExpr(), 1]).build(), {
+    expect($push([TestExpr(), 1]).build(), {
       '\$push': ['\$field', 1]
     });
-    expect($push.object({'field': TestExpr(), 'num': 1}).build(), {
+    expect($push({'field': TestExpr(), 'num': 1}).build(), {
       '\$push': {'field': '\$field', 'num': 1}
     });
   });

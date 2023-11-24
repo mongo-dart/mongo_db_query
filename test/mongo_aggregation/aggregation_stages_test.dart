@@ -260,9 +260,9 @@ void main() {
   test('group', () {
     expect(
         $group(id: {
-          'month': Month(Field('date')),
-          'day': DayOfMonth(Field('date')),
-          'year': Year(Field('date'))
+          'month': $month(Field('date')),
+          'day': $dayOfMonth(Field('date')),
+          'year': $year(Field('date'))
         }, fields: {
           'totalPrice': $sum($Multiply([Field('price'), Field('quantity')])),
           'averageQuantity': $avg(Field('quantity')),

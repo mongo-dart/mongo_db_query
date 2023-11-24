@@ -426,7 +426,7 @@ class QueryExpression {
   //@override
   //String toString() => 'QueryExpresion($filter.raw)';
 
-  void _addExpression(String fieldName, value) {
+  /*  void _addExpression(String fieldName, value) {
     var exprMap = emptyMongoDocument;
     exprMap[fieldName] = value;
     if (rawFilter.isEmpty) {
@@ -434,7 +434,7 @@ class QueryExpression {
     } else {
       _addExpressionMap(exprMap);
     }
-  }
+  } */
 
   void _addExpressionMap(Map<String, dynamic> expr) {
     if (rawFilter.containsKey('\$and')) {

@@ -1,21 +1,22 @@
 import 'package:meta/meta.dart';
 
-import 'ae_list.dart';
+import '../base/common/operators_def.dart';
+import '../query_expression/query_expression.dart';
 import 'aggregation_base.dart';
 
 /// `$concat` operator
-class Concat extends Operator {
+class $concat extends Operator {
   /// Creates `$concat` operator expression
   ///
   /// Concatenates strings and returns the concatenated string.
   ///
   /// The [strings] is a [List] of valid expression as long as they resolve to
   /// strings.
-  Concat(List strings) : super('concat', AEList(strings));
+  $concat(List strings) : super(op$concat, valueToContent(strings));
 }
 
 /// `$indexOfBytes` operator
-class IndexOfBytes extends Operator {
+class $indexOfBytes extends Operator {
   /// Creates `$indexOfBytes` operator expression
   ///
   /// Searches a [string] for an occurence of a [substring] and returns the
@@ -37,12 +38,12 @@ class IndexOfBytes extends Operator {
   /// non-negative integral number. If you specify a [end] index value, you
   /// should also specify a [start] index value; otherwise, `$indexOfBytes` uses
   /// the [end] value as the [start] index value instead of the [end] value.
-  IndexOfBytes(string, substring, [start, end])
-      : super('indexOfBytes', AEList([string, substring, start, end]));
+  $indexOfBytes(string, substring, [start, end])
+      : super(op$indexOfBytes, valueToContent([string, substring, start, end]));
 }
 
 /// `$indexOfCP` operator
-class IndexOfCP extends Operator {
+class $indexOfCP extends Operator {
   /// Creates `$indexOfCP` operator expression
   ///
   /// Searches a [string] for an occurence of a [substring] and returns the
@@ -64,12 +65,12 @@ class IndexOfCP extends Operator {
   /// non-negative integral number. If you specify a [end] index value, you
   /// should also specify a [start] index value; otherwise, `$indexOfCP` uses
   /// the [end] value as the [start] index value instead of the [end value.
-  IndexOfCP(string, substring, [start, end])
-      : super('indexOfCP', AEList([string, substring, start, end]));
+  $indexOfCP(string, substring, [start, end])
+      : super(op$indexOfCP, valueToContent([string, substring, start, end]));
 }
 
 /// `$ltrim` operator
-class Ltrim extends Operator {
+class $ltrim extends Operator {
   /// Creates `$ltrim` operator expression
   ///
   /// Removes whitespace characters, including null, or the specified characters
@@ -82,14 +83,14 @@ class Ltrim extends Operator {
   /// operator breaks down the string into individual UTF code point to trim from input.
   /// If unspecified, `$ltrim` removes whitespace characters, including the `null`
   /// character.
-  Ltrim({@required input, chars})
-      : super('ltrim', AEObject({'input': input, 'chars': chars}));
+  $ltrim({@required input, chars})
+      : super(op$ltrim, valueToContent({'input': input, 'chars': chars}));
 }
 
 // TODO: add options validation
 
 /// `$regexFind` operator
-class RegexFind extends Operator {
+class $regexFind extends Operator {
   /// Creates `$regexFind` operator expression
   ///
   /// Provides regular expression (regex) pattern matching capability in
@@ -123,13 +124,15 @@ class RegexFind extends Operator {
   /// 11).
   ///   * `s` - Allows the dot character (i.e. .) to match all characters including
   /// newline characters.
-  RegexFind({@required input, @required regex, options})
-      : super('regexFind',
-            AEObject({'input': input, 'regex': regex, 'options': options}));
+  $regexFind({@required input, @required regex, options})
+      : super(
+            op$regexFind,
+            valueToContent(
+                {'input': input, 'regex': regex, 'options': options}));
 }
 
 /// `$regexFindAll` operator
-class RegexFindAll extends Operator {
+class $regexFindAll extends Operator {
   /// Creates `$regexFindAll` operator expression
   ///
   /// Provides regular expression (regex) pattern matching capability in
@@ -163,13 +166,15 @@ class RegexFindAll extends Operator {
   /// 11).
   ///   * `s` - Allows the dot character (i.e. .) to match all characters including
   /// newline characters.
-  RegexFindAll({@required input, @required regex, options})
-      : super('regexFindAll',
-            AEObject({'input': input, 'regex': regex, 'options': options}));
+  $regexFindAll({@required input, @required regex, options})
+      : super(
+            op$regexFindAll,
+            valueToContent(
+                {'input': input, 'regex': regex, 'options': options}));
 }
 
 /// `$regexMatch` operator
-class RegexMatch extends Operator {
+class $regexMatch extends Operator {
   /// Creates `$regexMatch` operator expression
   ///
   /// Performs a regular expression (regex) pattern matching and returns:
@@ -203,13 +208,15 @@ class RegexMatch extends Operator {
   /// 11).
   ///   * `s` - Allows the dot character (i.e. .) to match all characters including
   /// newline characters.
-  RegexMatch({@required input, @required regex, options})
-      : super('regexMatch',
-            AEObject({'input': input, 'regex': regex, 'options': options}));
+  $regexMatch({@required input, @required regex, options})
+      : super(
+            op$regexMatch,
+            valueToContent(
+                {'input': input, 'regex': regex, 'options': options}));
 }
 
 /// `$rtrim` operator
-class Rtrim extends Operator {
+class $rtrim extends Operator {
   /// Creates `$rtrim` operator expression
   ///
   /// Removes whitespace characters, including `null`, or the specified
@@ -222,12 +229,12 @@ class Rtrim extends Operator {
   /// operator breaks down the string into individual UTF code point to trim from input.
   /// If unspecified, `$ltrim` removes whitespace characters, including the `null`
   /// character.
-  Rtrim({@required input, chars})
-      : super('rtrim', AEObject({'input': input, 'chars': chars}));
+  $rtrim({@required input, chars})
+      : super(op$rtrim, valueToContent({'input': input, 'chars': chars}));
 }
 
 /// `$split` operator
-class Split extends Operator {
+class $split extends Operator {
   /// Creates `$split` operator expression
   ///
   /// Divides a [string] into an array of substrings based on a [delimiter].
@@ -239,27 +246,28 @@ class Split extends Operator {
   /// expression as long as it resolves to a string.
   /// * [delimiter] - The delimiter to use when splitting the string expression.
   /// delimiter can be any valid expression as long as it resolves to a string.
-  Split(string, delimiter) : super('split', AEList([string, delimiter]));
+  $split(string, delimiter)
+      : super(op$split, valueToContent([string, delimiter]));
 }
 
 /// `$strLenBytes` operator
-class StrLenBytes extends Operator {
+class $strLenBytes extends Operator {
   /// Creates `$strLenBytes` operator expression
   ///
   /// Returns the number of UTF-8 encoded bytes in the specified string.
-  StrLenBytes(expr) : super('strLenBytes', expr);
+  $strLenBytes(expr) : super(op$strLenBytes, valueToContent(expr));
 }
 
 /// `$strLenCP` operator
-class StrLenCP extends Operator {
+class $strLenCP extends Operator {
   /// Creates `$xtrLenCp` operator expression
   ///
   /// Returns the number of UTF-8 code points in the specified string.
-  StrLenCP(expr) : super('strLenCP', expr);
+  $strLenCP(expr) : super(op$strLenCP, valueToContent(expr));
 }
 
 /// `$strcasecmp` operator
-class StrCaseCmp extends Operator {
+class $strCaseCmp extends Operator {
   /// Creates `$strcasecmp` operator expression
   ///
   /// Performs case-insensitive comparison of two strings. Returns
@@ -267,11 +275,11 @@ class StrCaseCmp extends Operator {
   /// * 1 if first string is “greater than” the second string.
   /// * 0 if the two strings are equal.
   /// * -1 if the first string is “less than” the second string.
-  StrCaseCmp(a, b) : super('strcasecmp', AEList([a, b]));
+  $strCaseCmp(a, b) : super(op$strcasecmp, valueToContent([a, b]));
 }
 
 /// `$substrBytes` operator
-class SubstrBytes extends Operator {
+class $substrBytes extends Operator {
   /// Creates `$substrBytes` operator expression
   ///
   /// Returns the substring of a string. The substring starts with the
@@ -293,12 +301,12 @@ class SubstrBytes extends Operator {
   /// non-negative integer or number that can be represented as an integer
   /// (such as 2.0). Byte count can not result in an ending index that is in the
   /// middle of a UTF-8 character.
-  SubstrBytes(string, index, count)
-      : super('substrBytes', AEList([string, index, count]));
+  $substrBytes(string, index, count)
+      : super(op$substrBytes, valueToContent([string, index, count]));
 }
 
 /// `$substrCP` operator
-class SubstrCP extends Operator {
+class $substrCP extends Operator {
   /// Creates `$substrCP` operator expression
   ///
   /// Returns the substring of a string. The substring starts with the character
@@ -317,22 +325,22 @@ class SubstrCP extends Operator {
   /// * [count] - Can be any valid expression as long as it resolves to a
   /// non-negative integer or number that can be represented as an integer
   /// (such as 2.0).
-  SubstrCP(string, index, count)
-      : super('substrCP', AEList([string, index, count]));
+  $substrCP(string, index, count)
+      : super(op$substrCP, valueToContent([string, index, count]));
 }
 
 /// `$toLower` operator
-class ToLower extends Operator {
+class $toLower extends Operator {
   /// Creates `$toLower` operator expression
   ///
   /// Converts a string to lowercase, returning the result.
   ///
   /// The argument can be any expression as long as it resolves to a string.
-  ToLower(expr) : super('toLower', expr);
+  $toLower(expr) : super(op$toLower, valueToContent(expr));
 }
 
 /// `$toString` operator
-class ToString extends Operator {
+class $toString extends Operator {
   /// Creates `$toString` operator expression
   ///
   /// Converts a value to a string. If the value cannot be converted to a
@@ -340,11 +348,11 @@ class ToString extends Operator {
   /// returns null.
   ///
   /// The $toString takes any valid expression.
-  ToString(expr) : super('toString', expr);
+  $toString(expr) : super(op$toString, valueToContent(expr));
 }
 
 /// `$trim` operator
-class Trim extends Operator {
+class $trim extends Operator {
   /// Creates `$trim` operator expression
   ///
   /// Removes whitespace characters, including null, or the specified characters
@@ -357,16 +365,16 @@ class Trim extends Operator {
   /// operator breaks down the string into individual UTF code point to trim from input.
   /// If unspecified, `$ltrim` removes whitespace characters, including the `null`
   /// character.
-  Trim({@required input, chars})
-      : super('trim', AEObject({'input': input, 'chars': chars}));
+  $trim({@required input, chars})
+      : super(op$trim, valueToContent({'input': input, 'chars': chars}));
 }
 
 /// `$toUpper` operator
-class ToUpper extends Operator {
+class $toUpper extends Operator {
   /// Creates `$toUpper` operator expression
   ///
   /// Converts a string to uppercase, returning the result.
   ///
   /// The argument can be any expression as long as it resolves to a string.
-  ToUpper(expr) : super('toUpper', expr);
+  $toUpper(expr) : super(op$toUpper, valueToContent(expr));
 }

@@ -112,6 +112,39 @@ const op$stdDevPop = r'$stdDevPop';
 const op$stdDevSamp = r'$stdDevSamp';
 const op$sum = r'$sum';
 
+// **** Comparison
+const op$cmp = r'$cmp';
+const op$dateFromParts = r'$dateFromParts';
+//const op$eq = r'$eq';
+//const op$gt = r'$gt';
+//const op$gte = r'$gte';
+//const op$lt = r'$lt';
+//const op$lte = r'$lte';
+//const op$ne = r'$ne';
+const op$cond = r'$cond';
+const op$ifNull = r'$ifNull';
+const op$switch = r'$switch';
+const op$case = r'$case';
+
+// **** Date Time
+//const op$dateFromParts = r'$dateFromParts';
+const op$dateFromString = r'$dateFromString';
+const op$dateToParts = r'$dateToParts';
+const op$dayOfMonth = r'$dayOfMonth';
+const op$dayOfWeek = r'$dayOfWeek';
+const op$dayOfYear = r'$dayOfYear';
+const op$hour = r'$hour';
+const op$isoDayOfWeek = r'$isoDayOfWeek';
+const op$isoWeek = r'$isoWeek';
+const op$isoWeekYear = r'$isoWeekYear';
+const op$millisecond = r'$millisecond';
+const op$minute = r'$minute';
+const op$month = r'$month';
+const op$second = r'$second';
+const op$toDate = r'$toDate';
+const op$week = r'$week';
+const op$year = r'$year';
+
 // **** Stages
 const st$addFields = r'$addFields';
 const st$bucket = r'$bucket';
@@ -135,3 +168,23 @@ const st$sortByCount = r'$sortByCount';
 const st$unionWith = r'$unionWith';
 const st$unset = r'$unset';
 const st$unwind = r'$unwind';
+
+// **** String
+const op$concat = r'$concat';
+const op$indexOfBytes = r'$indexOfBytes';
+const op$indexOfCP = r'$indexOfCP';
+const op$ltrim = r'$ltrim';
+const op$regexFind = r'$regexFind';
+const op$regexFindAll = r'$regexFindAll';
+const op$regexMatch = r'$regexMatch';
+const op$rtrim = r'$rtrim';
+const op$split = r'$split';
+const op$strLenBytes = r'$strLenBytes';
+const op$strLenCP = r'$strLenCP';
+const op$strcasecmp = r'$strcasecmp';
+const op$substrBytes = r'$substrBytes';
+const op$substrCP = r'$substrCP';
+const op$toLower = r'$toLower';
+const op$toString = r'$toString';
+const op$trim = r'$trim';
+const op$toUpper = r'$toUpper';

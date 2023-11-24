@@ -168,6 +168,8 @@ class ListExpression extends ExpressionContainer {
     if (toBeMerged is Expression) {
       MapExpression mapExpression;
       if (toBeMerged.content is! MapExpression) {
+        // here we need the content
+        // ignore: deprecated_member_use_from_same_package
         mapExpression = MapExpression(toBeMerged.rawContent);
       } else {
         mapExpression = toBeMerged.content as MapExpression;

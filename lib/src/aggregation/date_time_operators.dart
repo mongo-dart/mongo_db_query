@@ -1,18 +1,20 @@
 import 'package:meta/meta.dart';
+import '../query_expression/query_expression.dart';
 
+import '../base/common/operators_def.dart';
 import 'aggregation_base.dart';
 
 /// `$dateFromParts`
-class DateFromParts extends Operator {
+class $dateFromParts extends Operator {
   /// Creates `$dateFromParts` operator expression
   ///
   /// Constructs and returns a Date object given the date’s constituent
   /// properties.
-  DateFromParts(
+  $dateFromParts(
       {@required year, month, day, hour, minute, second, millisecond, timezone})
       : super(
-            'dateFromParts',
-            AEObject({
+            op$dateFromParts,
+            valueToContent({
               'year': year,
               'month': month,
               'day': day,
@@ -34,8 +36,8 @@ class IsoDateFromParts extends Operator {
   IsoDateFromParts(
       {@required year, week, day, hour, minute, second, millisecond, timezone})
       : super(
-            'dateFromParts',
-            AEObject({
+            op$dateFromParts,
+            valueToContent({
               'isoWeekYear': year,
               'isoWeek': week,
               'isoDayOfWeek': day,
@@ -48,7 +50,7 @@ class IsoDateFromParts extends Operator {
 }
 
 /// `$dateFromString` operator
-class DateFromString extends Operator {
+class $dateFromString extends Operator {
   /// Creates `$dateFromString` operator expression
   ///
   /// Converts a date/time string to a date object.
@@ -67,10 +69,10 @@ class DateFromString extends Operator {
   /// `null` or missing, it outputs the result value of the provided [onNull]
   /// expression. This result value can be of any type. If you do not specify
   /// [onNull] and dateString is null or missing, then $dateFromString outputs null.
-  DateFromString({@required dateString, format, timezone, onError, onNull})
+  $dateFromString({@required dateString, format, timezone, onError, onNull})
       : super(
-            'dateFromString',
-            AEObject({
+            op$dateFromString,
+            valueToContent({
               'dateString': dateString,
               'format': format,
               'timezone': timezone,
@@ -80,7 +82,7 @@ class DateFromString extends Operator {
 }
 
 /// `$dateToParts` operator
-class DateToParts extends Operator {
+class $dateToParts extends Operator {
   /// Creates `$dateToParts` operator expression
   ///
   /// Returns a document that contains the constituent parts of a given BSON Date
@@ -89,13 +91,15 @@ class DateToParts extends Operator {
   /// to true to return the parts representing an ISO week date instead. This will
   /// return a document where the properties are isoWeekYear, isoWeek,
   /// isoDayOfWeek, hour, minute, second and millisecond.
-  DateToParts(date, {timezone, bool iso8601 = false})
-      : super('dateToParts',
-            AEObject({'date': date, 'timezone': timezone, 'iso8601': iso8601}));
+  $dateToParts(date, {timezone, bool iso8601 = false})
+      : super(
+            op$dateToParts,
+            valueToContent(
+                {'date': date, 'timezone': timezone, 'iso8601': iso8601}));
 }
 
 /// `$dayOfMonth` operator
-class DayOfMonth extends Operator {
+class $dayOfMonth extends Operator {
   /// Creates `$dayOfMonth` operator expression
   ///
   /// Returns the day of the month for a date as a number between 1 and 31.
@@ -106,12 +110,13 @@ class DayOfMonth extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  DayOfMonth(date, {timezone})
-      : super('dayOfMonth', AEObject({'date': date, 'timezone': timezone}));
+  $dayOfMonth(date, {timezone})
+      : super(op$dayOfMonth,
+            valueToContent({'date': date, 'timezone': timezone}));
 }
 
 /// `$dayOfWeek` operator
-class DayOfWeek extends Operator {
+class $dayOfWeek extends Operator {
   /// Creates `$dayOfWeek` operator expression
   ///
   /// Returns the day of the week for a date as a number between 1 (Sunday) and
@@ -123,12 +128,13 @@ class DayOfWeek extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  DayOfWeek(date, {timezone})
-      : super('dayOfWeek', AEObject({'date': date, 'timezone': timezone}));
+  $dayOfWeek(date, {timezone})
+      : super(
+            op$dayOfWeek, valueToContent({'date': date, 'timezone': timezone}));
 }
 
 /// `$dayOfYear` operator
-class DayOfYear extends Operator {
+class $dayOfYear extends Operator {
   /// Creates `$dayOfYear` operator expression
   ///
   /// Returns the day of the year for a date as a number between 1 and 366.
@@ -139,12 +145,13 @@ class DayOfYear extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  DayOfYear(date, {timezone})
-      : super('dayOfYear', AEObject({'date': date, 'timezone': timezone}));
+  $dayOfYear(date, {timezone})
+      : super(
+            op$dayOfYear, valueToContent({'date': date, 'timezone': timezone}));
 }
 
 /// `$hour` operator
-class Hour extends Operator {
+class $hour extends Operator {
   /// Creates `$hour` operator expression
   ///
   /// Returns the hour portion of a date as a number between 0 and 23.
@@ -155,12 +162,12 @@ class Hour extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Hour(date, {timezone})
-      : super('hour', AEObject({'date': date, 'timezone': timezone}));
+  $hour(date, {timezone})
+      : super(op$hour, valueToContent({'date': date, 'timezone': timezone}));
 }
 
 /// `$isoDayOfWeek` operator
-class IsoDayOfWeek extends Operator {
+class $isoDayOfWeek extends Operator {
   /// Creates `$isoDayOfWeek` operator expression
   ///
   /// Returns the weekday number in ISO 8601 format, ranging from 1 (for Monday)
@@ -172,12 +179,13 @@ class IsoDayOfWeek extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  IsoDayOfWeek(date, {timezone})
-      : super('isoDayOfWeek', AEObject({'date': date, 'timezone': timezone}));
+  $isoDayOfWeek(date, {timezone})
+      : super(op$isoDayOfWeek,
+            valueToContent({'date': date, 'timezone': timezone}));
 }
 
 /// `$isoWeek` operator
-class IsoWeek extends Operator {
+class $isoWeek extends Operator {
   /// Creates `$isoWeek` operator expression
   ///
   /// Returns the week number in ISO 8601 format, ranging from 1 to 53. Week
@@ -190,12 +198,12 @@ class IsoWeek extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  IsoWeek(date, {timezone})
-      : super('isoWeek', AEObject({'date': date, 'timezone': timezone}));
+  $isoWeek(date, {timezone})
+      : super(op$isoWeek, valueToContent({'date': date, 'timezone': timezone}));
 }
 
 /// `$isoWeekYear` operator
-class IsoWeekYear extends Operator {
+class $isoWeekYear extends Operator {
   /// Creates `$isoWeekYear` operator expression
   ///
   /// Returns the year number in ISO 8601 format. The year starts with the
@@ -207,12 +215,13 @@ class IsoWeekYear extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  IsoWeekYear(date, {timezone})
-      : super('isoWeekYear', AEObject({'date': date, 'timezone': timezone}));
+  $isoWeekYear(date, {timezone})
+      : super(op$isoWeekYear,
+            valueToContent({'date': date, 'timezone': timezone}));
 }
 
 /// `$millisecond` operator
-class Millisecond extends Operator {
+class $millisecond extends Operator {
   /// Creates `$millisecond` operator expression
   ///
   /// Returns the millisecond portion of a date as an integer between 0 and 999.
@@ -223,12 +232,13 @@ class Millisecond extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Millisecond(date, {timezone})
-      : super('millisecond', AEObject({'date': date, 'timezone': timezone}));
+  $millisecond(date, {timezone})
+      : super(op$millisecond,
+            valueToContent({'date': date, 'timezone': timezone}));
 }
 
 /// `$minute` operator
-class Minute extends Operator {
+class $minute extends Operator {
   /// Creates `$minute` operator expression
   ///
   /// Returns the minute portion of a date as a number between 0 and 59.
@@ -240,12 +250,12 @@ class Minute extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Minute(date, {timezone})
-      : super('minute', AEObject({'date': date, 'timezone': timezone}));
+  $minute(date, {timezone})
+      : super(op$minute, valueToContent({'date': date, 'timezone': timezone}));
 }
 
 /// `$month` operator
-class Month extends Operator {
+class $month extends Operator {
   /// Creates `$month` operator expression
   ///
   /// Returns the month of a date as a number between 1 and 12.
@@ -256,12 +266,12 @@ class Month extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Month(date, {timezone})
-      : super('month', AEObject({'date': date, 'timezone': timezone}));
+  $month(date, {timezone})
+      : super(op$month, valueToContent({'date': date, 'timezone': timezone}));
 }
 
 /// `$second` operator
-class Second extends Operator {
+class $second extends Operator {
   /// Creates `$second` operator expression
   ///
   /// Returns the second portion of a date as a number between 0 and 59, but can
@@ -273,21 +283,21 @@ class Second extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Second(date, {timezone})
-      : super('second', AEObject({'date': date, 'timezone': timezone}));
+  $second(date, {timezone})
+      : super(op$second, valueToContent({'date': date, 'timezone': timezone}));
 }
 
 /// `$toDate` operator
-class ToDate extends Operator {
+class $toDate extends Operator {
   /// Creates `$toDate` operator expression
   ///
   /// Converts a value to a date. If the value cannot be converted to a date,
   /// `$toDate` errors. If the value is `null` or missing, `$toDate` returns `null`.
-  ToDate(expr) : super('toDate', expr);
+  $toDate(expr) : super(op$toDate, valueToContent(expr));
 }
 
 /// `$week` operator
-class Week extends Operator {
+class $week extends Operator {
   /// Creates `$week` operator expression
   ///
   /// Returns the week of the year for a date as a number between 0 and 53.
@@ -298,12 +308,12 @@ class Week extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Week(date, {timezone})
-      : super('week', AEObject({'date': date, 'timezone': timezone}));
+  $week(date, {timezone})
+      : super(op$week, valueToContent({'date': date, 'timezone': timezone}));
 }
 
 /// `$year` operator
-class Year extends Operator {
+class $year extends Operator {
   /// Creates `$year` operator expression
   ///
   /// Returns the year portion of a date.
@@ -314,6 +324,6 @@ class Year extends Operator {
   /// must be a valid expression that resolves to a string formatted as either
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
-  Year(date, {timezone})
-      : super('year', AEObject({'date': date, 'timezone': timezone}));
+  $year(date, {timezone})
+      : super(op$year, valueToContent({'date': date, 'timezone': timezone}));
 }
