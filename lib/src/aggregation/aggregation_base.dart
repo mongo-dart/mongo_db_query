@@ -1,9 +1,7 @@
-import 'package:meta/meta.dart';
 import 'package:mongo_db_query/src/base/operator_expression.dart';
 
 import '../base/expression_content.dart';
 import '../base/field_expression.dart';
-import 'ae_list.dart';
 
 /// Aggregation expression
 /* abstract class ExpressionContent implements Builder {
@@ -28,7 +26,7 @@ abstract class Accumulator extends OperatorExpression {
 /// Aggregation expression's object
 ///
 /// The object is used in aggregation expressions and is aggregation expression as well
-class AEObject extends Iterable<MapEntry<String, dynamic>>
+/* class AEObject extends Iterable<MapEntry<String, dynamic>>
     implements ExpressionContent {
   final Iterable<MapEntry<String, dynamic>> _iterable;
 
@@ -56,13 +54,14 @@ class AEObject extends Iterable<MapEntry<String, dynamic>>
       Map.fromEntries(_iterable).map((argName, argValue) => MapEntry(argName,
           argValue is ExpressionContent ? argValue.rawContent : argValue));
 }
+ */
 
 /// Returns `true` if value is not null
 ///
 /// The function is used  to filter not null elements in [AEObject] and [AEList]
 /// constuctors
-bool _valueIsNotNull(value) =>
-    value is MapEntry ? value.value != null : value != null;
+/* bool _valueIsNotNull(value) =>
+    value is MapEntry ? value.value != null : value != null; */
 
 /// Field path expression
 ///

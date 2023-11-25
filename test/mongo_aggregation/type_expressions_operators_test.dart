@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 void main() {
   test('convert', () {
     expect(
-        Convert(
+        $convert(
                 input: TestExpr(),
                 to: 'string',
                 onError: TestExpr(),
@@ -22,31 +22,31 @@ void main() {
   });
 
   test('toBool', () {
-    expect(ToBool(TestExpr()).rawContent, {'\$toBool': '\$field'});
+    expect($toBool(TestExpr()).rawContent, {'\$toBool': '\$field'});
   });
 
   test('toDecimal', () {
-    expect(ToDecimal(TestExpr()).rawContent, {'\$toDecimal': '\$field'});
+    expect($toDecimal(TestExpr()).rawContent, {'\$toDecimal': '\$field'});
   });
 
   test('toDouble', () {
-    expect(ToDouble(TestExpr()).rawContent, {'\$toDouble': '\$field'});
+    expect($toDouble(TestExpr()).rawContent, {'\$toDouble': '\$field'});
   });
 
   test('toInt', () {
-    expect(ToInt(TestExpr()).rawContent, {'\$toInt': '\$field'});
+    expect($toInt(TestExpr()).rawContent, {'\$toInt': '\$field'});
   });
 
   test('toLong', () {
-    expect(ToLong(TestExpr()).rawContent, {'\$toLong': '\$field'});
+    expect($toLong(TestExpr()).rawContent, {'\$toLong': '\$field'});
   });
 
   test('toObjectId', () {
-    expect(ToObjectId(TestExpr()).rawContent, {'\$toObjectId': '\$field'});
+    expect($toObjectId(TestExpr()).rawContent, {'\$toObjectId': '\$field'});
   });
 
   test('type', () {
-    expect(Type(TestExpr()).rawContent, {'\$type': '\$field'});
+    expect($type(TestExpr()).rawContent, {'\$type': '\$field'});
   });
 }
 

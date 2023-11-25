@@ -1,6 +1,5 @@
-import 'package:mongo_db_query/src/base/map_expression.dart';
-
-import '../ae_list.dart';
+import '../../base/map_expression.dart';
+import '../../query_expression/query_expression.dart';
 import '../aggregation_base.dart';
 import '../common.dart';
 
@@ -61,8 +60,8 @@ class Output extends MapExpression {
             ...operator.build(),
             if (documents != null || range != null || unit != null)
               spWindow: {
-                if (documents != null) spDocuments: AEList(documents),
-                if (range != null) spRange: AEList(range),
+                if (documents != null) spDocuments: valueToContent(documents),
+                if (range != null) spRange: valueToContent(range),
                 if (unit != null) spUnit: unit
               }
           }

@@ -1,16 +1,14 @@
-import 'package:meta/meta.dart';
-
 import '../base/common/operators_def.dart';
 import '../query_expression/query_expression.dart';
-import 'ae_list.dart';
 import 'aggregation_base.dart';
 
 /// `$arrayElemAt` operator
 ///
 /// Returns the element at the specified [array] [index].
-class ArrayElemAt extends Operator {
+class $arrayElemAt extends Operator {
   /// Creates `$arrayToObject` operator expression
-  ArrayElemAt(array, index) : super('arrayElemAt', AEList([array, index]));
+  $arrayElemAt(array, index)
+      : super(op$arrayElemAt, valueToContent([array, index]));
 }
 
 /// `$arrayToObject` operator
@@ -28,20 +26,19 @@ class ArrayElemAt extends Operator {
 ///
 /// * The `k` field contains the field name.
 /// * The `v` field contains the value of the field.
-class ArrayToObject extends Operator {
+class $arrayToObject extends Operator {
   /// Creates `$arrayToObject` operator expression
-  ArrayToObject(array)
-      : super('arrayToObject', array is List ? AEList(array) : array);
+  $arrayToObject(array) : super(op$arrayToObject, valueToContent(array));
 }
 
 /// `$concatArrays` operator
 ///
 /// Concatenates [arrays] to return the concatenated array.
-class ConcatArrays extends Operator {
+class $concatArrays extends Operator {
   /// Creates `$concatArrays` operator expression
-  ConcatArrays(List arrays)
-      : super('concatArrays',
-            AEList(arrays.map((elem) => elem is List ? AEList(elem) : elem)));
+  $concatArrays(List arrays)
+      : super(op$concatArrays,
+            valueToContent(arrays.map((elem) => valueToContent(elem))));
 }
 
 /// `$filter` operator
@@ -49,7 +46,7 @@ class ConcatArrays extends Operator {
 /// Selects a subset of an array to return based on the specified condition.
 /// Returns an array with only those elements that match the condition. The
 /// returned elements are in the original order.
-class Filter extends Operator {
+class $filter extends Operator {
   /// Creates `$filter` operator expression
   ///
   /// * [input] - an expression that resolves to an array.
@@ -60,18 +57,20 @@ class Filter extends Operator {
   /// if an element should be included in the output array. The expression
   /// references each element of the input array individually with the variable
   /// name specified in [as].
-  Filter({required input, String? as, required cond})
-      : super('filter',
-            AEObject({'input': input, if (as != null) 'as': as, 'cond': cond}));
+  $filter({required input, String? as, required cond})
+      : super(
+            op$filter,
+            valueToContent(
+                {'input': input, if (as != null) 'as': as, 'cond': cond}));
 }
 
 /// `$in` operator
 ///
 /// Returns a boolean indicating whether a specified [value] is in an [array].
-class In extends Operator {
+class $in extends Operator {
   /// Creates `$in` operator expression
-  In(value, array)
-      : super('in', AEList([value, array is List ? AEList(array) : array]));
+  $in(value, array)
+      : super(op$in, valueToContent([value, valueToContent(array)]));
 }
 
 /// `$indexOfArray` operator
@@ -79,7 +78,7 @@ class In extends Operator {
 /// Searches an [array] for an occurence of a specified [value] and returns the
 /// array index (zero-based) of the first occurence. If the value is not found,
 /// returns `-1`.
-class IndexOfArray extends Operator {
+class $indexOfArray extends Operator {
   /// Creates `$indexOfArray` operator expression
   ///
   /// * [array] - Can be any valid expression as long as it resolves to an array.
@@ -89,17 +88,17 @@ class IndexOfArray extends Operator {
   /// search. Can be any valid expression that resolves to a non-negative integral
   /// number. If unspecified, the starting index position for the search is the
   /// first element.
-  IndexOfArray(array, value, start, end)
-      : super('indexOfArray',
-            AEList([array is List ? AEList(array) : array, value, start, end]));
+  $indexOfArray(array, value, start, end)
+      : super(op$indexOfArray,
+            valueToContent([valueToContent(array), value, start, end]));
 }
 
 /// `$isArray` operator
 ///
 /// Determines if the operand is an array. Returns a boolean.
-class IsArray extends Operator {
+class $isArray extends Operator {
   /// Creates `$isArray` operator expression
-  IsArray(expr) : super('isArray', expr);
+  $isArray(expr) : super(op$isArray, expr);
 }
 
 /// `$map` operator
@@ -107,7 +106,7 @@ class IsArray extends Operator {
 /// Applies an expression to each item in an array and returns an array with the
 /// applied results.
 /// name specified in [as].
-class MapOp extends Operator {
+class $map extends Operator {
   /// Creates `$map` operator expression
   ///
   /// * [input] - 	An expression that resolves to an array.
@@ -116,13 +115,13 @@ class MapOp extends Operator {
   /// defaults to `this`.
   /// * [inExpr] - An expression that is applied to each element of the input
   /// array. The expression references each element individually with the variable
-  MapOp({@required input, String? as, @required inExpr})
+  $map({required input, String? as, required inExpr})
       : super(
-            'map',
-            AEObject({
-              'input': input is List ? AEList(input) : input,
+            op$map,
+            valueToContent({
+              'input': valueToContent(input),
               if (as != null) 'as': as,
-              'in': inExpr
+              'in': valueToContent(inExpr)
             }));
 }
 
@@ -134,11 +133,9 @@ class MapOp extends Operator {
 ///
 /// * The `k` field contains the field name in the original document.
 /// * The `v` field contains the value of the field in the original document.
-class ObjectToArray extends Operator {
+class $objectToArray extends Operator {
   /// Creates `$objectToArray` operator expression
-  ObjectToArray(expr)
-      : super('objectToArray',
-            expr is Map<String, dynamic> ? AEObject(expr) : expr);
+  $objectToArray(expr) : super(op$objectToArray, valueToContent(expr));
 }
 
 /// `$range` operator
@@ -147,7 +144,7 @@ class ObjectToArray extends Operator {
 /// generates the sequence from the specified starting number by successively
 /// incrementing the starting number by the specified step value up to but not
 /// including the end point.
-class Range extends Operator {
+class $range extends Operator {
   /// Creates `$range` operator expression
   ///
   /// * [start] - An integer that specifies the start of the sequence. Can be any
@@ -156,14 +153,15 @@ class Range extends Operator {
   /// Can be any valid expression that resolves to an integer.
   /// * [step] - Optional. An integer that specifies the increment value. Can be
   /// any valid expression that resolves to a non-zero integer. Defaults to 1.
-  Range(start, end, [step]) : super('range', AEList([start, end, step]));
+  $range(start, end, [step])
+      : super(op$range, valueToContent([start, end, step]));
 }
 
 /// `$reduce` operator
 ///
 /// Applies an expression to each element in an array and combines them into a
 /// single value.
-class Reduce extends Operator {
+class $reduce extends Operator {
   /// Creates `$reduce` operator expression
   ///
   /// * [input] - Can be any valid expression that resolves to an array. If the
@@ -179,35 +177,37 @@ class Reduce extends Operator {
   ///
   /// * `value` is the variable that represents the cumulative value of the expression.
   /// * `this` is the variable that refers to the element being processed.
-  Reduce({@required input, @required initialValue, @required inExpr})
+  $reduce({required input, required initialValue, required inExpr})
       : super(
-            'reduce',
-            AEObject(
-                {'input': input, 'initialValue': initialValue, 'in': inExpr}));
+            op$reduce,
+            valueToContent({
+              'input': valueToContent(input),
+              'initialValue': valueToContent(initialValue),
+              'in': valueToContent(inExpr)
+            }));
 }
 
 /// `$reverseArray` operator
 ///
 /// Accepts an array expression as an argument and returns an array with the
 /// elements in reverse order.
-class ReverseArray extends Operator {
+class $reverseArray extends Operator {
   /// Creates `$reverseArray` operator expression
-  ReverseArray(array)
-      : super('reverseArray', array is List ? AEList(array) : array);
+  $reverseArray(array) : super(op$reverseArray, valueToContent(array));
 }
 
 /// `$size` operator
 ///
 /// Counts and returns the total the number of items in an array.
-class Size extends Operator {
+class $size extends Operator {
   /// Creates `$size` operator expression
-  Size(array) : super('size', array is List ? AEList(array) : array);
+  $size(array) : super(op$size, valueToContent(array));
 }
 
 /// `$slice` operator
 ///
 /// Returns a subset of an array.
-class Slice extends Operator {
+class $slice extends Operator {
   /// Creates `$slice` operator expression
   ///
   /// * [array] - Any valid expression as long as it resolves to an array.
@@ -228,9 +228,8 @@ class Slice extends Operator {
   /// from the position.
   ///   * If negative, `$slice` returns up to the last `n` elements in the array. [n]
   /// cannot resolve to a negative number if [position] is specified
-  Slice(array, n, [position])
-      : super('slice',
-            AEList([array is List ? AEList(array) : array, position, n]));
+  $slice(array, n, [position])
+      : super(op$slice, valueToContent([valueToContent(array), position, n]));
 }
 
 /// `$zip` operator
@@ -241,7 +240,7 @@ class Slice extends Operator {
 ///
 /// For example, $zip would transform `[ [ 1, 2, 3 ], [ "a", "b", "c" ] ]` into
 /// `[ [ 1, "a" ], [ 2, "b" ], [ 3, "c" ] ]`.
-class Zip extends Operator {
+class $zip extends Operator {
   /// Creates `$zip` operator expression
   ///
   /// * [inputs] - An array of expressions that resolve to arrays. The elements
@@ -260,15 +259,15 @@ class Zip extends Operator {
   /// `true` but [defaults] is empty or not specified, `$zip` uses `null` as the
   /// default value. If specifying a non-empty [defaults], you must specify a
   /// default for each input array or else `$zip` will return an error.
-  Zip({required List inputs, bool useLongestLength = false, List? defaults})
+  $zip({required List inputs, bool useLongestLength = false, List? defaults})
       : super(
-            'zip',
-            AEObject({
-              'inputs': AEList(
-                  inputs.map((elem) => elem is List ? AEList(elem) : elem)),
+            op$zip,
+            valueToContent({
+              'inputs':
+                  valueToContent(inputs.map((elem) => valueToContent(elem))),
               'useLongestLength': useLongestLength,
               if (defaults != null && defaults.isNotEmpty)
-                'defaults': AEList(defaults)
+                'defaults': valueToContent(defaults)
             }));
 }
 

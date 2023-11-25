@@ -1,4 +1,3 @@
-import 'package:mongo_db_query/src/aggregation/ae_list.dart';
 import 'package:mongo_db_query/src/base/expression_content.dart';
 import 'package:mongo_db_query/mongo_db_query.dart';
 import 'package:test/test.dart';
@@ -27,26 +26,27 @@ void main() {
     expect(Var.keep.rawContent, '\$\$KEEP');
   });
 
-  test('AEList filter null elements', () {
-    expect(AEList([1, 'string', null, 2]).rawContent,
+  test('valueToContent filter null elements', () {
+    expect(valueToContent([1, 'string', null, 2]).rawContent,
         containsAllInOrder([1, 'string', 2]));
   });
 
-  test('AEObject filter null values', () {
+  test('valueToContent filter null values in Map', () {
     expect(
-        AEObject({'num': 1, 'string': 'value', 'null': null, 'two': 2})
+        valueToContent({'num': 1, 'string': 'value', 'null': null, 'two': 2})
             .rawContent,
         {'num': 1, 'string': 'value', 'two': 2});
   });
 
-  test('AElist#build', () {
-    expect(AEList([1, TestExpr(), 'string']).rawContent,
+  test('valueToContent#rawContet', () {
+    expect(valueToContent([1, TestExpr(), 'string']).rawContent,
         containsAllInOrder([1, 'test', 'string']));
   });
 
-  test('AEObject#build', () {
+  test('valueToContent#rawContet in Map', () {
     expect(
-        AEObject({'num': 1, 'expr': TestExpr(), 'string': 'value'}).rawContent,
+        valueToContent({'num': 1, 'expr': TestExpr(), 'string': 'value'})
+            .rawContent,
         {'num': 1, 'expr': 'test', 'string': 'value'});
   });
 }

@@ -1,19 +1,21 @@
+import '../base/common/operators_def.dart';
 import '../base/expression_content.dart';
+import '../query_expression/query_expression.dart';
 import 'aggregation_base.dart';
 
 /// `$expr` operator
-class Expr extends Operator {
+class $expr extends Operator {
   /// Creates an `$expr` part of `$match` stage
   ///
   /// The operator is used in `match` aggregation stage to define match expression
   /// as aggregation expression.
   ///
   /// [expr] - aggregation expression which usually resolves into [bool]
-  Expr(ExpressionContent expr) : super('expr', expr);
+  $expr(ExpressionContent expr) : super(op$expr, valueToContent(expr));
 }
 
 /// `$let` operator
-class Let extends Operator {
+class $let extends Operator {
   /// Creates `$let` operator expression
   ///
   /// Binds variables for use in the specified expression, and returns the
@@ -25,8 +27,11 @@ class Let extends Operator {
   /// have no meaning outside the in expression, not even within the vars block
   /// itself.
   /// * [inExpr] - The expression to evaluate.
-  Let({required Map<String, dynamic> vars, required inExpr})
-      : super('let', AEObject({'vars': AEObject(vars), 'in': inExpr}));
+  $let({required Map<String, dynamic> vars, required inExpr})
+      : super(
+            op$let,
+            valueToContent(
+                {'vars': valueToContent(vars), 'in': valueToContent(inExpr)}));
 }
 
 // TODO: Trigonometry Expression Operators

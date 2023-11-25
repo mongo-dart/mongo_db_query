@@ -1,9 +1,9 @@
-import 'package:meta/meta.dart';
-
+import '../base/common/operators_def.dart';
+import '../query_expression/query_expression.dart';
 import 'aggregation_base.dart';
 
 /// `$convert` operator
-class Convert extends Operator {
+class $convert extends Operator {
   /// Creates `$convert` operator expression
   ///
   /// The argument can be any expression as long as it resolves to a string.
@@ -26,10 +26,10 @@ class Convert extends Operator {
   /// * [onNull] - Optional. The value to return if the input is null or missing.
   /// The arguments can be any valid expression. If unspecified, `$convert` returns
   /// `null` if the input is null or missing.
-  Convert({@required input, @required to, onError, onNull})
+  $convert({required input, required to, onError, onNull})
       : super(
-            'convert',
-            AEObject({
+            op$convert,
+            valueToContent({
               'input': input,
               'to': to,
               'onError': onError,
@@ -38,81 +38,81 @@ class Convert extends Operator {
 }
 
 /// `$toBool` operator
-class ToBool extends Operator {
+class $toBool extends Operator {
   /// Creates `$toBool` operator expression
   ///
   /// Converts a value to a boolean.
   ///
-  /// The [ToBool] takes any valid expression.
-  ToBool(expr) : super('toBool', expr);
+  /// The [$toBool] takes any valid expression.
+  $toBool(expr) : super(op$toBool, valueToContent(expr));
 }
 
 /// `$toDecimal` operator
-class ToDecimal extends Operator {
+class $toDecimal extends Operator {
   /// Creates `$toDecimal` operator expression
   ///
   /// Converts a value to a decimal. If the value cannot be converted to a
   /// decimal, `$toDecimal` errors. If the value is `null` or missing,
   /// `$toDecimal` returns `null`.
   ///
-  /// The [ToDecimal] takes any valid expression.
-  ToDecimal(expr) : super('toDecimal', expr);
+  /// The [$toDecimal] takes any valid expression.
+  $toDecimal(expr) : super(op$toDecimal, valueToContent(expr));
 }
 
 /// `$toDouble` operator
-class ToDouble extends Operator {
+class $toDouble extends Operator {
   /// Creates `$toDouble` operator expression
   ///
   /// Converts a value to a double. If the value cannot be converted to an
   /// double, `$toDouble` errors. If the value is `null` or missing, `$toDouble`
   /// returns `null`.
   ///
-  /// The [ToDouble] takes any valid expression.
-  ToDouble(expr) : super('toDouble', expr);
+  /// The [$toDouble] takes any valid expression.
+  $toDouble(expr) : super(op$toDouble, valueToContent(expr));
 }
 
 /// `$toInt` operator
-class ToInt extends Operator {
+class $toInt extends Operator {
   /// Creates `$toInt` operator expression
   ///
   /// Converts a value to an integer. If the value cannot be converted to an
   /// integer, `$toInt` errors. If the value is `null` or missing, `$toInt`
   /// returns `null`.
   ///
-  /// The [ToInt] takes any valid expression.
-  ToInt(expr) : super('toInt', expr);
+  /// The [$toInt] takes any valid expression.
+  $toInt(expr) : super(op$toInt, valueToContent(expr));
 }
 
 /// `$toLong` operator
-class ToLong extends Operator {
+class $toLong extends Operator {
   /// Creates `$toLong` operator expression
   ///
   /// Converts a value to a long. If the value cannot be converted to a long,
   /// `$toLong` errors. If the value is `null` or missing, `$toLong` returns
   /// `null`.
   ///
-  /// The [ToLong] takes any valid expression.
-  ToLong(expr) : super('toLong', expr);
+  /// The [$toLong] takes any valid expression.
+  $toLong(expr) : super(op$toLong, valueToContent(expr));
 }
 
 /// `$toObjectId` operator
-class ToObjectId extends Operator {
+class $toObjectId extends Operator {
   /// Creates `$toObjectId` operator expression
   ///
   /// Converts a value to an ObjectId. If the value cannot be converted to an
   /// `ObjectId`, `$toObjectId` errors. If the value is `null` or missing,
   /// `$toObjectId` returns `null`.
   ///
-  /// The [ToObjectId] takes any valid expression.
-  ToObjectId(expr) : super('toObjectId', expr);
+  /// The [$toObjectId] takes any valid expression.
+  $toObjectId(expr) : super(op$toObjectId, valueToContent(expr));
 }
 
 /// `$type` operator
-class Type extends Operator {
+class $type extends Operator {
   /// Creates `$type` operator expression
   ///
   /// Returns a string that specifies the BSON type of the argument.
   ///
   /// The argument can be any valid expression.
-  Type(expr) : super('type', expr);
+  $type(expr) : super(op$type, valueToContent(expr));
 }

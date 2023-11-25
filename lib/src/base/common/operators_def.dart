@@ -81,6 +81,21 @@ const opBitXor = 'xor';
 
 // *********************** AGGREGATION **********************
 
+// **** Array Object
+const op$arrayToObject = r'$arrayToObject';
+const op$arrayElemAt = r'$arrayElemAt';
+const op$concatArrays = r'concatArrays';
+const op$filter = r'$filter';
+const op$indexOfArray = r'$indexOfArray';
+const op$isArray = r'$isArray';
+const op$map = r'$map';
+const op$objectToArray = r'$objectToArray';
+const op$range = r'$range';
+const op$reduce = r'$reduce';
+const op$reverseArray = r'$reverseArray';
+//const op$slice = r'$slice';
+const op$zip = r'$zip';
+
 // **** Arithmentic
 const op$abs = r'$abs';
 const op$add = r'$add';
@@ -113,18 +128,19 @@ const op$stdDevSamp = r'$stdDevSamp';
 const op$sum = r'$sum';
 
 // **** Comparison
+const op$case = r'$case';
 const op$cmp = r'$cmp';
+const op$cond = r'$cond';
 const op$dateFromParts = r'$dateFromParts';
 //const op$eq = r'$eq';
 //const op$gt = r'$gt';
 //const op$gte = r'$gte';
+const op$ifNull = r'$ifNull';
 //const op$lt = r'$lt';
 //const op$lte = r'$lte';
 //const op$ne = r'$ne';
-const op$cond = r'$cond';
-const op$ifNull = r'$ifNull';
 const op$switch = r'$switch';
-const op$case = r'$case';
+const op$then = r'$then';
 
 // **** Date Time
 //const op$dateFromParts = r'$dateFromParts';
@@ -188,3 +204,16 @@ const op$toLower = r'$toLower';
 const op$toString = r'$toString';
 const op$trim = r'$trim';
 const op$toUpper = r'$toUpper';
+
+// **** Type Expression
+const op$convert = r'$convert';
+const op$toBool = r'$toBool';
+const op$toDecimal = r'$toDecimal';
+const op$toDouble = r'$toDouble';
+const op$toInt = r'$toInt';
+const op$toLong = r'$toLong';
+const op$toObjectId = r'$toObjectId';
+//const op$type = r'$type';
+
+// **** Type Expression
+const op$let = r'$let';

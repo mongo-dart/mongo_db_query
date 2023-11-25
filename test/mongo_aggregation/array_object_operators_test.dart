@@ -4,10 +4,10 @@ import 'package:test/test.dart';
 
 void main() {
   test('arrayToObjects', () {
-    expect(ArrayToObject(Field('products')).rawContent,
+    expect($arrayToObject(Field('products')).rawContent,
         {'\$arrayToObject': '\$products'});
     expect(
-        ArrayToObject([
+        $arrayToObject([
           ['item', 'abc123'],
           ['qty', 25]
         ]).rawContent,
@@ -18,7 +18,7 @@ void main() {
           ]
         });
     expect(
-        ArrayToObject([
+        $arrayToObject([
           {'k': 'item', 'v': 'abc123'},
           {'k': 'qty', 'v': 25}
         ]).rawContent,
@@ -31,10 +31,10 @@ void main() {
   });
 
   test('arrayElemAt', () {
-    expect(ArrayElemAt(TestExpr(), 0).rawContent, {
+    expect($arrayElemAt(TestExpr(), 0).rawContent, {
       '\$arrayElemAt': ['\$field', 0]
     });
-    expect(ArrayElemAt([1, 2, 3], 1).rawContent, {
+    expect($arrayElemAt([1, 2, 3], 1).rawContent, {
       '\$arrayElemAt': [
         [1, 2, 3],
         1
@@ -44,7 +44,7 @@ void main() {
 
   test('concatArrays', () {
     expect(
-        ConcatArrays([
+        $concatArrays([
           TestExpr(),
           [1, 2]
         ]).rawContent,
@@ -57,16 +57,17 @@ void main() {
   });
 
   test('filter', () {
-    expect(Filter(input: TestExpr(), as: 'test', cond: TestExpr()).rawContent, {
+    expect(
+        $filter(input: TestExpr(), as: 'test', cond: TestExpr()).rawContent, {
       '\$filter': {'input': '\$field', 'as': 'test', 'cond': '\$field'}
     });
   });
 
   test('in', () {
-    expect(In(TestExpr(), TestExpr()).rawContent, {
+    expect($in(TestExpr(), TestExpr()).rawContent, {
       '\$in': ['\$field', '\$field']
     });
-    expect(In('string', ['string', TestExpr()]).rawContent, {
+    expect($in('string', ['string', TestExpr()]).rawContent, {
       '\$in': [
         'string',
         ['string', '\$field']
@@ -75,10 +76,10 @@ void main() {
   });
 
   test('indexOfArray', () {
-    expect(IndexOfArray(TestExpr(), TestExpr(), 2, 3).rawContent, {
+    expect($indexOfArray(TestExpr(), TestExpr(), 2, 3).rawContent, {
       '\$indexOfArray': ['\$field', '\$field', 2, 3]
     });
-    expect(IndexOfArray([1, 2, TestExpr()], 'value', 2, 3).rawContent, {
+    expect($indexOfArray([1, 2, TestExpr()], 'value', 2, 3).rawContent, {
       '\$indexOfArray': [
         [1, 2, '\$field'],
         'value',
@@ -89,24 +90,24 @@ void main() {
   });
 
   test('isArray', () {
-    expect(IsArray(TestExpr()).rawContent, {'\$isArray': '\$field'});
+    expect($isArray(TestExpr()).rawContent, {'\$isArray': '\$field'});
   });
 
   test('map', () {
-    expect(MapOp(input: TestExpr(), as: 'val', inExpr: TestExpr()).rawContent, {
+    expect($map(input: TestExpr(), as: 'val', inExpr: TestExpr()).rawContent, {
       '\$map': {'input': '\$field', 'as': 'val', 'in': '\$field'}
     });
   });
 
   test('range', () {
-    expect(Range(1, TestExpr(), 2).rawContent, {
+    expect($range(1, TestExpr(), 2).rawContent, {
       '\$range': [1, '\$field', 2]
     });
   });
 
   test('reduce', () {
     expect(
-        Reduce(input: TestExpr(), initialValue: 0, inExpr: TestExpr())
+        $reduce(input: TestExpr(), initialValue: 0, inExpr: TestExpr())
             .rawContent,
         {
           '\$reduce': {'input': '\$field', 'initialValue': 0, 'in': '\$field'}
@@ -114,17 +115,17 @@ void main() {
   });
 
   test('reverseArray', () {
-    expect(ReverseArray(TestExpr()).rawContent, {'\$reverseArray': '\$field'});
-    expect(ReverseArray([1, 2, TestExpr()]).rawContent, {
+    expect($reverseArray(TestExpr()).rawContent, {'\$reverseArray': '\$field'});
+    expect($reverseArray([1, 2, TestExpr()]).rawContent, {
       '\$reverseArray': [1, 2, '\$field']
     });
   });
 
   test('slice', () {
-    expect(Slice(TestExpr(), 5, 2).rawContent, {
+    expect($slice(TestExpr(), 5, 2).rawContent, {
       '\$slice': ['\$field', 2, 5]
     });
-    expect(Slice([1, TestExpr()], 5, 2).rawContent, {
+    expect($slice([1, TestExpr()], 5, 2).rawContent, {
       '\$slice': [
         [1, '\$field'],
         2,
@@ -135,7 +136,7 @@ void main() {
 
   test('zip', () {
     expect(
-        Zip(
+        $zip(
             inputs: [
               TestExpr(),
               [1, 2]
@@ -170,7 +171,7 @@ void main() {
   });
 
   test('objectToArray', () {
-    expect(ObjectToArray(Field('order')).rawContent,
+    expect($objectToArray(Field('order')).rawContent,
         {'\$objectToArray': '\$order'});
   });
 }

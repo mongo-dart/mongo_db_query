@@ -1,7 +1,8 @@
-import 'package:meta/meta.dart';
+import 'package:mongo_db_query/src/base/map_expression.dart';
 
+import '../base/common/operators_def.dart';
 import '../base/expression_content.dart';
-import 'ae_list.dart';
+import '../query_expression/query_expression.dart';
 import 'aggregation_base.dart';
 
 /// `$cmp` operator
@@ -11,9 +12,9 @@ import 'aggregation_base.dart';
 /// * -1 if the first value is less than the second.
 /// * 1 if the first value is greater than the second.
 /// * 0 if the two values are equivalent.
-class Cmp extends Operator {
+class $cmp extends Operator {
   /// Creates `$cmp` operator expression
-  Cmp(a, b) : super('cmp', AEList([a, b]));
+  $cmp(a, b) : super(op$cmp, valueToContent([a, b]));
 }
 
 /// `$eq` operator
@@ -22,9 +23,9 @@ class Cmp extends Operator {
 ///
 /// * `true` when the values are equivalent.
 /// * `false` when the values are not equivalent.
-class Eq extends Operator {
+class $eq extends Operator {
   /// Creates `$eq` operator expression
-  Eq(a, b) : super('eq', AEList([a, b]));
+  $eq(a, b) : super(op$eq, valueToContent([a, b]));
 }
 
 /// `$gt` operator
@@ -34,9 +35,9 @@ class Eq extends Operator {
 /// * `true` when the first value is greater than the second value.
 /// * `false` when the first value is less than or equivalent to the second
 /// value.
-class Gt extends Operator {
+class $gt extends Operator {
   /// Creates `$gt` operator expression
-  Gt(a, b) : super('gt', AEList([a, b]));
+  $gt(a, b) : super(op$gt, valueToContent([a, b]));
 }
 
 /// `$gte` operator
@@ -46,9 +47,9 @@ class Gt extends Operator {
 /// * `true` when the first value is greater than or equivalent to the second
 /// value.
 /// * `false` when the first value is less than the second value.
-class Gte extends Operator {
+class $gte extends Operator {
   /// Creates `$gte` operator expression
-  Gte(a, b) : super('gte', AEList([a, b]));
+  $gte(a, b) : super(op$gte, valueToContent([a, b]));
 }
 
 /// `$lt` operator
@@ -58,9 +59,9 @@ class Gte extends Operator {
 /// * `true` when the first value is less than the second value.
 /// * `false` when the first value is greater than or equivalent to the second
 /// value.
-class Lt extends Operator {
+class $lt extends Operator {
   /// Creates `$lt` operator expression
-  Lt(a, b) : super('lt', AEList([a, b]));
+  $lt(a, b) : super(op$lt, valueToContent([a, b]));
 }
 
 /// `lte` operator
@@ -69,9 +70,9 @@ class Lt extends Operator {
 ///
 /// * `true` when the first value is less than or equivalent to the second value.
 /// * `false` when the first value is greater than the second value.
-class Lte extends Operator {
+class $lte extends Operator {
   /// Creates `$lte` operator expression
-  Lte(a, b) : super('lte', AEList([a, b]));
+  $lte(a, b) : super(op$lte, valueToContent([a, b]));
 }
 
 /// `$ne` operator
@@ -80,9 +81,9 @@ class Lte extends Operator {
 ///
 /// * `true` when the values are not equivalent.
 /// * `false` when the values are equivalent.
-class Ne extends Operator {
+class $ne extends Operator {
   /// Creates `$ne` operator expression
-  Ne(a, b) : super('ne', AEList([a, b]));
+  $ne(a, b) : super(op$ne, valueToContent([a, b]));
 }
 
 /// `$cond` operator
@@ -91,10 +92,10 @@ class Ne extends Operator {
 /// expressions.
 ///
 /// The arguments can be any valid expression.
-class Cond extends Operator {
+class $cond extends Operator {
   /// Creates `$cond` operator expression
-  Cond({@required ifExpr, @required thenExpr, @required elseExpr})
-      : super('cond', AEList([ifExpr, thenExpr, elseExpr]));
+  $cond({required ifExpr, required thenExpr, required elseExpr})
+      : super(op$cond, valueToContent([ifExpr, thenExpr, elseExpr]));
 }
 
 /// `$ifNull` operator
@@ -103,10 +104,10 @@ class Cond extends Operator {
 /// [expression] evaluates to a non-null value. If the [expression] evaluates
 /// to a null value, including instances of undefined values or missing fields,
 /// returns the value of the [replacement] expression.
-class IfNull extends Operator {
+class $ifNull extends Operator {
   /// Creates `$ifNull` operator expression
-  IfNull(expression, replacement)
-      : super('ifNull', AEList([expression, replacement]));
+  $ifNull(expression, replacement)
+      : super(op$ifNull, valueToContent([expression, replacement]));
 }
 
 /// `$switch` operator
@@ -114,30 +115,33 @@ class IfNull extends Operator {
 /// Evaluates a series of case expressions. When it finds an expression which
 /// evaluates to true, $switch executes a specified expression and breaks out
 /// of the control flow.
-class Switch extends Operator {
+class $switch extends Operator {
   /// Creates `$switch` operator expression
   ///
   /// * [branches] - An array of control branch object. Each branch is an
-  /// instance of [Case]
+  /// instance of [$case]
   /// * [defaultExpr] - Optional. The path to take if no branch case expression
   /// evaluates to true. Although optional, if default is unspecified and no
   /// branch case evaluates to true, $switch returns an error.
-  Switch({required List<Case> branches, defaultExpr})
+  $switch({required List<$case> branches, defaultExpr})
       : super(
-            'switch',
-            AEObject({
-              'branches': AEList(branches),
-              if (defaultExpr != null) 'default': defaultExpr
+            op$switch,
+            valueToContent({
+              'branches': valueToContent(branches),
+              if (defaultExpr != null) 'default': valueToContent(defaultExpr)
             }));
 }
 
-/// Case branch for [Switch] operator
-class Case extends AEObject {
-  /// Creates [Case] branch for Switch operator
+/// Case branch for [$switch] operator
+class $case extends MapExpression {
+  /// Creates [$case] branch for Switch operator
   ///
   /// * [caseExpr] - Can be any valid expression that resolves to a boolean. If
   /// the result is not a boolean, it is coerced to a boolean value.
   /// * [thenExpr] - Can be any valid expression.
-  Case({required ExpressionContent caseExpr, @required thenExpr})
-      : super.internal({'case': caseExpr, 'then': thenExpr});
+  $case({required ExpressionContent caseExpr, required thenExpr})
+      : super({
+          op$case: valueToContent(caseExpr),
+          op$then: valueToContent(thenExpr)
+        });
 }

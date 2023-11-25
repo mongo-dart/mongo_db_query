@@ -343,7 +343,7 @@ void main() {
             'author': {r'$eq': 'dave'}
           }
         });
-    expect($match(Expr(Eq(Field('author'), 'dave'))).build(), {
+    expect($match($expr($eq(Field('author'), 'dave'))).build(), {
       '\$match': {
         '\$expr': {
           '\$eq': ['\$author', 'dave']
@@ -377,9 +377,9 @@ void main() {
                   'order_qty': Field('ordered')
                 },
                 pipeline: [
-                  $match(Expr(And([
-                    Eq(Field('stock_item'), Var('order_item')),
-                    Gte(Field('instock'), Var('order_qty'))
+                  $match($expr($and([
+                    $eq(Field('stock_item'), Var('order_item')),
+                    $gte(Field('instock'), Var('order_qty'))
                   ]))),
                   $project({'stock_item': 0, '_id': 0})
                 ],
@@ -538,9 +538,9 @@ void main() {
         });
     expect(
         $unionWith(coll: 'warehouses', pipeline: [
-          $match(Expr(And([
-            Eq(Field('stock_item'), Var('order_item')),
-            Gte(Field('instock'), Var('order_qty'))
+          $match($expr($and([
+            $eq(Field('stock_item'), Var('order_item')),
+            $gte(Field('instock'), Var('order_qty'))
           ]))),
           $project({'stock_item': 0, '_id': 0})
         ]).build(),
