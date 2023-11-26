@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:bson/bson.dart';
 
-import '../aggregation/aggregation_base.dart';
 import '../aggregation/support_classes/geometry_obj.dart';
 import '../base/common/constant.dart';
 import '../base/common/document_types.dart';
@@ -159,9 +158,9 @@ class QueryExpression {
   // ***************** Evaluation Query Operators
   // ***************************************************
 
-  void $expr(Operator aggregationExpression) =>
+  void $expr(OperatorExpression aggregationExpression) =>
       filter.addOperator(OperatorExpression(
-          op$expr, MapExpression(aggregationExpression.rawContent)));
+          op$expr, MapExpression(aggregationExpression.build())));
 
   /// The $jsonSchema operator matches documents that satisfy the
   /// specified JSON Schema.
@@ -228,11 +227,11 @@ class QueryExpression {
   // ***************************************************
 
   /// Geospatial operators return data based on geospatial expression conditions
-  void $geoIntersects(String fieldName, Geometry coordinate) =>
+  void $geoIntersects(String fieldName, $geometry coordinate) =>
       filter.addFieldOperator(FieldExpression(
           fieldName,
           OperatorExpression(
-              op$geoIntersects, MapExpression(coordinate.rawContent))));
+              op$geoIntersects, MapExpression(coordinate.build()))));
 
   /// Selects documents with geospatial data that exists entirely
   /// within a specified shape.
@@ -240,7 +239,7 @@ class QueryExpression {
   /// Available ShapeOperator instances: Box , Center, CenterSphere, Geometry
   void $geoWithin(String fieldName, ShapeOperator shape) =>
       filter.addFieldOperator(FieldExpression(fieldName,
-          OperatorExpression(op$geoWithin, MapExpression(shape.rawContent))));
+          OperatorExpression(op$geoWithin, MapExpression(shape.build()))));
 
   /// Specifies a point for which a geospatial query returns the documents
   /// from nearest to farthest.
@@ -258,7 +257,7 @@ class QueryExpression {
   /// Specifies a point for which a geospatial query returns the documents
   /// from nearest to farthest.
   /// Only support geometry of point
-  void $nearSphere(String fieldName, Geometry point,
+  void $nearSphere(String fieldName, $geometry point,
           {double? maxDistance, double? minDistance}) =>
       filter.addFieldOperator(FieldExpression(
           fieldName,
@@ -267,7 +266,7 @@ class QueryExpression {
               MapExpression({
                 if (minDistance != null) op$minDistance: minDistance,
                 if (maxDistance != null) op$maxDistance: maxDistance
-              }..addAll(point.rawContent)))));
+              }..addAll(point.build())))));
 
   // ***************************************************
   // ***************** Array Query Operator

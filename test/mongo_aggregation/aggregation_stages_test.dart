@@ -264,7 +264,7 @@ void main() {
           'day': $dayOfMonth(Field('date')),
           'year': $year(Field('date'))
         }, fields: {
-          'totalPrice': $sum($Multiply([Field('price'), Field('quantity')])),
+          'totalPrice': $sum($multiply([Field('price'), Field('quantity')])),
           'averageQuantity': $avg(Field('quantity')),
           'count': $sum(1)
         }).build(),
@@ -293,7 +293,7 @@ void main() {
     final nullId = BsonNull();
     expect(
         $group(id: nullId, fields: {
-          'totalPrice': $sum($Multiply([Field('price'), Field('quantity')])),
+          'totalPrice': $sum($multiply([Field('price'), Field('quantity')])),
           'averageQuantity': $avg(Field('quantity')),
           'count': $sum(1)
         }).build(),
@@ -482,7 +482,7 @@ void main() {
   test('geoNear', () {
     expect(
         $geoNear(
-                near: Geometry.point([-73.99279, 40.719296]),
+                near: $geometry.point([-73.99279, 40.719296]),
                 distanceField: 'dist.calculated',
                 maxDistance: 2,
                 query: where

@@ -4,11 +4,11 @@ import 'package:test/test.dart';
 
 void main() {
   test('expr', () {
-    expect($expr(TestExpr()).rawContent, {'\$expr': '\$field'});
+    expect($expr(TestExpr()).build(), {'\$expr': '\$field'});
   });
 
   test('let', () {
-    expect($let(vars: {'var': TestExpr()}, inExpr: TestExpr()).rawContent, {
+    expect($let(vars: {'var': TestExpr()}, inExpr: TestExpr()).build(), {
       '\$let': {
         'vars': {'var': '\$field'},
         'in': '\$field'

@@ -1,11 +1,12 @@
 import '../base/common/operators_def.dart';
+import '../base/operator_expression.dart';
 import '../query_expression/query_expression.dart';
 import 'aggregation_base.dart';
 
 /// `$arrayElemAt` operator
 ///
 /// Returns the element at the specified [array] [index].
-class $arrayElemAt extends Operator {
+class $arrayElemAt extends OperatorExpression {
   /// Creates `$arrayToObject` operator expression
   $arrayElemAt(array, index)
       : super(op$arrayElemAt, valueToContent([array, index]));
@@ -26,7 +27,7 @@ class $arrayElemAt extends Operator {
 ///
 /// * The `k` field contains the field name.
 /// * The `v` field contains the value of the field.
-class $arrayToObject extends Operator {
+class $arrayToObject extends OperatorExpression {
   /// Creates `$arrayToObject` operator expression
   $arrayToObject(array) : super(op$arrayToObject, valueToContent(array));
 }
@@ -34,11 +35,12 @@ class $arrayToObject extends Operator {
 /// `$concatArrays` operator
 ///
 /// Concatenates [arrays] to return the concatenated array.
-class $concatArrays extends Operator {
+class $concatArrays extends OperatorExpression {
   /// Creates `$concatArrays` operator expression
   $concatArrays(List arrays)
       : super(op$concatArrays,
-            valueToContent(arrays.map((elem) => valueToContent(elem))));
+            valueToContent(/* arrays.map((elem) => valueToContent(elem)))); */
+                [for (var array in arrays) valueToContent(array)]));
 }
 
 /// `$filter` operator
@@ -46,7 +48,7 @@ class $concatArrays extends Operator {
 /// Selects a subset of an array to return based on the specified condition.
 /// Returns an array with only those elements that match the condition. The
 /// returned elements are in the original order.
-class $filter extends Operator {
+class $filter extends OperatorExpression {
   /// Creates `$filter` operator expression
   ///
   /// * [input] - an expression that resolves to an array.
@@ -67,7 +69,7 @@ class $filter extends Operator {
 /// `$in` operator
 ///
 /// Returns a boolean indicating whether a specified [value] is in an [array].
-class $in extends Operator {
+class $in extends OperatorExpression {
   /// Creates `$in` operator expression
   $in(value, array)
       : super(op$in, valueToContent([value, valueToContent(array)]));
@@ -78,7 +80,7 @@ class $in extends Operator {
 /// Searches an [array] for an occurence of a specified [value] and returns the
 /// array index (zero-based) of the first occurence. If the value is not found,
 /// returns `-1`.
-class $indexOfArray extends Operator {
+class $indexOfArray extends OperatorExpression {
   /// Creates `$indexOfArray` operator expression
   ///
   /// * [array] - Can be any valid expression as long as it resolves to an array.
@@ -96,7 +98,7 @@ class $indexOfArray extends Operator {
 /// `$isArray` operator
 ///
 /// Determines if the operand is an array. Returns a boolean.
-class $isArray extends Operator {
+class $isArray extends OperatorExpression {
   /// Creates `$isArray` operator expression
   $isArray(expr) : super(op$isArray, expr);
 }
@@ -106,7 +108,7 @@ class $isArray extends Operator {
 /// Applies an expression to each item in an array and returns an array with the
 /// applied results.
 /// name specified in [as].
-class $map extends Operator {
+class $map extends OperatorExpression {
   /// Creates `$map` operator expression
   ///
   /// * [input] - 	An expression that resolves to an array.
@@ -133,7 +135,7 @@ class $map extends Operator {
 ///
 /// * The `k` field contains the field name in the original document.
 /// * The `v` field contains the value of the field in the original document.
-class $objectToArray extends Operator {
+class $objectToArray extends OperatorExpression {
   /// Creates `$objectToArray` operator expression
   $objectToArray(expr) : super(op$objectToArray, valueToContent(expr));
 }
@@ -144,7 +146,7 @@ class $objectToArray extends Operator {
 /// generates the sequence from the specified starting number by successively
 /// incrementing the starting number by the specified step value up to but not
 /// including the end point.
-class $range extends Operator {
+class $range extends OperatorExpression {
   /// Creates `$range` operator expression
   ///
   /// * [start] - An integer that specifies the start of the sequence. Can be any
@@ -161,7 +163,7 @@ class $range extends Operator {
 ///
 /// Applies an expression to each element in an array and combines them into a
 /// single value.
-class $reduce extends Operator {
+class $reduce extends OperatorExpression {
   /// Creates `$reduce` operator expression
   ///
   /// * [input] - Can be any valid expression that resolves to an array. If the
@@ -191,7 +193,7 @@ class $reduce extends Operator {
 ///
 /// Accepts an array expression as an argument and returns an array with the
 /// elements in reverse order.
-class $reverseArray extends Operator {
+class $reverseArray extends OperatorExpression {
   /// Creates `$reverseArray` operator expression
   $reverseArray(array) : super(op$reverseArray, valueToContent(array));
 }
@@ -199,7 +201,7 @@ class $reverseArray extends Operator {
 /// `$size` operator
 ///
 /// Counts and returns the total the number of items in an array.
-class $size extends Operator {
+class $size extends OperatorExpression {
   /// Creates `$size` operator expression
   $size(array) : super(op$size, valueToContent(array));
 }
@@ -207,7 +209,7 @@ class $size extends Operator {
 /// `$slice` operator
 ///
 /// Returns a subset of an array.
-class $slice extends Operator {
+class $slice extends OperatorExpression {
   /// Creates `$slice` operator expression
   ///
   /// * [array] - Any valid expression as long as it resolves to an array.
@@ -240,7 +242,7 @@ class $slice extends Operator {
 ///
 /// For example, $zip would transform `[ [ 1, 2, 3 ], [ "a", "b", "c" ] ]` into
 /// `[ [ 1, "a" ], [ 2, "b" ], [ 3, "c" ] ]`.
-class $zip extends Operator {
+class $zip extends OperatorExpression {
   /// Creates `$zip` operator expression
   ///
   /// * [inputs] - An array of expressions that resolve to arrays. The elements
@@ -263,8 +265,9 @@ class $zip extends Operator {
       : super(
             op$zip,
             valueToContent({
-              'inputs':
-                  valueToContent(inputs.map((elem) => valueToContent(elem))),
+              'inputs': valueToContent([
+                for (var input in inputs) valueToContent(input)
+              ] /* inputs.map((elem) => valueToContent(elem)) */),
               'useLongestLength': useLongestLength,
               if (defaults != null && defaults.isNotEmpty)
                 'defaults': valueToContent(defaults)

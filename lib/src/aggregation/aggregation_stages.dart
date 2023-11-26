@@ -1455,7 +1455,7 @@ class $geoNear extends AggregationStage {
               if (key != null) 'key': key
             })); */
   $geoNear(
-      {required Geometry near,
+      {required $geometry near,
       required String distanceField,
       num? maxDistance,
       num? minDistance,
@@ -1469,7 +1469,8 @@ class $geoNear extends AggregationStage {
         super(
             st$geoNear,
             valueToContent({
-              'near': near.rawContent[r'$geometry'],
+              // ignore: deprecated_member_use_from_same_package
+              'near': near.rawContent /* [r'$geometry'] */,
               'distanceField': distanceField,
               if (maxDistance != null) 'maxDistance': maxDistance,
               if (minDistance != null) 'minDistance': minDistance,

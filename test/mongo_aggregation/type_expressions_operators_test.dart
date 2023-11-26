@@ -10,7 +10,7 @@ void main() {
                 to: 'string',
                 onError: TestExpr(),
                 onNull: TestExpr())
-            .rawContent,
+            .build(),
         {
           '\$convert': {
             'input': '\$field',
@@ -22,31 +22,31 @@ void main() {
   });
 
   test('toBool', () {
-    expect($toBool(TestExpr()).rawContent, {'\$toBool': '\$field'});
+    expect($toBool(TestExpr()).build(), {'\$toBool': '\$field'});
   });
 
   test('toDecimal', () {
-    expect($toDecimal(TestExpr()).rawContent, {'\$toDecimal': '\$field'});
+    expect($toDecimal(TestExpr()).build(), {'\$toDecimal': '\$field'});
   });
 
   test('toDouble', () {
-    expect($toDouble(TestExpr()).rawContent, {'\$toDouble': '\$field'});
+    expect($toDouble(TestExpr()).build(), {'\$toDouble': '\$field'});
   });
 
   test('toInt', () {
-    expect($toInt(TestExpr()).rawContent, {'\$toInt': '\$field'});
+    expect($toInt(TestExpr()).build(), {'\$toInt': '\$field'});
   });
 
   test('toLong', () {
-    expect($toLong(TestExpr()).rawContent, {'\$toLong': '\$field'});
+    expect($toLong(TestExpr()).build(), {'\$toLong': '\$field'});
   });
 
   test('toObjectId', () {
-    expect($toObjectId(TestExpr()).rawContent, {'\$toObjectId': '\$field'});
+    expect($toObjectId(TestExpr()).build(), {'\$toObjectId': '\$field'});
   });
 
   test('type', () {
-    expect($type(TestExpr()).rawContent, {'\$type': '\$field'});
+    expect($type(TestExpr()).build(), {'\$type': '\$field'});
   });
 }
 

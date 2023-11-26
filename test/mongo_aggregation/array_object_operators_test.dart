@@ -4,13 +4,13 @@ import 'package:test/test.dart';
 
 void main() {
   test('arrayToObjects', () {
-    expect($arrayToObject(Field('products')).rawContent,
+    expect($arrayToObject(Field('products')).build(),
         {'\$arrayToObject': '\$products'});
     expect(
         $arrayToObject([
           ['item', 'abc123'],
           ['qty', 25]
-        ]).rawContent,
+        ]).build(),
         {
           '\$arrayToObject': [
             ['item', 'abc123'],
@@ -21,7 +21,7 @@ void main() {
         $arrayToObject([
           {'k': 'item', 'v': 'abc123'},
           {'k': 'qty', 'v': 25}
-        ]).rawContent,
+        ]).build(),
         {
           '\$arrayToObject': [
             {'k': 'item', 'v': 'abc123'},
@@ -31,10 +31,10 @@ void main() {
   });
 
   test('arrayElemAt', () {
-    expect($arrayElemAt(TestExpr(), 0).rawContent, {
+    expect($arrayElemAt(TestExpr(), 0).build(), {
       '\$arrayElemAt': ['\$field', 0]
     });
-    expect($arrayElemAt([1, 2, 3], 1).rawContent, {
+    expect($arrayElemAt([1, 2, 3], 1).build(), {
       '\$arrayElemAt': [
         [1, 2, 3],
         1
@@ -47,7 +47,7 @@ void main() {
         $concatArrays([
           TestExpr(),
           [1, 2]
-        ]).rawContent,
+        ]).build(),
         {
           '\$concatArrays': [
             '\$field',
@@ -57,17 +57,16 @@ void main() {
   });
 
   test('filter', () {
-    expect(
-        $filter(input: TestExpr(), as: 'test', cond: TestExpr()).rawContent, {
+    expect($filter(input: TestExpr(), as: 'test', cond: TestExpr()).build(), {
       '\$filter': {'input': '\$field', 'as': 'test', 'cond': '\$field'}
     });
   });
 
   test('in', () {
-    expect($in(TestExpr(), TestExpr()).rawContent, {
+    expect($in(TestExpr(), TestExpr()).build(), {
       '\$in': ['\$field', '\$field']
     });
-    expect($in('string', ['string', TestExpr()]).rawContent, {
+    expect($in('string', ['string', TestExpr()]).build(), {
       '\$in': [
         'string',
         ['string', '\$field']
@@ -76,10 +75,10 @@ void main() {
   });
 
   test('indexOfArray', () {
-    expect($indexOfArray(TestExpr(), TestExpr(), 2, 3).rawContent, {
+    expect($indexOfArray(TestExpr(), TestExpr(), 2, 3).build(), {
       '\$indexOfArray': ['\$field', '\$field', 2, 3]
     });
-    expect($indexOfArray([1, 2, TestExpr()], 'value', 2, 3).rawContent, {
+    expect($indexOfArray([1, 2, TestExpr()], 'value', 2, 3).build(), {
       '\$indexOfArray': [
         [1, 2, '\$field'],
         'value',
@@ -90,42 +89,41 @@ void main() {
   });
 
   test('isArray', () {
-    expect($isArray(TestExpr()).rawContent, {'\$isArray': '\$field'});
+    expect($isArray(TestExpr()).build(), {'\$isArray': '\$field'});
   });
 
   test('map', () {
-    expect($map(input: TestExpr(), as: 'val', inExpr: TestExpr()).rawContent, {
+    expect($map(input: TestExpr(), as: 'val', inExpr: TestExpr()).build(), {
       '\$map': {'input': '\$field', 'as': 'val', 'in': '\$field'}
     });
   });
 
   test('range', () {
-    expect($range(1, TestExpr(), 2).rawContent, {
+    expect($range(1, TestExpr(), 2).build(), {
       '\$range': [1, '\$field', 2]
     });
   });
 
   test('reduce', () {
     expect(
-        $reduce(input: TestExpr(), initialValue: 0, inExpr: TestExpr())
-            .rawContent,
+        $reduce(input: TestExpr(), initialValue: 0, inExpr: TestExpr()).build(),
         {
           '\$reduce': {'input': '\$field', 'initialValue': 0, 'in': '\$field'}
         });
   });
 
   test('reverseArray', () {
-    expect($reverseArray(TestExpr()).rawContent, {'\$reverseArray': '\$field'});
-    expect($reverseArray([1, 2, TestExpr()]).rawContent, {
+    expect($reverseArray(TestExpr()).build(), {'\$reverseArray': '\$field'});
+    expect($reverseArray([1, 2, TestExpr()]).build(), {
       '\$reverseArray': [1, 2, '\$field']
     });
   });
 
   test('slice', () {
-    expect($slice(TestExpr(), 5, 2).rawContent, {
+    expect($slice(TestExpr(), 5, 2).build(), {
       '\$slice': ['\$field', 2, 5]
     });
-    expect($slice([1, TestExpr()], 5, 2).rawContent, {
+    expect($slice([1, TestExpr()], 5, 2).build(), {
       '\$slice': [
         [1, '\$field'],
         2,
@@ -142,7 +140,7 @@ void main() {
               [1, 2]
             ],
             useLongestLength: true,
-            defaults: ['a', 'b']).rawContent,
+            defaults: ['a', 'b']).build(),
         {
           '\$zip': {
             'inputs': [
@@ -171,8 +169,8 @@ void main() {
   });
 
   test('objectToArray', () {
-    expect($objectToArray(Field('order')).rawContent,
-        {'\$objectToArray': '\$order'});
+    expect(
+        $objectToArray(Field('order')).build(), {'\$objectToArray': '\$order'});
   });
 }
 

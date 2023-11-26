@@ -56,14 +56,14 @@ class Output extends MapExpression {
   Output(String fieldName, Accumulator operator,
       {List? documents, List? range, String? unit})
       : super({
-          fieldName: {
+          fieldName: valueToContent({
             ...operator.build(),
             if (documents != null || range != null || unit != null)
-              spWindow: {
+              spWindow: valueToContent({
                 if (documents != null) spDocuments: valueToContent(documents),
                 if (range != null) spRange: valueToContent(range),
                 if (unit != null) spUnit: unit
-              }
-          }
+              })
+          })
         });
 }

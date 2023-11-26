@@ -4,19 +4,19 @@ import 'package:test/test.dart';
 
 void main() {
   test('and', () {
-    expect($and([TestExpr(), false]).rawContent, {
+    expect($and([TestExpr(), false]).build(), {
       '\$and': ['\$field', false]
     });
   });
 
   test('or', () {
-    expect($or([TestExpr(), false]).rawContent, {
+    expect($or([TestExpr(), false]).build(), {
       '\$or': ['\$field', false]
     });
   });
 
   test('not', () {
-    expect($not(TestExpr()).rawContent, {'\$not': '\$field'});
+    expect($not(TestExpr()).build(), {'\$not': '\$field'});
   });
 }
 

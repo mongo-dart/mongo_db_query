@@ -2,8 +2,8 @@ import 'package:mongo_db_query/src/base/map_expression.dart';
 
 import '../base/common/operators_def.dart';
 import '../base/expression_content.dart';
+import '../base/operator_expression.dart';
 import '../query_expression/query_expression.dart';
-import 'aggregation_base.dart';
 
 /// `$cmp` operator
 ///
@@ -12,7 +12,7 @@ import 'aggregation_base.dart';
 /// * -1 if the first value is less than the second.
 /// * 1 if the first value is greater than the second.
 /// * 0 if the two values are equivalent.
-class $cmp extends Operator {
+class $cmp extends OperatorExpression {
   /// Creates `$cmp` operator expression
   $cmp(a, b) : super(op$cmp, valueToContent([a, b]));
 }
@@ -23,7 +23,7 @@ class $cmp extends Operator {
 ///
 /// * `true` when the values are equivalent.
 /// * `false` when the values are not equivalent.
-class $eq extends Operator {
+class $eq extends OperatorExpression {
   /// Creates `$eq` operator expression
   $eq(a, b) : super(op$eq, valueToContent([a, b]));
 }
@@ -35,7 +35,7 @@ class $eq extends Operator {
 /// * `true` when the first value is greater than the second value.
 /// * `false` when the first value is less than or equivalent to the second
 /// value.
-class $gt extends Operator {
+class $gt extends OperatorExpression {
   /// Creates `$gt` operator expression
   $gt(a, b) : super(op$gt, valueToContent([a, b]));
 }
@@ -47,7 +47,7 @@ class $gt extends Operator {
 /// * `true` when the first value is greater than or equivalent to the second
 /// value.
 /// * `false` when the first value is less than the second value.
-class $gte extends Operator {
+class $gte extends OperatorExpression {
   /// Creates `$gte` operator expression
   $gte(a, b) : super(op$gte, valueToContent([a, b]));
 }
@@ -59,7 +59,7 @@ class $gte extends Operator {
 /// * `true` when the first value is less than the second value.
 /// * `false` when the first value is greater than or equivalent to the second
 /// value.
-class $lt extends Operator {
+class $lt extends OperatorExpression {
   /// Creates `$lt` operator expression
   $lt(a, b) : super(op$lt, valueToContent([a, b]));
 }
@@ -70,7 +70,7 @@ class $lt extends Operator {
 ///
 /// * `true` when the first value is less than or equivalent to the second value.
 /// * `false` when the first value is greater than the second value.
-class $lte extends Operator {
+class $lte extends OperatorExpression {
   /// Creates `$lte` operator expression
   $lte(a, b) : super(op$lte, valueToContent([a, b]));
 }
@@ -81,7 +81,7 @@ class $lte extends Operator {
 ///
 /// * `true` when the values are not equivalent.
 /// * `false` when the values are equivalent.
-class $ne extends Operator {
+class $ne extends OperatorExpression {
   /// Creates `$ne` operator expression
   $ne(a, b) : super(op$ne, valueToContent([a, b]));
 }
@@ -92,7 +92,7 @@ class $ne extends Operator {
 /// expressions.
 ///
 /// The arguments can be any valid expression.
-class $cond extends Operator {
+class $cond extends OperatorExpression {
   /// Creates `$cond` operator expression
   $cond({required ifExpr, required thenExpr, required elseExpr})
       : super(op$cond, valueToContent([ifExpr, thenExpr, elseExpr]));
@@ -104,7 +104,7 @@ class $cond extends Operator {
 /// [expression] evaluates to a non-null value. If the [expression] evaluates
 /// to a null value, including instances of undefined values or missing fields,
 /// returns the value of the [replacement] expression.
-class $ifNull extends Operator {
+class $ifNull extends OperatorExpression {
   /// Creates `$ifNull` operator expression
   $ifNull(expression, replacement)
       : super(op$ifNull, valueToContent([expression, replacement]));
@@ -115,15 +115,15 @@ class $ifNull extends Operator {
 /// Evaluates a series of case expressions. When it finds an expression which
 /// evaluates to true, $switch executes a specified expression and breaks out
 /// of the control flow.
-class $switch extends Operator {
+class $switch extends OperatorExpression {
   /// Creates `$switch` operator expression
   ///
   /// * [branches] - An array of control branch object. Each branch is an
-  /// instance of [$case]
+  /// instance of [Case]
   /// * [defaultExpr] - Optional. The path to take if no branch case expression
   /// evaluates to true. Although optional, if default is unspecified and no
   /// branch case evaluates to true, $switch returns an error.
-  $switch({required List<$case> branches, defaultExpr})
+  $switch({required List<Case> branches, defaultExpr})
       : super(
             op$switch,
             valueToContent({
@@ -133,15 +133,15 @@ class $switch extends Operator {
 }
 
 /// Case branch for [$switch] operator
-class $case extends MapExpression {
-  /// Creates [$case] branch for Switch operator
+class Case extends MapExpression {
+  /// Creates [Case] branch for Switch operator
   ///
   /// * [caseExpr] - Can be any valid expression that resolves to a boolean. If
   /// the result is not a boolean, it is coerced to a boolean value.
   /// * [thenExpr] - Can be any valid expression.
-  $case({required ExpressionContent caseExpr, required thenExpr})
+  Case({required ExpressionContent caseExpr, required thenExpr})
       : super({
-          op$case: valueToContent(caseExpr),
-          op$then: valueToContent(thenExpr)
+          pmCase: valueToContent(caseExpr),
+          pmThen: valueToContent(thenExpr)
         });
 }

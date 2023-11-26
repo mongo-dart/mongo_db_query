@@ -48,6 +48,12 @@ const op$language = r'$language';
 const op$caseSensitive = r'$caseSensitive';
 const op$diacriticSensitive = r'$diacriticSensitive';
 
+// ************* Geometry
+const op$center = r'$center';
+const op$centerSphere = r'$centerSphere';
+const op$geometry = r'$geometry';
+//const op$box = r'$box';
+
 // ************* Logical
 const op$and = r'$and';
 const op$not = r'$not';
@@ -84,7 +90,7 @@ const opBitXor = 'xor';
 // **** Array Object
 const op$arrayToObject = r'$arrayToObject';
 const op$arrayElemAt = r'$arrayElemAt';
-const op$concatArrays = r'concatArrays';
+const op$concatArrays = r'$concatArrays';
 const op$filter = r'$filter';
 const op$indexOfArray = r'$indexOfArray';
 const op$isArray = r'$isArray';
@@ -128,7 +134,6 @@ const op$stdDevSamp = r'$stdDevSamp';
 const op$sum = r'$sum';
 
 // **** Comparison
-const op$case = r'$case';
 const op$cmp = r'$cmp';
 const op$cond = r'$cond';
 const op$dateFromParts = r'$dateFromParts';
@@ -140,7 +145,8 @@ const op$ifNull = r'$ifNull';
 //const op$lte = r'$lte';
 //const op$ne = r'$ne';
 const op$switch = r'$switch';
-const op$then = r'$then';
+const pmCase = 'case';
+const pmThen = 'then';
 
 // **** Date Time
 //const op$dateFromParts = r'$dateFromParts';

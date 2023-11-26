@@ -35,7 +35,7 @@ void main() {
     expect(
         valueToContent({'num': 1, 'string': 'value', 'null': null, 'two': 2})
             .rawContent,
-        {'num': 1, 'string': 'value', 'two': 2});
+        {'num': 1, 'string': 'value', 'null': null, 'two': 2});
   });
 
   test('valueToContent#rawContet', () {

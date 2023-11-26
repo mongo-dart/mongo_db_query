@@ -1,7 +1,9 @@
-import '../aggregation_base.dart';
+import '../../base/common/operators_def.dart';
+import '../../base/operator_expression.dart';
+import '../../query_expression/query_expression.dart';
 
 /// There is
-abstract class ShapeOperator extends Operator {
+abstract class ShapeOperator extends OperatorExpression {
   ShapeOperator(super.name, super.args);
 }
 
@@ -21,44 +23,48 @@ enum GeometryObjectType {
 }
 
 /// https://docs.mongodb.com/manual/reference/operator/query/geometry/#mongodb-query-op.-geometry
-class Geometry extends ShapeOperator {
-  Geometry(
+class $geometry extends ShapeOperator {
+  $geometry(
       {required this.type,
       required List coordinates,
       Map<String, dynamic>? crs})
-      : super('geometry', {
-          'type': type.toString().split('.').last,
-          'coordinates': coordinates,
-          if (crs != null) 'crs': crs
-        });
+      : super(
+            op$geometry,
+            valueToContent({
+              'type': type.toString().split('.').last,
+              'coordinates': coordinates,
+              if (crs != null) 'crs': crs
+            }));
 
-  Geometry.point(List<double> point, {Map<String, dynamic>? crs})
+  $geometry.point(List<double> point, {Map<String, dynamic>? crs})
       : type = GeometryObjectType.Point,
-        super('geometry', {
-          'type': GeometryObjectType.Point.toString().split('.').last,
-          'coordinates': point,
-          if (crs != null) 'crs': crs
-        });
+        super(
+            op$geometry,
+            valueToContent({
+              'type': GeometryObjectType.Point.toString().split('.').last,
+              'coordinates': point,
+              if (crs != null) 'crs': crs
+            }));
 
   GeometryObjectType type;
 }
 
 /// https://docs.mongodb.com/manual/reference/operator/query/box/#mongodb-query-op.-box
-class Box extends ShapeOperator {
-  Box({required List<num> bottomLeft, required List<num> upperRight})
-      : super('box', [bottomLeft, upperRight]);
+class $box extends ShapeOperator {
+  $box({required List<num> bottomLeft, required List<num> upperRight})
+      : super(op$box, valueToContent([bottomLeft, upperRight]));
 }
 
 /// https://docs.mongodb.com/manual/reference/operator/query/box/#mongodb-query-op.-box
-class Center extends ShapeOperator {
-  Center({required List<num> center, required num radius})
-      : super('center', [center, radius]);
+class $center extends ShapeOperator {
+  $center({required List<num> center, required num radius})
+      : super(op$center, valueToContent([center, radius]));
 }
 
 /// https://docs.mongodb.com/manual/reference/operator/query/box/#mongodb-query-op.-box
-class CenterSphere extends ShapeOperator {
-  CenterSphere({required List<num> center, required num radius})
-      : super('centerSphere', [center, radius]);
+class $centerSphere extends ShapeOperator {
+  $centerSphere({required List<num> center, required num radius})
+      : super(op$centerSphere, valueToContent([center, radius]));
 }
 
 // TODO missing Polygon

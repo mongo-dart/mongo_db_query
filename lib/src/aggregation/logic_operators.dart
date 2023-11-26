@@ -1,10 +1,10 @@
+import '../base/operator_expression.dart';
 import '../query_expression/query_expression.dart';
 
 import '../base/common/operators_def.dart';
-import 'aggregation_base.dart';
 
 /// `$and` operator
-class $and extends Operator {
+class $and extends OperatorExpression {
   /// Creates `$and` operator expression
   ///
   /// Evaluates one or more expressions and returns `true` if all of the
@@ -14,7 +14,7 @@ class $and extends Operator {
 }
 
 /// `$or` operator
-class $or extends Operator {
+class $or extends OperatorExpression {
   /// Creates `$or` operator expression
   ///
   /// Evaluates one or more expressions and returns `true` if any of the expressions
@@ -23,7 +23,7 @@ class $or extends Operator {
 }
 
 /// `$not` operator
-class $not extends Operator {
+class $not extends OperatorExpression {
   /// Creates `$not` operator expression
   ///
   /// Evaluates a boolean and returns the opposite boolean value; i.e. when

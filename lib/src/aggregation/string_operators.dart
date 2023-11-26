@@ -1,11 +1,9 @@
-import 'package:meta/meta.dart';
-
 import '../base/common/operators_def.dart';
+import '../base/operator_expression.dart';
 import '../query_expression/query_expression.dart';
-import 'aggregation_base.dart';
 
 /// `$concat` operator
-class $concat extends Operator {
+class $concat extends OperatorExpression {
   /// Creates `$concat` operator expression
   ///
   /// Concatenates strings and returns the concatenated string.
@@ -16,7 +14,7 @@ class $concat extends Operator {
 }
 
 /// `$indexOfBytes` operator
-class $indexOfBytes extends Operator {
+class $indexOfBytes extends OperatorExpression {
   /// Creates `$indexOfBytes` operator expression
   ///
   /// Searches a [string] for an occurence of a [substring] and returns the
@@ -43,7 +41,7 @@ class $indexOfBytes extends Operator {
 }
 
 /// `$indexOfCP` operator
-class $indexOfCP extends Operator {
+class $indexOfCP extends OperatorExpression {
   /// Creates `$indexOfCP` operator expression
   ///
   /// Searches a [string] for an occurence of a [substring] and returns the
@@ -70,7 +68,7 @@ class $indexOfCP extends Operator {
 }
 
 /// `$ltrim` operator
-class $ltrim extends Operator {
+class $ltrim extends OperatorExpression {
   /// Creates `$ltrim` operator expression
   ///
   /// Removes whitespace characters, including null, or the specified characters
@@ -83,14 +81,14 @@ class $ltrim extends Operator {
   /// operator breaks down the string into individual UTF code point to trim from input.
   /// If unspecified, `$ltrim` removes whitespace characters, including the `null`
   /// character.
-  $ltrim({@required input, chars})
+  $ltrim({required input, chars})
       : super(op$ltrim, valueToContent({'input': input, 'chars': chars}));
 }
 
 // TODO: add options validation
 
 /// `$regexFind` operator
-class $regexFind extends Operator {
+class $regexFind extends OperatorExpression {
   /// Creates `$regexFind` operator expression
   ///
   /// Provides regular expression (regex) pattern matching capability in
@@ -124,7 +122,7 @@ class $regexFind extends Operator {
   /// 11).
   ///   * `s` - Allows the dot character (i.e. .) to match all characters including
   /// newline characters.
-  $regexFind({@required input, @required regex, options})
+  $regexFind({required input, required regex, options})
       : super(
             op$regexFind,
             valueToContent(
@@ -132,7 +130,7 @@ class $regexFind extends Operator {
 }
 
 /// `$regexFindAll` operator
-class $regexFindAll extends Operator {
+class $regexFindAll extends OperatorExpression {
   /// Creates `$regexFindAll` operator expression
   ///
   /// Provides regular expression (regex) pattern matching capability in
@@ -166,7 +164,7 @@ class $regexFindAll extends Operator {
   /// 11).
   ///   * `s` - Allows the dot character (i.e. .) to match all characters including
   /// newline characters.
-  $regexFindAll({@required input, @required regex, options})
+  $regexFindAll({required input, required regex, options})
       : super(
             op$regexFindAll,
             valueToContent(
@@ -174,7 +172,7 @@ class $regexFindAll extends Operator {
 }
 
 /// `$regexMatch` operator
-class $regexMatch extends Operator {
+class $regexMatch extends OperatorExpression {
   /// Creates `$regexMatch` operator expression
   ///
   /// Performs a regular expression (regex) pattern matching and returns:
@@ -208,7 +206,7 @@ class $regexMatch extends Operator {
   /// 11).
   ///   * `s` - Allows the dot character (i.e. .) to match all characters including
   /// newline characters.
-  $regexMatch({@required input, @required regex, options})
+  $regexMatch({required input, required regex, options})
       : super(
             op$regexMatch,
             valueToContent(
@@ -216,7 +214,7 @@ class $regexMatch extends Operator {
 }
 
 /// `$rtrim` operator
-class $rtrim extends Operator {
+class $rtrim extends OperatorExpression {
   /// Creates `$rtrim` operator expression
   ///
   /// Removes whitespace characters, including `null`, or the specified
@@ -229,12 +227,12 @@ class $rtrim extends Operator {
   /// operator breaks down the string into individual UTF code point to trim from input.
   /// If unspecified, `$ltrim` removes whitespace characters, including the `null`
   /// character.
-  $rtrim({@required input, chars})
+  $rtrim({required input, chars})
       : super(op$rtrim, valueToContent({'input': input, 'chars': chars}));
 }
 
 /// `$split` operator
-class $split extends Operator {
+class $split extends OperatorExpression {
   /// Creates `$split` operator expression
   ///
   /// Divides a [string] into an array of substrings based on a [delimiter].
@@ -251,7 +249,7 @@ class $split extends Operator {
 }
 
 /// `$strLenBytes` operator
-class $strLenBytes extends Operator {
+class $strLenBytes extends OperatorExpression {
   /// Creates `$strLenBytes` operator expression
   ///
   /// Returns the number of UTF-8 encoded bytes in the specified string.
@@ -259,7 +257,7 @@ class $strLenBytes extends Operator {
 }
 
 /// `$strLenCP` operator
-class $strLenCP extends Operator {
+class $strLenCP extends OperatorExpression {
   /// Creates `$xtrLenCp` operator expression
   ///
   /// Returns the number of UTF-8 code points in the specified string.
@@ -267,7 +265,7 @@ class $strLenCP extends Operator {
 }
 
 /// `$strcasecmp` operator
-class $strCaseCmp extends Operator {
+class $strCaseCmp extends OperatorExpression {
   /// Creates `$strcasecmp` operator expression
   ///
   /// Performs case-insensitive comparison of two strings. Returns
@@ -279,7 +277,7 @@ class $strCaseCmp extends Operator {
 }
 
 /// `$substrBytes` operator
-class $substrBytes extends Operator {
+class $substrBytes extends OperatorExpression {
   /// Creates `$substrBytes` operator expression
   ///
   /// Returns the substring of a string. The substring starts with the
@@ -306,7 +304,7 @@ class $substrBytes extends Operator {
 }
 
 /// `$substrCP` operator
-class $substrCP extends Operator {
+class $substrCP extends OperatorExpression {
   /// Creates `$substrCP` operator expression
   ///
   /// Returns the substring of a string. The substring starts with the character
@@ -330,7 +328,7 @@ class $substrCP extends Operator {
 }
 
 /// `$toLower` operator
-class $toLower extends Operator {
+class $toLower extends OperatorExpression {
   /// Creates `$toLower` operator expression
   ///
   /// Converts a string to lowercase, returning the result.
@@ -340,7 +338,7 @@ class $toLower extends Operator {
 }
 
 /// `$toString` operator
-class $toString extends Operator {
+class $toString extends OperatorExpression {
   /// Creates `$toString` operator expression
   ///
   /// Converts a value to a string. If the value cannot be converted to a
@@ -352,7 +350,7 @@ class $toString extends Operator {
 }
 
 /// `$trim` operator
-class $trim extends Operator {
+class $trim extends OperatorExpression {
   /// Creates `$trim` operator expression
   ///
   /// Removes whitespace characters, including null, or the specified characters
@@ -365,12 +363,12 @@ class $trim extends Operator {
   /// operator breaks down the string into individual UTF code point to trim from input.
   /// If unspecified, `$ltrim` removes whitespace characters, including the `null`
   /// character.
-  $trim({@required input, chars})
+  $trim({required input, chars})
       : super(op$trim, valueToContent({'input': input, 'chars': chars}));
 }
 
 /// `$toUpper` operator
-class $toUpper extends Operator {
+class $toUpper extends OperatorExpression {
   /// Creates `$toUpper` operator expression
   ///
   /// Converts a string to uppercase, returning the result.

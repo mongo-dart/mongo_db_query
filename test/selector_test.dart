@@ -305,7 +305,7 @@ void main() {
       ..$eq('field', 'value')
       ..$gt('num_field', 5)
       ..and
-      ..$nearSphere('geo_obj', Geometry.point([35.0, 35.0]));
+      ..$nearSphere('geo_obj', $geometry.point([35.0, 35.0]));
 
     var copied = QueryExpression.copyWith(selector);
 
@@ -316,7 +316,7 @@ void main() {
     var selector = where
       ..$nearSphere(
           'geo_field',
-          Geometry(type: GeometryObjectType.Polygon, coordinates: [
+          $geometry(type: GeometryObjectType.Polygon, coordinates: [
             [0, 0],
             [1, 8],
             [12, 30],
@@ -359,7 +359,7 @@ void main() {
     var selector = where
       ..$geoIntersects(
           'geo_field',
-          Geometry(type: GeometryObjectType.Polygon, coordinates: [
+          $geometry(type: GeometryObjectType.Polygon, coordinates: [
             [0, 0],
             [1, 8],
             [12, 30],
@@ -389,7 +389,7 @@ void main() {
     var selector = where
       ..$geoWithin(
           'geo_field',
-          Geometry(type: GeometryObjectType.Polygon, coordinates: [
+          $geometry(type: GeometryObjectType.Polygon, coordinates: [
             [0, 0],
             [1, 8],
             [12, 30],
@@ -418,7 +418,7 @@ void main() {
   test('geoWithin_box', () {
     var selector = where
       ..$geoWithin(
-          'geo_field', Box(bottomLeft: [5, 8], upperRight: [8.8, 10.5]));
+          'geo_field', $box(bottomLeft: [5, 8], upperRight: [8.8, 10.5]));
 
     expect(
         selector.filter.rawContent,
@@ -436,7 +436,7 @@ void main() {
 
   test('geoWithin_center', () {
     var selector = where
-      ..$geoWithin('geo_field', Center(center: [5, 8], radius: 50.2));
+      ..$geoWithin('geo_field', $center(center: [5, 8], radius: 50.2));
 
     expect(
         selector.filter.rawContent,

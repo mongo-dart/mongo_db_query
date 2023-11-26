@@ -9,14 +9,14 @@ import '../base/field_expression.dart';
 } */
 
 /// Basic aggregation operator
-abstract class Operator extends ExpressionContent {
+/* abstract class Operator extends ExpressionContent {
   final dynamic _args;
   final String _name;
   Operator(this._name, this._args);
   @override
   Map<String, dynamic> get rawContent =>
       {'\$$_name': _args is ExpressionContent ? _args.rawContent : _args};
-}
+} */
 
 /// Basic accumulation operator
 abstract class Accumulator extends OperatorExpression {

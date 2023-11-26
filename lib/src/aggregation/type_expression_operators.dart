@@ -1,9 +1,9 @@
 import '../base/common/operators_def.dart';
+import '../base/operator_expression.dart';
 import '../query_expression/query_expression.dart';
-import 'aggregation_base.dart';
 
 /// `$convert` operator
-class $convert extends Operator {
+class $convert extends OperatorExpression {
   /// Creates `$convert` operator expression
   ///
   /// The argument can be any expression as long as it resolves to a string.
@@ -38,7 +38,7 @@ class $convert extends Operator {
 }
 
 /// `$toBool` operator
-class $toBool extends Operator {
+class $toBool extends OperatorExpression {
   /// Creates `$toBool` operator expression
   ///
   /// Converts a value to a boolean.
@@ -48,7 +48,7 @@ class $toBool extends Operator {
 }
 
 /// `$toDecimal` operator
-class $toDecimal extends Operator {
+class $toDecimal extends OperatorExpression {
   /// Creates `$toDecimal` operator expression
   ///
   /// Converts a value to a decimal. If the value cannot be converted to a
@@ -60,7 +60,7 @@ class $toDecimal extends Operator {
 }
 
 /// `$toDouble` operator
-class $toDouble extends Operator {
+class $toDouble extends OperatorExpression {
   /// Creates `$toDouble` operator expression
   ///
   /// Converts a value to a double. If the value cannot be converted to an
@@ -72,7 +72,7 @@ class $toDouble extends Operator {
 }
 
 /// `$toInt` operator
-class $toInt extends Operator {
+class $toInt extends OperatorExpression {
   /// Creates `$toInt` operator expression
   ///
   /// Converts a value to an integer. If the value cannot be converted to an
@@ -84,7 +84,7 @@ class $toInt extends Operator {
 }
 
 /// `$toLong` operator
-class $toLong extends Operator {
+class $toLong extends OperatorExpression {
   /// Creates `$toLong` operator expression
   ///
   /// Converts a value to a long. If the value cannot be converted to a long,
@@ -96,7 +96,7 @@ class $toLong extends Operator {
 }
 
 /// `$toObjectId` operator
-class $toObjectId extends Operator {
+class $toObjectId extends OperatorExpression {
   /// Creates `$toObjectId` operator expression
   ///
   /// Converts a value to an ObjectId. If the value cannot be converted to an
@@ -108,7 +108,7 @@ class $toObjectId extends Operator {
 }
 
 /// `$type` operator
-class $type extends Operator {
+class $type extends OperatorExpression {
   /// Creates `$type` operator expression
   ///
   /// Returns a string that specifies the BSON type of the argument.

@@ -1,10 +1,10 @@
 import '../base/common/operators_def.dart';
 import '../base/expression_content.dart';
+import '../base/operator_expression.dart';
 import '../query_expression/query_expression.dart';
-import 'aggregation_base.dart';
 
 /// `$expr` operator
-class $expr extends Operator {
+class $expr extends OperatorExpression {
   /// Creates an `$expr` part of `$match` stage
   ///
   /// The operator is used in `match` aggregation stage to define match expression
@@ -15,7 +15,7 @@ class $expr extends Operator {
 }
 
 /// `$let` operator
-class $let extends Operator {
+class $let extends OperatorExpression {
   /// Creates `$let` operator expression
   ///
   /// Binds variables for use in the specified expression, and returns the
