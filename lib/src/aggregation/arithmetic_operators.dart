@@ -7,10 +7,10 @@ import '../query_expression/query_expression.dart';
 /// `$abs` operator
 ///
 /// Returns the absolute value of an [expr]
-class $Abs extends OperatorExpression {
+class $abs extends OperatorExpression {
   /// Creates an `$abs` operator expression
   //Abs(expr) : super('abs', expr); ** OLD
-  $Abs(ExpressionContent expr) : super(op$abs, expr);
+  $abs(ExpressionContent expr) : super(op$abs, expr);
 }
 
 /// `$add` operator

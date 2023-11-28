@@ -1,10 +1,13 @@
 import 'package:mongo_db_query/mongo_db_query.dart';
-import 'package:mongo_db_query/src/base/expression_content.dart';
+import 'package:mongo_db_query/src/aggregation/aggregation_stage_new.dart';
 import 'package:test/test.dart';
+
+import 'test_expression.dart';
 
 void main() {
   test('abs', () {
-    expect($abs(TestExpr()).build(), {'\$abs': '\$field'});
+    expect((AggregationStageNew()..$abs(TestExpr())).build(),
+        {'\$abs': '\$field'});
   });
 
   test('add', () {
@@ -84,9 +87,4 @@ void main() {
       '\$trunc': ['\$field', 3]
     });
   });
-}
-
-class TestExpr implements ExpressionContent {
-  @override
-  get rawContent => '\$field';
 }
