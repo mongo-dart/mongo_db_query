@@ -20,11 +20,7 @@ class AggregationStageNew extends MapExpression
       expressionProcessed ? <String, dynamic>{...valueMap} : rawContent;
 
   @override
-  MongoDocument build() {
-    print(expressionProcessed);
-    print(valueMap);
-    return content;
-  }
+  MongoDocument build() => content;
 
   @override
   MongoDocument get rawContent {

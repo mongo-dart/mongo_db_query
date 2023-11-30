@@ -25,7 +25,8 @@ class FilterExpression extends MapExpression {
 
   bool get isOpenSublevel => _openChild != null;
   bool get notEmpty => _sequence.isNotEmpty;
-  MongoDocument get content => valueMap;
+  MongoDocument get content =>
+      expressionProcessed ? <String, dynamic>{...valueMap} : rawContent;
 
   @override
   MongoDocument get rawContent {
@@ -38,7 +39,7 @@ class FilterExpression extends MapExpression {
       processExpression();
     }
     //return key == op$And ? content.mergeContent2map : super.raw;
-    return content;
+    return valueMap;
   }
 
   // TODO Revert after debug
@@ -108,7 +109,7 @@ class FilterExpression extends MapExpression {
         }
       }
     }
-    content.addAll(actualContainer?.build() ?? emptyMongoDocument);
+    valueMap.addAll(actualContainer?.build() ?? emptyMongoDocument);
   }
 
   void addDocument(MongoDocument document) {

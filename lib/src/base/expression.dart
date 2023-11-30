@@ -9,6 +9,7 @@ class Expression<T extends ExpressionContent> extends ExpressionContent
   MapEntry<String, T> entry;
 
   String get key => entry.key;
+  // TODO check if the name is appropriate
   T get content => entry.value;
 
   @override

@@ -11,7 +11,8 @@ class ProjectionExpression extends MapExpression {
   final _sequence = <MapExpression>[];
 
   bool get notEmpty => _sequence.isNotEmpty;
-  ProjectionDocument get content => <String, Object>{...valueMap};
+  ProjectionDocument get content =>
+      expressionProcessed ? <String, Object>{...valueMap} : rawContent;
 
   @override
   ProjectionDocument get rawContent {

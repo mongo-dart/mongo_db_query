@@ -13,6 +13,7 @@ class MapExpression extends ExpressionContainer {
   // If not, we could have problems with the addAll method
   MapExpression(MongoDocument value) : valueMap = {...value};
   MapExpression.empty() : valueMap = emptyMongoDocument;
+  MapExpression.expression(Expression expression) : this(expression.build());
 
   MongoDocument valueMap;
   int get length => valueMap.length;
