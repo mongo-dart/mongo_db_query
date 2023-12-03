@@ -1,3 +1,4 @@
+import '../base/common/document_types.dart';
 import '../base/common/operators_def.dart';
 import '../base/expression_content.dart';
 import '../base/field_expression.dart';
@@ -47,6 +48,7 @@ class $addFields extends AggregationStage {
             st$addFields,
             MapExpression(
                 {for (var expression in expressions) ...expression.build()}));
+  $addFields.raw(MongoDocument raw) : super.raw(st$addFields, raw);
 }
 
 /// `$set` aggregation stage
@@ -94,6 +96,7 @@ class $set extends AggregationStage {
             st$set,
             MapExpression(
                 {for (var expression in expressions) ...expression.build()}));
+  $set.raw(MongoDocument raw) : super.raw(st$addFields, raw);
 }
 
 /// `$setWindowFields` aggregation stage

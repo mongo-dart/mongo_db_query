@@ -19,6 +19,28 @@ void main() {
             'totalQuiz': {r'$sum': r'$quiz'}
           }
         });
+    expect(
+        $addFields.raw({
+          'totalHomework': {r'$sum': r'$homework'},
+          'totalQuiz': {r'$sum': r'$quiz'}
+        }).build(),
+        {
+          r'$addFields': {
+            'totalHomework': {r'$sum': r'$homework'},
+            'totalQuiz': {r'$sum': r'$quiz'}
+          }
+        });
+    expect(
+        $addFields.raw({
+          'totalHomework': $sum(Field('homework')),
+          'totalQuiz': $sum(r'$quiz')
+        }).build(),
+        {
+          r'$addFields': {
+            'totalHomework': {r'$sum': r'$homework'},
+            'totalQuiz': {r'$sum': r'$quiz'}
+          }
+        });
   });
 
   test('set', () {
@@ -29,6 +51,28 @@ void main() {
         ]).build(),
         {
           r'$set': {
+            'totalHomework': {r'$sum': r'$homework'},
+            'totalQuiz': {r'$sum': r'$quiz'}
+          }
+        });
+    expect(
+        $set.raw({
+          'totalHomework': {r'$sum': r'$homework'},
+          'totalQuiz': {r'$sum': r'$quiz'}
+        }).build(),
+        {
+          r'$addFields': {
+            'totalHomework': {r'$sum': r'$homework'},
+            'totalQuiz': {r'$sum': r'$quiz'}
+          }
+        });
+    expect(
+        $set.raw({
+          'totalHomework': $sum(Field('homework')),
+          'totalQuiz': $sum(r'$quiz')
+        }).build(),
+        {
+          r'$addFields': {
             'totalHomework': {r'$sum': r'$homework'},
             'totalQuiz': {r'$sum': r'$quiz'}
           }

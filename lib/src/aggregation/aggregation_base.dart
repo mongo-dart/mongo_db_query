@@ -1,7 +1,9 @@
 import 'package:mongo_db_query/src/base/operator_expression.dart';
 
+import '../base/common/document_types.dart';
 import '../base/expression_content.dart';
 import '../base/field_expression.dart';
+import '../base/map_expression.dart';
 
 /// Aggregation expression
 /* abstract class ExpressionContent implements Builder {
@@ -168,4 +170,7 @@ class Var extends ExpressionContent {
 abstract class AggregationStage extends FieldExpression {
   AggregationStage(super.fieldName, super.value);
   String get stageName => entry.key;
+
+  AggregationStage.raw(String fieldName, MongoDocument raw)
+      : super(fieldName, MapExpression(raw));
 }
