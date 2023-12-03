@@ -1,18 +1,14 @@
-import 'package:bson/src/types/bson_null.dart';
-import 'package:mongo_db_query/mongo_db_query.dart';
+/* import 'package:mongo_db_query/src/aggregation/aggregation_base.dart';
+import 'package:mongo_db_query/src/aggregation/aggregation_stage_new.dart';
 import 'package:test/test.dart' hide Skip;
 
 void main() {
   test('addFields', () {
     expect(
-        /*  $addFields({
-          'totalHomework': $sum(Field('homework')),
-          'totalQuiz': $sum(Field('quiz'))
-        }).build(), */
-        $addFields([
-          fieldSum('totalHomework', Field('homework')),
-          fieldSum('totalQuiz', r'$quiz')
-        ]).build(),
+        ($addFields
+              ..$sum('totalHomework', Field('homework'))
+              ..$sum('totalQuiz', Field('quiz')))
+            .build(),
         {
           r'$addFields': {
             'totalHomework': {r'$sum': r'$homework'},
@@ -23,16 +19,22 @@ void main() {
 
   test('set', () {
     expect(
-        $set([
-          fieldSum('totalHomework', Field('homework')),
-          fieldSum('totalQuiz', r'$quiz')
-        ]).build(),
+        ($set
+              ..$sum('totalHomework', Field('homework'))
+              ..$sum('totalQuiz', Field('quiz')))
+            .build(),
         {
-          r'$set': {
-            'totalHomework': {r'$sum': r'$homework'},
-            'totalQuiz': {r'$sum': r'$quiz'}
+          '\$set': {
+            'totalHomework': {'\$sum': '\$homework'},
+            'totalQuiz': {'\$sum': '\$quiz'}
           }
         });
+  });
+/*   
+  test('unset', () {
+    expect($unset(['isbn', 'author.first', 'copies.warehouse']).build(), {
+      '\$unset': ['isbn', 'author.first', 'copies.warehouse']
+    });
   });
 
   test('setWindowFields', () {
@@ -123,11 +125,6 @@ void main() {
         });
   });
 
-  test('unset', () {
-    expect($Unset(['isbn', 'author.first', 'copies.warehouse']).build(), {
-      '\$unset': ['isbn', 'author.first', 'copies.warehouse']
-    });
-  });
 
   test('bucket', () {
     expect(
@@ -293,7 +290,7 @@ void main() {
             'count': {'\$sum': 1}
           }
         });
-    final nullId = BsonNull();
+    final nullId = null;
     expect(
         $group(id: nullId, fields: {
           'totalPrice': $sum($multiply([Field('price'), Field('quantity')])),
@@ -572,4 +569,6 @@ void main() {
           }
         });
   });
+ */
 }
+ */

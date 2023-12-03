@@ -1,18 +1,38 @@
-import '../base/builder.dart';
+/* import '../base/builder.dart';
 import '../base/common/constant.dart';
 import '../base/common/document_types.dart';
 import '../base/common/operators_def.dart';
 import '../base/map_expression.dart';
 import '../query_expression/filter_expression.dart';
 import 'mixin/arithmetic_mixin.dart';
+import 'mixin/date_time_mixin.dart';
+import 'mixin/accumulator_mixin.dart';
 
-class AggregationStageNew extends MapExpression
-    with ArithmeticMixin
+part 'support_classes/aggregation_stages.dart';
+
+StageExpression stage = StageExpression();
+
+class Stage
+    with ArithmeticMixin, DateTimeMixin, AccumulatorMixin
     implements Builder {
-  AggregationStageNew() : super.empty();
+  Stage(
+    this.stageName,
+  );
+  String stageName;
+
+  StageExpression aggregationStage = StageExpression();
+
+  @override
+  build() => {stageName: aggregationStage.build()};
+
+  @override
+  List<MapExpression> get sequence => aggregationStage.sequence;
+}
+
+class StageExpression extends MapExpression implements Builder {
+  StageExpression() : super.empty();
 
   bool expressionProcessed = false;
-  @override
   final sequence = <MapExpression>[];
 
   bool get notEmpty => sequence.isNotEmpty;
@@ -52,11 +72,6 @@ class AggregationStageNew extends MapExpression
   /// If any key alreay exists, it is substituted
   @override
   void addMap(MongoDocument map) => valueMap.addAll(map);
-
-  /// Add a key-value pair
-  /// If the key already exists, the value is substituted
-  @override
-  void addEntry(String key, value) => valueMap[key] = value as Object;
 
   /// adds a {$meta : testScore} for search score projection
   void add$metaTextScore(String fieldName) => sequence.add(MapExpression({
@@ -111,3 +126,4 @@ class AggregationStageNew extends MapExpression
         }
       }));
 }
+ */

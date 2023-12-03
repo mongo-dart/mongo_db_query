@@ -1,4 +1,7 @@
+import 'package:mongo_db_query/src/base/map_expression.dart';
+
 import '../base/common/operators_def.dart';
+import '../base/field_expression.dart';
 import '../query_expression/query_expression.dart';
 import 'aggregation_base.dart';
 
@@ -120,3 +123,9 @@ class $sum extends Accumulator {
   //$Sum(expr) : super('sum', expr is List ? AEList(expr) : expr);
   $sum(expr) : super(op$sum, valueToContent(expr));
 }
+
+fieldAccumulator(String fieldName, Accumulator accumulator) =>
+    FieldExpression(fieldName, MapExpression.expression(accumulator));
+
+FieldExpression fieldSum(String fieldName, expr) =>
+    FieldExpression(fieldName, MapExpression.expression($sum(expr)));

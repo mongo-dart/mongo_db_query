@@ -1,12 +1,4 @@
-import '../base/common/operators_def.dart';
-import '../base/expression_content.dart';
-import '../base/field_expression.dart';
-import '../base/map_expression.dart';
-import '../query_expression/query_expression.dart';
-import 'aggregation_base.dart';
-import 'common.dart';
-import 'support_classes/geometry_obj.dart';
-import 'support_classes/output.dart';
+/* part of '../aggregation_stage_new.dart';
 
 /// `$addFields` aggregation stage
 ///
@@ -40,14 +32,9 @@ import 'support_classes/output.dart';
 /// }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/addFields/
-class $addFields extends AggregationStage {
-  /// Creates `$addFields` aggregation stage
-  $addFields(List<FieldExpression> expressions)
-      : super(
-            st$addFields,
-            MapExpression(
-                {for (var expression in expressions) ...expression.build()}));
-}
+
+Stage $addFields = Stage(st$addFields);
+Stage $addFields2 = Stage(st$addFields);
 
 /// `$set` aggregation stage
 ///
@@ -86,15 +73,7 @@ class $addFields extends AggregationStage {
 /// }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/set/
-class $set extends AggregationStage {
-  /// Creates `$set` aggregation stage
-  //$set(Map<String, dynamic> fields) : super('set', AEObject(fields));
-  $set(List<FieldExpression> expressions)
-      : super(
-            st$set,
-            MapExpression(
-                {for (var expression in expressions) ...expression.build()}));
-}
+Stage $set = Stage(st$set);
 
 /// `$setWindowFields` aggregation stage
 ///
@@ -141,34 +120,22 @@ class $set extends AggregationStage {
 ///  }
 /// ```
 /// https://www.mongodb.com/docs/manual/reference/operator/aggregation/setWindowFields/
-class $setWindowFields extends AggregationStage {
-  /// Creates `$setWindowFields` aggregation stage
-  ///
-  /// * [partitionBy] Optional - Specifies an expression to group the documents.
-  ///   In the $setWindowFields stage, the group of documents is known as a
-  ///   partition. Default is one partition for the entire collection.
-  /// * [sortBy] Required for some operators
-  ///   Specifies the field(s) to sort the documents by in the partition.
-  ///   Uses the same syntax as the $sort stage.
-  ///   Default is no sorting.
-  /// * [output] - Specifies the field(s) an related parameters to append to
-  ///   the documents in the output returned by the $setWindowFields stage.
-  ///   Each field is set to the result returned by the window operator.
-  ///   The field can either an Output object, a list of Output Objects or a
-  ///   document containing the explicit description of the output required
-/*   $setWindowFields({
-    partitionBy,
-    Map<String, int>? sortBy,
-    defaultId,
-    required dynamic output,
-  }) : super(
-            st$setWindowFields,
-            AEObject({
-              if (partitionBy != null) spPartitionBy: partitionBy,
-              if (sortBy != null) spSortBy: AEObject(sortBy),
-              'output': _getOutputDocument(output),
-            })); */
-  $setWindowFields(
+//class $setWindowFields extends AggregationStage {
+/// Creates `$setWindowFields` aggregation stage
+///
+/// * [partitionBy] Optional - Specifies an expression to group the documents.
+///   In the $setWindowFields stage, the group of documents is known as a
+///   partition. Default is one partition for the entire collection.
+/// * [sortBy] Required for some operators
+///   Specifies the field(s) to sort the documents by in the partition.
+///   Uses the same syntax as the $sort stage.
+///   Default is no sorting.
+/// * [output] - Specifies the field(s) an related parameters to append to
+///   the documents in the output returned by the $setWindowFields stage.
+///   Each field is set to the result returned by the window operator.
+///   The field can either an Output object, a list of Output Objects or a
+///   document containing the explicit description of the output required
+/*  $setWindowFields(
       {partitionBy,
       Map<String, int>? sortBy,
       defaultId,
@@ -194,7 +161,8 @@ class $setWindowFields extends AggregationStage {
           'output parm must be Map<String,dynamic>, Output or List<Output>');
     }
   }
-}
+} */
+Stage $setWindowFields = Stage(st$setWindowFields);
 
 /// `$unset` aggregation stage
 ///
@@ -215,10 +183,11 @@ class $setWindowFields extends AggregationStage {
 /// { $unset: [ "isbn", "author.first", "copies.warehouse" ] }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/unset/
-class $Unset extends AggregationStage {
+/* class $Unset extends AggregationStage {
   /// Creates `$unset` aggreagation stage
   $Unset(List<String> fields) : super(st$unset, valueToContent(fields));
-}
+} */
+Stage $unset = Stage(st$unset);
 
 /// `$bucket` aggregation stage
 ///
@@ -265,40 +234,40 @@ class $Unset extends AggregationStage {
 /// }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/bucket/
-class $bucket extends AggregationStage {
-  /// Creates `$bucket` aggregation stage
-  ///
-  /// * [groupBy] - An expression to group documents by. To specify a field
-  /// path use [Field] object. Unless `$bucket` includes a default
-  /// specification, each input document must resolve the groupBy field path
-  /// or expression to a value that falls within one of the ranges specified
-  /// by the boundaries.
-  /// * [boundaries] - An array of values based on the [groupBy] expression that
-  /// specify the boundaries for each bucket. Each adjacent pair of values acts
-  /// as the inclusive lower boundary and the exclusive upper boundary for the
-  /// bucket. You must specify at least two boundaries.
-  ///
-  /// Example:
-  ///
-  /// An array of `[ 0, 5, 10 ]` creates two buckets:
-  ///
-  ///   * [0, 5) with inclusive lower bound 0 and exclusive upper bound 5.
-  ///   * [5, 10) with inclusive lower bound 5 and exclusive upper bound 10.
-  ///
-  ///
-  /// * [defaultId] - Optional. A literal that specifies the `_id` of an
-  /// additional bucket that contains all documents whose groupBy expression
-  /// result does not fall into a bucket specified by boundaries. If
-  /// unspecified, each input document must resolve the groupBy expression to
-  /// a value within one of the bucket ranges specified by boundaries or the
-  /// operation throws an error. The default value must be less than the lowest
-  /// boundaries value, or greater than or equal to the highest boundaries
-  /// value. The default value can be of a different type than the entries in
-  /// boundaries.
-  /// * [output] - Optional. A document that specifies the fields to include in
-  /// the output documents in addition to the _id field. To specify the field
-  /// to include, you must use accumulator expressions.
-  /*  $bucket(
+//class $bucket extends AggregationStage {
+/// Creates `$bucket` aggregation stage
+///
+/// * [groupBy] - An expression to group documents by. To specify a field
+/// path use [Field] object. Unless `$bucket` includes a default
+/// specification, each input document must resolve the groupBy field path
+/// or expression to a value that falls within one of the ranges specified
+/// by the boundaries.
+/// * [boundaries] - An array of values based on the [groupBy] expression that
+/// specify the boundaries for each bucket. Each adjacent pair of values acts
+/// as the inclusive lower boundary and the exclusive upper boundary for the
+/// bucket. You must specify at least two boundaries.
+///
+/// Example:
+///
+/// An array of `[ 0, 5, 10 ]` creates two buckets:
+///
+///   * [0, 5) with inclusive lower bound 0 and exclusive upper bound 5.
+///   * [5, 10) with inclusive lower bound 5 and exclusive upper bound 10.
+///
+///
+/// * [defaultId] - Optional. A literal that specifies the `_id` of an
+/// additional bucket that contains all documents whose groupBy expression
+/// result does not fall into a bucket specified by boundaries. If
+/// unspecified, each input document must resolve the groupBy expression to
+/// a value within one of the bucket ranges specified by boundaries or the
+/// operation throws an error. The default value must be less than the lowest
+/// boundaries value, or greater than or equal to the highest boundaries
+/// value. The default value can be of a different type than the entries in
+/// boundaries.
+/// * [output] - Optional. A document that specifies the fields to include in
+/// the output documents in addition to the _id field. To specify the field
+/// to include, you must use accumulator expressions.
+/*  $bucket(
       {required ExpressionContent groupBy,
       required List boundaries,
       defaultId,
@@ -311,7 +280,7 @@ class $bucket extends AggregationStage {
               if (defaultId != null) 'default': defaultId,
               if (output != null) 'output': AEObject(output)
             })); */
-  $bucket(
+/*  $bucket(
       {required ExpressionContent groupBy,
       required List boundaries,
       defaultId,
@@ -324,7 +293,8 @@ class $bucket extends AggregationStage {
               if (defaultId != null) 'default': defaultId,
               if (output != null) 'output': valueToContent(output)
             }));
-}
+} */
+Stage $bucket = Stage(st$bucket);
 
 /// `$bucketAuto` aggregation stage
 ///
@@ -342,33 +312,20 @@ class $bucket extends AggregationStage {
 /// field is included by default when the output is not specified.
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/
-class $bucketAuto extends AggregationStage {
-  /// Creates `$bucketAuto` aggregation stage
-  ///
-  /// * [groupBy] - An expression to group documents by. To specify a field path
-  /// use [Field] object.
-  /// * [buckets] - A positive integer that specifies the number of buckets
-  /// into which input documents are grouped.
-  /// * [output] - Optional. A document that specifies the fields to include in
-  /// the output documents in addition to the `_id` field. To specify the field
-  /// to include, you must use accumulator expressions
-  /// * [granularity] - Optional. A [Granularity] that specifies the preferred
-  /// number series to use to ensure that the calculated boundary edges end on
-  /// preferred round numbers or their powers of 10.
-  /*  $bucketAuto(
-      {required ExpressionContent groupBy,
-      required int buckets,
-      Map<String, Accumulator>? output,
-      Granularity? granularity})
-      : super(
-            'bucketAuto',
-            AEObject({
-              'groupBy': groupBy,
-              'buckets': buckets,
-              if (output != null) 'output': AEObject(output),
-              if (granularity != null) 'granularity': granularity
-            })); */
-  $bucketAuto(
+//class $bucketAuto extends AggregationStage {
+/// Creates `$bucketAuto` aggregation stage
+///
+/// * [groupBy] - An expression to group documents by. To specify a field path
+/// use [Field] object.
+/// * [buckets] - A positive integer that specifies the number of buckets
+/// into which input documents are grouped.
+/// * [output] - Optional. A document that specifies the fields to include in
+/// the output documents in addition to the `_id` field. To specify the field
+/// to include, you must use accumulator expressions
+/// * [granularity] - Optional. A [Granularity] that specifies the preferred
+/// number series to use to ensure that the calculated boundary edges end on
+/// preferred round numbers or their powers of 10.
+/*   $bucketAuto(
       {required ExpressionContent groupBy,
       required int buckets,
       Map<String, Accumulator>? output,
@@ -381,7 +338,8 @@ class $bucketAuto extends AggregationStage {
               if (output != null) 'output': valueToContent(output),
               if (granularity != null) 'granularity': granularity
             }));
-}
+} */
+Stage $bucketAuto = Stage(st$bucketAuto);
 
 /// Granularity for [$bucketAuto]
 ///
@@ -467,7 +425,7 @@ class $bucketAuto extends AggregationStage {
 /// 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, and so on….
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/#granularity
-class Granularity extends Const {
+/* class Granularity extends Const {
   static final r5 = Granularity._('R5');
   static final r10 = Granularity._('R10');
   static final r20 = Granularity._('R20');
@@ -483,7 +441,7 @@ class Granularity extends Const {
   static final powersof2 = Granularity._('POWERSOF2');
 
   Granularity._(String super.value);
-}
+} */
 
 /// `$count` aggregation stage
 ///
@@ -493,14 +451,15 @@ class Granularity extends Const {
 /// documents input to the stage.
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/count/
-class $count extends AggregationStage {
+/* class $count extends AggregationStage {
   /// Creates `$count` aggregation stage
   ///
   /// [fieldName] - is the name of the output field which has the count as its
   /// value. [fieldName] must be a non-empty string and must not contain the `.`
   /// character.
   $count(String fieldName) : super(st$count, valueToContent(fieldName));
-}
+} */
+Stage $count = Stage(st$count);
 
 /// `$facet` aggregation stage
 ///
@@ -584,7 +543,7 @@ class $count extends AggregationStage {
 /// }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/facet/
-class $facet extends AggregationStage {
+/* class $facet extends AggregationStage {
   /// Creates `$facet` aggregation stage
   /* $facet(Map<String, List<AggregationStage>> pipelines)
       : super(
@@ -598,7 +557,8 @@ class $facet extends AggregationStage {
               for (var pipeline in pipelines.entries)
                 pipeline.key: valueToContent(pipeline.value)
             }));
-}
+} */
+Stage $facet = Stage(st$facet);
 
 /// `$replaceRoot` aggregation stage
 ///
@@ -650,7 +610,7 @@ class $facet extends AggregationStage {
 /// }}
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/replaceRoot/
-class $replaceRoot extends AggregationStage {
+/* class $replaceRoot extends AggregationStage {
   /// Creates `$replaceRoot` aggrregation stage
   ///
   /// The [replacement] document can be any valid expression that resolves to
@@ -660,7 +620,8 @@ class $replaceRoot extends AggregationStage {
       : super('replaceRoot', AEObject({'newRoot': replacement})); */
   $replaceRoot(replacement)
       : super(st$replaceRoot, valueToContent(replacement));
-}
+} */
+Stage $replaceRoot = Stage(st$replaceRoot);
 
 /// `$replaceWith` aggregation stage
 ///
@@ -716,7 +677,7 @@ class $replaceRoot extends AggregationStage {
 /// }}
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/replaceWith/
-class $replaceWith extends AggregationStage {
+/* class $replaceWith extends AggregationStage {
   /// Creates `$replaceWith` aggregation stage
   ///
   /// The [replacement] document can be any valid expression that resolves to a
@@ -724,7 +685,8 @@ class $replaceWith extends AggregationStage {
   /*  $replaceWith(replacement) : super('replaceWith', replacement); */
   $replaceWith(replacement)
       : super(st$replaceWith, valueToContent(replacement));
-}
+} */
+Stage $replaceWith = Stage(st$replaceWith);
 
 /// `$group` aggregation stage
 ///
@@ -851,14 +813,10 @@ class $replaceWith extends AggregationStage {
 /// { $group : { _id : "$author", books: { $push: "$$ROOT" } } }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/group/
-class $group extends AggregationStage {
-  /// Creates `$group` aggregation stage
-  /*  $Group({required id, Map<String, Accumulator> fields = const {}})
-      : super(
-            'group',
-            AEObject({'_id': id is Map<String, dynamic> ? AEObject(id) : id}
-              ..addAll(fields))); */
-  $group({required id, Map<String, Accumulator> fields = const {}})
+//class $group extends AggregationStage {
+/// Creates `$group` aggregation stage
+
+/*   $group({required id, Map<String, Accumulator> fields = const {}})
       : super(
             st$group,
             valueToContent({
@@ -866,7 +824,8 @@ class $group extends AggregationStage {
               for (var field in fields.entries)
                 field.key: valueToContent(field.value)
             }));
-}
+} */
+Stage $group = Stage(st$group);
 
 /// `$match` aggregation stage
 ///
@@ -899,7 +858,7 @@ class $group extends AggregationStage {
 /// {$match: {$expr: {$eq: ['$author', 'dave']}}}
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/match/
-class $match extends AggregationStage {
+/* class $match extends AggregationStage {
   /// Creates `$match` aggreagtion stage
   ///
   /// [query] can be either a [SelectorBuilder] query part
@@ -907,7 +866,8 @@ class $match extends AggregationStage {
   /// in [Expr]
   /*  $match(query) : super('match', query); */
   $match(query) : super(st$match, valueToContent(query));
-}
+} */
+Stage $match = Stage(st$match);
 
 /// `$lookup` aggregation stage
 ///
@@ -991,39 +951,27 @@ class $match extends AggregationStage {
 /// }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/
-class $lookup extends AggregationStage {
-  /// Creates ordinary `$lookup` stage
-  ///
-  /// * [from] - Specifies the collection in the same database to perform the join
-  /// with. The from collection cannot be sharded.
-  /// * [localField] - Specifies the field from the documents input to the
-  /// `$lookup` stage. `$lookup` performs an equality match on the [localField] to
-  /// the [foreignField] from the documents of the from collection. If an input
-  /// document does not contain the [localField], the `$lookup` treats the field as
-  /// having a value of `null` for matching purposes.
-  /// * [foreignField] - Specifies the field from the documents in the from
-  /// collection. `$lookup` performs an equality match on the [foreignField] to
-  /// the [localField] from the input documents. If a document in the from
-  /// collection does not contain the [foreignField], the `$lookup` treats the
-  /// value as `null` for matching purposes.
-  /// * [as] - Specifies the name of the new array field to add to the input
-  /// documents. The new array field contains the matching documents from the
-  /// from collection. If the specified name already exists in the input
-  /// document, the existing field is overwritten.
-/*   $lookup(
-      {required String from,
-      required String localField,
-      required String foreignField,
-      required String as})
-      : super(
-            'lookup',
-            AEObject({
-              'from': from,
-              'localField': localField,
-              'foreignField': foreignField,
-              'as': as
-            })); */
-  $lookup(
+//class $lookup extends AggregationStage {
+/// Creates ordinary `$lookup` stage
+///
+/// * [from] - Specifies the collection in the same database to perform the join
+/// with. The from collection cannot be sharded.
+/// * [localField] - Specifies the field from the documents input to the
+/// `$lookup` stage. `$lookup` performs an equality match on the [localField] to
+/// the [foreignField] from the documents of the from collection. If an input
+/// document does not contain the [localField], the `$lookup` treats the field as
+/// having a value of `null` for matching purposes.
+/// * [foreignField] - Specifies the field from the documents in the from
+/// collection. `$lookup` performs an equality match on the [foreignField] to
+/// the [localField] from the input documents. If a document in the from
+/// collection does not contain the [foreignField], the `$lookup` treats the
+/// value as `null` for matching purposes.
+/// * [as] - Specifies the name of the new array field to add to the input
+/// documents. The new array field contains the matching documents from the
+/// from collection. If the specified name already exists in the input
+/// document, the existing field is overwritten.
+
+/*  $lookup(
       {required String from,
       required String localField,
       required String foreignField,
@@ -1035,38 +983,39 @@ class $lookup extends AggregationStage {
               'localField': localField,
               'foreignField': foreignField,
               'as': as
-            }));
+            })); */
+Stage $lookup = Stage(st$lookup);
 
-  /// Creates `$lookup` stage with it's own pipeline
-  ///
-  /// * [from] - Specifies the collection in the same database to perform the join
-  /// with. The from collection cannot be sharded.
-  /// * [let] - Optional. Specifies variables to use in the pipeline field
-  /// stages. Use the variable expressions to access the fields from the
-  /// documents input to the $lookup stage. The pipeline cannot directly access
-  /// the input document fields. Instead, first define the variables for the
-  /// input document fields, and then reference the variables in the stages in
-  /// the pipeline. To access the let variables in the pipeline, use the
-  /// `$expr` ([Expr]) operator.
-  ///
-  /// NOTE:
-  ///
-  /// The let variables are accessible by the stages in the pipeline, including
-  /// additional `$lookup` stages nested in the pipeline.
-  /// * [pipeline] - Specifies the pipeline to run on the joined collection.
-  /// The pipeline determines the resulting documents from the joined
-  /// collection. To return all documents, specify an empty pipeline `[]`.
-  ///
-  /// The pipeline cannot include the `$out` stage or the `$merge` stage.
-  ///
-  /// The pipeline cannot directly access the input document fields. Instead,
-  /// first define the variables for the input document fields, and then
-  /// reference the variables in the stages in the pipeline.
-  /// * [as] - Specifies the name of the new array field to add to the input
-  /// documents. The new array field contains the matching documents from the
-  /// from collection. If the specified name already exists in the input
-  /// document, the existing field is overwritten.
-  $lookup.withPipeline(
+/// Creates `$lookup` stage with it's own pipeline
+///
+/// * [from] - Specifies the collection in the same database to perform the join
+/// with. The from collection cannot be sharded.
+/// * [let] - Optional. Specifies variables to use in the pipeline field
+/// stages. Use the variable expressions to access the fields from the
+/// documents input to the $lookup stage. The pipeline cannot directly access
+/// the input document fields. Instead, first define the variables for the
+/// input document fields, and then reference the variables in the stages in
+/// the pipeline. To access the let variables in the pipeline, use the
+/// `$expr` ([Expr]) operator.
+///
+/// NOTE:
+///
+/// The let variables are accessible by the stages in the pipeline, including
+/// additional `$lookup` stages nested in the pipeline.
+/// * [pipeline] - Specifies the pipeline to run on the joined collection.
+/// The pipeline determines the resulting documents from the joined
+/// collection. To return all documents, specify an empty pipeline `[]`.
+///
+/// The pipeline cannot include the `$out` stage or the `$merge` stage.
+///
+/// The pipeline cannot directly access the input document fields. Instead,
+/// first define the variables for the input document fields, and then
+/// reference the variables in the stages in the pipeline.
+/// * [as] - Specifies the name of the new array field to add to the input
+/// documents. The new array field contains the matching documents from the
+/// from collection. If the specified name already exists in the input
+/// document, the existing field is overwritten.
+/* $lookup.withPipeline(
       {required String from,
       required Map<String, dynamic> let,
       required List<AggregationStage> pipeline,
@@ -1079,7 +1028,7 @@ class $lookup extends AggregationStage {
               'pipeline': valueToContent(pipeline),
               'as': as
             }));
-}
+} */
 
 /// `$graphLookup`
 ///
@@ -1120,30 +1069,8 @@ class $lookup extends AggregationStage {
 /// ```
 ///
 ///
-class $graphLookup extends AggregationStage {
-  /*  $graphLookup(
-      {required String from,
-      required String startWith,
-      required String connectFromField,
-      required String connectToField,
-      required String as,
-      int? maxDepth,
-      String? depthField,
-      restrictSearchWithMatch})
-      : super(
-            'graphLookup',
-            AEObject({
-              'from': from,
-              'startWith': '\$$startWith',
-              'connectFromField': connectFromField,
-              'connectToField': connectToField,
-              'as': as,
-              if (maxDepth != null) 'maxDepth': maxDepth,
-              if (depthField != null) 'depthField': depthField,
-              if (restrictSearchWithMatch != null)
-                'restrictSearchWithMatch':
-                    _getRestrictSearchWithMatch(restrictSearchWithMatch)
-            })); */
+/* class $graphLookup extends AggregationStage {
+ 
   $graphLookup(
       {required String from,
       required String startWith,
@@ -1179,7 +1106,8 @@ class $graphLookup extends AggregationStage {
           'restrictSearchWithMatch must be Map<String,dynamic> or SelectorBuilder');
     }
   }
-}
+} */
+Stage $graphLookup = Stage(st$graphLookup);
 
 /// `$unwind` aggregation stage
 ///
@@ -1202,27 +1130,17 @@ class $graphLookup extends AggregationStage {
 /// {$unwind : {path: "$sizes"}}
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/
-class $unwind extends AggregationStage {
-  /// Creates `$unwind` aggregation stage
-  ///
-  /// * [field] - Field path to an array field.
-  /// * [includeArrayIndex] - Optional. The name of a new field to hold the
-  /// array index of the element.
-  /// * [preserveNullAndEmptyArrays] - Optional. If `true`, if the path is
-  /// `null`, missing, or an empty array, `$unwind` outputs the document. If
-  /// `false`, `$unwind` does not output a document if the path is `null`,
-  /// missing, or an empty array. The default value is `false`.
-  /*  $unwind(Field field,
-      {String? includeArrayIndex, bool? preserveNullAndEmptyArrays})
-      : super(
-            'unwind',
-            AEObject({
-              'path': field,
-              if (includeArrayIndex != null)
-                'includeArrayIndex': includeArrayIndex,
-              if (preserveNullAndEmptyArrays != null)
-                'preserveNullAndEmptyArrays': preserveNullAndEmptyArrays
-            })); */
+//class $unwind extends AggregationStage {
+/// Creates `$unwind` aggregation stage
+///
+/// * [field] - Field path to an array field.
+/// * [includeArrayIndex] - Optional. The name of a new field to hold the
+/// array index of the element.
+/// * [preserveNullAndEmptyArrays] - Optional. If `true`, if the path is
+/// `null`, missing, or an empty array, `$unwind` outputs the document. If
+/// `false`, `$unwind` does not output a document if the path is `null`,
+/// missing, or an empty array. The default value is `false`.
+/* 
   $unwind(Field field,
       {String? includeArrayIndex, bool? preserveNullAndEmptyArrays})
       : super(
@@ -1234,7 +1152,8 @@ class $unwind extends AggregationStage {
               if (preserveNullAndEmptyArrays != null)
                 'preserveNullAndEmptyArrays': preserveNullAndEmptyArrays
             }));
-}
+} */
+Stage $unwind = Stage(st$unwind);
 
 /// `$project` aggregation stage
 ///
@@ -1243,44 +1162,44 @@ class $unwind extends AggregationStage {
 /// Passes along the documents with the requested fields to the next stage in
 /// the pipeline. The specified fields can be existing fields from the input
 /// documents or newly computed fields.
-class $project extends AggregationStage {
-  /// Creates `$project` aggreagtion stage
-  ///
-  /// [specification] have the following forms:
-  ///
-  /// * `<fieldname>`: `1` or `true` - Specifies the inclusion of a field.
-  /// * `<fieldname>`: `0` or `false` - Specifies the exclusion of a field. To
-  /// exclude a field conditionally, use the [Var].remove (`REMOVE`) variable
-  /// instead. If you specify the exclusion of a field other than `_id`, you
-  /// cannot employ any other `$project` specification forms. This restriction
-  /// does not apply to conditionally exclusion of a field using the
-  /// [Var].remove (`REMOVE`) variable. By default, the `_id` field is included
-  /// in the output documents. If you do not need the `_id` field, you have
-  /// to exclude it explicitly.
-  /// * `<fieldname>`: `<expression>` - Adds a new field or resets the value of
-  /// an existing field. If the the expression evaluates to [Var].remove
-  /// (`$$REMOVE`), the field is excluded in the output.
-  ///
-  /// Example:
-  ///
-  /// Dart code:
-  /// ```
-  /// Project({
-  ///   '_id': 0,
-  ///   'title': 1,
-  ///   'author': 1
-  /// }).build()
-  /// ```
-  /// Equivalent mongoDB aggregation stage:
-  /// ```
-  /// { $project : { _id: 0, title : 1 , author : 1 } }
-  /// ```
-  /// https://docs.mongodb.com/manual/reference/operator/aggregation/project/
-  /*  $project(Map<String, dynamic> specification)
-      : super('project', AEObject(specification)); */
-  $project(Map<String, dynamic> specification)
+//class $project extends AggregationStage {
+/// Creates `$project` aggreagtion stage
+///
+/// [specification] have the following forms:
+///
+/// * `<fieldname>`: `1` or `true` - Specifies the inclusion of a field.
+/// * `<fieldname>`: `0` or `false` - Specifies the exclusion of a field. To
+/// exclude a field conditionally, use the [Var].remove (`REMOVE`) variable
+/// instead. If you specify the exclusion of a field other than `_id`, you
+/// cannot employ any other `$project` specification forms. This restriction
+/// does not apply to conditionally exclusion of a field using the
+/// [Var].remove (`REMOVE`) variable. By default, the `_id` field is included
+/// in the output documents. If you do not need the `_id` field, you have
+/// to exclude it explicitly.
+/// * `<fieldname>`: `<expression>` - Adds a new field or resets the value of
+/// an existing field. If the the expression evaluates to [Var].remove
+/// (`$$REMOVE`), the field is excluded in the output.
+///
+/// Example:
+///
+/// Dart code:
+/// ```
+/// Project({
+///   '_id': 0,
+///   'title': 1,
+///   'author': 1
+/// }).build()
+/// ```
+/// Equivalent mongoDB aggregation stage:
+/// ```
+/// { $project : { _id: 0, title : 1 , author : 1 } }
+/// ```
+/// https://docs.mongodb.com/manual/reference/operator/aggregation/project/
+
+/* $project(Map<String, dynamic> specification)
       : super(st$project, valueToContent(specification));
-}
+} */
+Stage $project = Stage(st$project);
 
 /// `$skip` aggregation stage
 ///
@@ -1290,13 +1209,14 @@ class $project extends AggregationStage {
 /// passes the remaining documents to the next stage in the pipeline.
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/skip/
-class $skip extends AggregationStage {
+/* class $skip extends AggregationStage {
   /// Creates `$skip` aggregation stage
   ///
   /// [count] - positive integer that specifies the maximum number of documents
   /// to skip.
   $skip(int count) : super(st$skip, valueToContent(count));
-}
+} */
+Stage $skip = Stage(st$skip);
 
 /// `$limit` aggregation stage
 ///
@@ -1305,13 +1225,14 @@ class $skip extends AggregationStage {
 /// Limits the number of documents passed to the next stage in the pipeline.
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/limit/
-class $limit extends AggregationStage {
+/* class $limit extends AggregationStage {
   /// Creates `$limit` aggregation stage
   ///
   /// [count] - a positive integer that specifies the maximum number of
   /// documents to pass along.
   $limit(int count) : super(st$limit, valueToContent(count));
-}
+} */
+Stage $limit = Stage(st$limit);
 
 /// `$sort` aggregation stage
 ///
@@ -1333,7 +1254,7 @@ class $limit extends AggregationStage {
 /// { $sort : { age : -1, posts: 1 } }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/sort/
-class $sort extends AggregationStage {
+/* class $sort extends AggregationStage {
   /// Creates `$sort` aggregation stage
   ///
   /// [specification] - a document that specifies the field(s) to sort by and
@@ -1346,7 +1267,8 @@ class $sort extends AggregationStage {
       : super('sort', AEObject(specification)); */
   $sort(Map<String, dynamic> specification)
       : super(st$sort, valueToContent(specification));
-}
+} */
+Stage $sort = Stage(st$sort);
 
 /// `$sortByCount`
 ///
@@ -1362,7 +1284,7 @@ class $sort extends AggregationStage {
 /// The documents are sorted by count in descending order.
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/
-class $sortByCount extends AggregationStage {
+/* class $sortByCount extends AggregationStage {
   /// Creates `$sortByCount` aggregation stage
   ///
   /// [expression] - expression to group by. You can specify any expression
@@ -1393,9 +1315,9 @@ class $sortByCount extends AggregationStage {
   /// ```
   /// { $sortByCount: { $mergeObjects: [ "$employee", "$business" ] } }
   /// ```
-/*   $sortByCount(expression) : super('sortByCount', expression);*/
   $sortByCount(expression) : super(st$sortByCount, valueToContent(expression));
-}
+} */
+Stage $sortByCount = Stage(st$sortByCount);
 
 /// `$geoNear`
 ///
@@ -1435,33 +1357,8 @@ class $sortByCount extends AggregationStage {
 /// ```
 ///
 ///
-class $geoNear extends AggregationStage {
-  /*  $geoNear(
-      {required Geometry near,
-      required String distanceField,
-      num? maxDistance,
-      num? minDistance,
-      bool? spherical,
-      dynamic query,
-      num? distanceMultiplier,
-      String? includeLocs,
-      String? key})
-      : assert(near.type == GeometryObjectType.Point,
-            '\$geoNear \'near\' field must be Point'),
-        super(
-            'geoNear',
-            AEObject({
-              'near': near.rawContent[r'$geometry'],
-              'distanceField': distanceField,
-              if (maxDistance != null) 'maxDistance': maxDistance,
-              if (minDistance != null) 'minDistance': minDistance,
-              if (spherical != null) 'spherical': spherical,
-              if (query != null) 'query': _getQuery(query),
-              if (distanceMultiplier != distanceMultiplier)
-                'distanceMultiplier': distanceMultiplier,
-              if (includeLocs != null) 'includeLocs': includeLocs,
-              if (key != null) 'key': key
-            })); */
+/* class $geoNear extends AggregationStage {
+ 
   $geoNear(
       {required $geometry near,
       required String distanceField,
@@ -1500,7 +1397,8 @@ class $geoNear extends AggregationStage {
           'restrictSearchWithMatch must be Map<String,dynamic> or SelectorBuilder');
     }
   }
-}
+} */
+Stage $geoNear = Stage(st$geoNear);
 
 /// `$unionWith` aggregation stage
 ///
@@ -1543,50 +1441,47 @@ class $geoNear extends AggregationStage {
 /// }
 /// ```
 /// https://www.mongodb.com/docs/manual/reference/operator/aggregation/unionWith/
-class $unionWith extends AggregationStage {
-  /// Creates `$UnionWith` stage with it's own pipeline
-  ///
-  /// * [coll] - The collection or view whose pipeline results you
-  ///   wish to include in the result set.
-  /// * [pipeline] - Optional. An aggregation pipeline to apply to the
-  ///   specified coll.
-  ///     [ <stage1>, <stage2>, ...]
-  ///   The pipeline cannot include the $out and $merge stages.
-  ///
-  ///   The combined results from the previous stage and the $unionWith stage
-  ///   can include duplicates.
-  ///
-  /// NOTE:
-  ///
-  /// The $unionWith operation would correspond to the following SQL statement:
-  /// ```
-  ///    SELECT *
-  ///   FROM Collection1
-  ///   WHERE ...
-  ///   UNION ALL
-  ///   SELECT *
-  ///   FROM Collection2
-  ///   WHERE ...
-  /// ```
-  /// The pipeline cannot directly access the input document fields. Instead,
-  /// first define the variables for the input document fields, and then
-  /// reference the variables in the stages in the pipeline.
-  /// * [as] - Specifies the name of the new array field to add to the input
-  /// documents. The new array field contains the matching documents from the
-  /// from collection. If the specified name already exists in the input
-  /// document, the existing field is overwritten.
-  /* $unionWith({required String coll, List<AggregationStage>? pipeline})
-      : super(
-            'unionWith',
-            AEObject({
-              'coll': coll,
-              if (pipeline != null) 'pipeline': AEList(pipeline),
-            })); */
-  $unionWith({required String coll, List<AggregationStage>? pipeline})
+//class $unionWith extends AggregationStage {
+/// Creates `$UnionWith` stage with it's own pipeline
+///
+/// * [coll] - The collection or view whose pipeline results you
+///   wish to include in the result set.
+/// * [pipeline] - Optional. An aggregation pipeline to apply to the
+///   specified coll.
+///     [ <stage1>, <stage2>, ...]
+///   The pipeline cannot include the $out and $merge stages.
+///
+///   The combined results from the previous stage and the $unionWith stage
+///   can include duplicates.
+///
+/// NOTE:
+///
+/// The $unionWith operation would correspond to the following SQL statement:
+/// ```
+///    SELECT *
+///   FROM Collection1
+///   WHERE ...
+///   UNION ALL
+///   SELECT *
+///   FROM Collection2
+///   WHERE ...
+/// ```
+/// The pipeline cannot directly access the input document fields. Instead,
+/// first define the variables for the input document fields, and then
+/// reference the variables in the stages in the pipeline.
+/// * [as] - Specifies the name of the new array field to add to the input
+/// documents. The new array field contains the matching documents from the
+/// from collection. If the specified name already exists in the input
+/// document, the existing field is overwritten.
+
+/* $unionWith({required String coll, List<AggregationStage>? pipeline})
       : super(
             st$unionWith,
             valueToContent({
               'coll': coll,
               if (pipeline != null) 'pipeline': valueToContent(pipeline),
             }));
-}
+} */
+
+Stage $unionWith = Stage(st$unionWith);
+ */
