@@ -5,10 +5,6 @@ import 'package:test/test.dart' hide Skip;
 void main() {
   test('addFields', () {
     expect(
-        /*  $addFields({
-          'totalHomework': $sum(Field('homework')),
-          'totalQuiz': $sum(Field('quiz'))
-        }).build(), */
         $addFields([
           fieldSum('totalHomework', Field('homework')),
           fieldSum('totalQuiz', r'$quiz')
@@ -61,18 +57,18 @@ void main() {
           'totalQuiz': {r'$sum': r'$quiz'}
         }).build(),
         {
-          r'$addFields': {
+          r'$set': {
             'totalHomework': {r'$sum': r'$homework'},
             'totalQuiz': {r'$sum': r'$quiz'}
           }
         });
     expect(
         $set.raw({
-          'totalHomework': $sum(Field('homework')),
+          ...FieldExpression('totalHomework', $sum(Field('homework'))).build(),
           'totalQuiz': $sum(r'$quiz')
         }).build(),
         {
-          r'$addFields': {
+          r'$set': {
             'totalHomework': {r'$sum': r'$homework'},
             'totalQuiz': {r'$sum': r'$quiz'}
           }
@@ -165,10 +161,49 @@ void main() {
             }
           }
         });
+    expect(
+        $setWindowFields.raw({
+          'partitionBy': $year(Field('orderDate')).build(),
+          'sortBy': {'orderDate': 1},
+          'output': {
+            'cumulativeQuantityForYear': {
+              ...$sum(Field('quantity')).build(),
+              'window': {
+                'documents': ["unbounded", "current"]
+              }
+            },
+            'maximumQuantityForYear': {
+              ...$max(Field('quantity')).build(),
+              'window': {
+                'documents': ["unbounded", "unbounded"]
+              }
+            }
+          }
+        }).build(),
+        {
+          r'$setWindowFields': {
+            'partitionBy': {r'$year': r'$orderDate'},
+            'sortBy': {'orderDate': 1},
+            'output': {
+              'cumulativeQuantityForYear': {
+                r'$sum': r'$quantity',
+                'window': {
+                  'documents': ["unbounded", "current"]
+                }
+              },
+              'maximumQuantityForYear': {
+                r'$max': r'$quantity',
+                'window': {
+                  'documents': ["unbounded", "unbounded"]
+                }
+              }
+            }
+          }
+        });
   });
 
   test('unset', () {
-    expect($Unset(['isbn', 'author.first', 'copies.warehouse']).build(), {
+    expect($unset(['isbn', 'author.first', 'copies.warehouse']).build(), {
       '\$unset': ['isbn', 'author.first', 'copies.warehouse']
     });
   });
@@ -316,25 +351,19 @@ void main() {
           'count': $sum(1)
         }).build(),
         {
-          '\$group': {
+          r'$group': {
             '_id': {
-              'month': {
-                '\$month': {'date': '\$date'}
-              },
-              'day': {
-                '\$dayOfMonth': {'date': '\$date'}
-              },
-              'year': {
-                '\$year': {'date': '\$date'}
-              }
+              'month': {r'$month': r'$date'},
+              'day': {r'$dayOfMonth': r'$date'},
+              'year': {r'$year': r'$date'}
             },
             'totalPrice': {
-              '\$sum': {
-                '\$multiply': ['\$price', '\$quantity']
+              r'$sum': {
+                r'$multiply': [r'$price', r'$quantity']
               }
             },
-            'averageQuantity': {'\$avg': '\$quantity'},
-            'count': {'\$sum': 1}
+            'averageQuantity': {r'$avg': r'$quantity'},
+            'count': {r'$sum': 1}
           }
         });
     final nullId = BsonNull();

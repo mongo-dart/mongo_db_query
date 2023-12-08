@@ -2,6 +2,7 @@ import '../base/common/document_types.dart';
 import '../base/common/operators_def.dart';
 import '../base/expression_content.dart';
 import '../base/field_expression.dart';
+import '../base/list_expression.dart';
 import '../base/map_expression.dart';
 import '../query_expression/query_expression.dart';
 import 'aggregation_base.dart';
@@ -96,7 +97,7 @@ class $set extends AggregationStage {
             st$set,
             MapExpression(
                 {for (var expression in expressions) ...expression.build()}));
-  $set.raw(MongoDocument raw) : super.raw(st$addFields, raw);
+  $set.raw(MongoDocument raw) : super.raw(st$set, raw);
 }
 
 /// `$setWindowFields` aggregation stage
@@ -159,18 +160,6 @@ class $setWindowFields extends AggregationStage {
   ///   Each field is set to the result returned by the window operator.
   ///   The field can either an Output object, a list of Output Objects or a
   ///   document containing the explicit description of the output required
-/*   $setWindowFields({
-    partitionBy,
-    Map<String, int>? sortBy,
-    defaultId,
-    required dynamic output,
-  }) : super(
-            st$setWindowFields,
-            AEObject({
-              if (partitionBy != null) spPartitionBy: partitionBy,
-              if (sortBy != null) spSortBy: AEObject(sortBy),
-              'output': _getOutputDocument(output),
-            })); */
   $setWindowFields(
       {partitionBy,
       Map<String, int>? sortBy,
@@ -183,6 +172,8 @@ class $setWindowFields extends AggregationStage {
               if (sortBy != null) spSortBy: valueToContent(sortBy),
               'output': _getOutputDocument(output),
             }));
+
+  $setWindowFields.raw(MongoDocument raw) : super.raw(st$setWindowFields, raw);
 
   static ExpressionContent _getOutputDocument(output) {
     if (output is Output) {
@@ -218,9 +209,10 @@ class $setWindowFields extends AggregationStage {
 /// { $unset: [ "isbn", "author.first", "copies.warehouse" ] }
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/unset/
-class $Unset extends AggregationStage {
+class $unset extends AggregationStage {
   /// Creates `$unset` aggreagation stage
-  $Unset(List<String> fields) : super(st$unset, valueToContent(fields));
+  $unset(List<String> fieldNames) : super(st$unset, ListExpression(fieldNames));
+  $unset.raw(MongoDocument raw) : super.raw(st$unset, raw);
 }
 
 /// `$bucket` aggregation stage
@@ -470,22 +462,22 @@ class $bucketAuto extends AggregationStage {
 /// 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, and so on….
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/#granularity
-class Granularity extends Const {
-  static final r5 = Granularity._('R5');
-  static final r10 = Granularity._('R10');
-  static final r20 = Granularity._('R20');
-  static final r40 = Granularity._('R40');
-  static final r80 = Granularity._('R80');
-  static final g125 = Granularity._('1-2-5');
-  static final e6 = Granularity._('E6');
-  static final e12 = Granularity._('E12');
-  static final e24 = Granularity._('E24');
-  static final e48 = Granularity._('E48');
-  static final e96 = Granularity._('E96');
-  static final e192 = Granularity._('E192');
-  static final powersof2 = Granularity._('POWERSOF2');
+class Granularity extends Const<String> {
+  static const r5 = Granularity._('R5');
+  static const r10 = Granularity._('R10');
+  static const r20 = Granularity._('R20');
+  static const r40 = Granularity._('R40');
+  static const r80 = Granularity._('R80');
+  static const g125 = Granularity._('1-2-5');
+  static const e6 = Granularity._('E6');
+  static const e12 = Granularity._('E12');
+  static const e24 = Granularity._('E24');
+  static const e48 = Granularity._('E48');
+  static const e96 = Granularity._('E96');
+  static const e192 = Granularity._('E192');
+  static const powersof2 = Granularity._('POWERSOF2');
 
-  Granularity._(String super.value);
+  const Granularity._(super.value);
 }
 
 /// `$count` aggregation stage

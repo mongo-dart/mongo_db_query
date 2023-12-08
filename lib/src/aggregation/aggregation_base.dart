@@ -82,11 +82,11 @@ class Field extends ExpressionContent {
 }
 
 /// Constant expression
-class Const extends ExpressionContent {
-  final dynamic _value;
+class Const<T> extends ExpressionContent {
+  final T _value;
   const Const(this._value);
   @override
-  dynamic get rawContent => _value;
+  T get rawContent => _value;
 }
 
 /// Literal expression

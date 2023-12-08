@@ -1,3 +1,4 @@
+import '../base/expression_content.dart';
 import '../base/operator_expression.dart';
 import '../query_expression/query_expression.dart';
 
@@ -21,7 +22,7 @@ class $dateFromParts extends OperatorExpression {
               if (minute != null) 'minute': minute,
               if (second != null) 'second': second,
               if (millisecond != null) 'millisecond': millisecond,
-              if (timezone != null) 'timezone': timezone
+              if (timezone != null) 'timezone': valueToContent(timezone)
             }));
 }
 
@@ -44,7 +45,7 @@ class IsoDateFromParts extends OperatorExpression {
               if (minute != null) 'minute': minute,
               if (second != null) 'second': second,
               if (millisecond != null) 'millisecond': millisecond,
-              if (timezone != null) 'timezone': timezone
+              if (timezone != null) 'timezone': valueToContent(timezone)
             }));
 }
 
@@ -68,13 +69,14 @@ class $dateFromString extends OperatorExpression {
   /// `null` or missing, it outputs the result value of the provided [onNull]
   /// expression. This result value can be of any type. If you do not specify
   /// [onNull] and dateString is null or missing, then $dateFromString outputs null.
-  $dateFromString({required dateString, format, timezone, onError, onNull})
+  $dateFromString(
+      {required String dateString, format, timezone, onError, onNull})
       : super(
             op$dateFromString,
             valueToContent({
               'dateString': dateString,
-              if (format != null) 'format': format,
-              if (timezone != null) 'timezone': timezone,
+              if (format != null) 'format': valueToContent(format),
+              if (timezone != null) 'timezone': valueToContent(timezone),
               if (onError != null) 'onError': onError,
               if (onNull != null) 'onNull': onNull
             }));
@@ -94,8 +96,8 @@ class $dateToParts extends OperatorExpression {
       : super(
             op$dateToParts,
             valueToContent({
-              'date': date,
-              if (timezone != null) 'timezone': timezone,
+              'date': valueToContent(date),
+              if (timezone != null) 'timezone': valueToContent(timezone),
               'iso8601': iso8601
             }));
 }
@@ -113,10 +115,7 @@ class $dayOfMonth extends OperatorExpression {
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
   $dayOfMonth(date, {timezone})
-      : super(
-            op$dayOfMonth,
-            valueToContent(
-                {'date': date, if (timezone != null) 'timezone': timezone}));
+      : super(op$dayOfMonth, _getDateExpression(date, timezone: timezone));
 }
 
 /// `$dayOfWeek` operator
@@ -133,10 +132,7 @@ class $dayOfWeek extends OperatorExpression {
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
   $dayOfWeek(date, {timezone})
-      : super(
-            op$dayOfWeek,
-            valueToContent(
-                {'date': date, if (timezone != null) 'timezone': timezone}));
+      : super(op$dayOfWeek, _getDateExpression(date, timezone: timezone));
 }
 
 /// `$dayOfYear` operator
@@ -152,10 +148,7 @@ class $dayOfYear extends OperatorExpression {
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
   $dayOfYear(date, {timezone})
-      : super(
-            op$dayOfYear,
-            valueToContent(
-                {'date': date, if (timezone != null) 'timezone': timezone}));
+      : super(op$dayOfYear, _getDateExpression(date, timezone: timezone));
 }
 
 /// `$hour` operator
@@ -171,10 +164,7 @@ class $hour extends OperatorExpression {
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
   $hour(date, {timezone})
-      : super(
-            op$hour,
-            valueToContent(
-                {'date': date, if (timezone != null) 'timezone': timezone}));
+      : super(op$hour, _getDateExpression(date, timezone: timezone));
 }
 
 /// `$isoDayOfWeek` operator
@@ -191,10 +181,7 @@ class $isoDayOfWeek extends OperatorExpression {
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
   $isoDayOfWeek(date, {timezone})
-      : super(
-            op$isoDayOfWeek,
-            valueToContent(
-                {'date': date, if (timezone != null) 'timezone': timezone}));
+      : super(op$isoDayOfWeek, _getDateExpression(date, timezone: timezone));
 }
 
 /// `$isoWeek` operator
@@ -212,10 +199,7 @@ class $isoWeek extends OperatorExpression {
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
   $isoWeek(date, {timezone})
-      : super(
-            op$isoWeek,
-            valueToContent(
-                {'date': date, if (timezone != null) 'timezone': timezone}));
+      : super(op$isoWeek, _getDateExpression(date, timezone: timezone));
 }
 
 /// `$isoWeekYear` operator
@@ -232,10 +216,7 @@ class $isoWeekYear extends OperatorExpression {
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
   $isoWeekYear(date, {timezone})
-      : super(
-            op$isoWeekYear,
-            valueToContent(
-                {'date': date, if (timezone != null) 'timezone': timezone}));
+      : super(op$isoWeekYear, _getDateExpression(date, timezone: timezone));
 }
 
 /// `$millisecond` operator
@@ -251,10 +232,7 @@ class $millisecond extends OperatorExpression {
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
   $millisecond(date, {timezone})
-      : super(
-            op$millisecond,
-            valueToContent(
-                {'date': date, if (timezone != null) 'timezone': timezone}));
+      : super(op$millisecond, _getDateExpression(date, timezone: timezone));
 }
 
 /// `$minute` operator
@@ -271,10 +249,7 @@ class $minute extends OperatorExpression {
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
   $minute(date, {timezone})
-      : super(
-            op$minute,
-            valueToContent(
-                {'date': date, if (timezone != null) 'timezone': timezone}));
+      : super(op$minute, _getDateExpression(date, timezone: timezone));
 }
 
 /// `$month` operator
@@ -290,10 +265,7 @@ class $month extends OperatorExpression {
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
   $month(date, {timezone})
-      : super(
-            op$month,
-            valueToContent(
-                {'date': date, if (timezone != null) 'timezone': timezone}));
+      : super(op$month, _getDateExpression(date, timezone: timezone));
 }
 
 /// `$second` operator
@@ -310,10 +282,7 @@ class $second extends OperatorExpression {
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
   $second(date, {timezone})
-      : super(
-            op$second,
-            valueToContent(
-                {'date': date, if (timezone != null) 'timezone': timezone}));
+      : super(op$second, _getDateExpression(date, timezone: timezone));
 }
 
 /// `$toDate` operator
@@ -338,10 +307,7 @@ class $week extends OperatorExpression {
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
   $week(date, {timezone})
-      : super(
-            op$week,
-            valueToContent(
-                {'date': date, if (timezone != null) 'timezone': timezone}));
+      : super(op$week, _getDateExpression(date, timezone: timezone));
 }
 
 /// `$year` operator
@@ -357,8 +323,11 @@ class $year extends OperatorExpression {
   /// an Olson Timezone Identifier or a UTC Offset. If no timezone is provided,
   /// the result is displayed in UTC.
   $year(date, {timezone})
-      : super(
-            op$year,
-            valueToContent(
-                {'date': date, if (timezone != null) 'timezone': timezone}));
+      : super(op$year, _getDateExpression(date, timezone: timezone));
+}
+
+ExpressionContent _getDateExpression(date, {timezone}) {
+  return valueToContent(timezone == null
+      ? valueToContent(date)
+      : {'date': valueToContent(date), 'timezone': valueToContent(timezone)});
 }
