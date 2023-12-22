@@ -5,65 +5,10 @@ import '../base/expression_content.dart';
 import '../base/field_expression.dart';
 import '../base/map_expression.dart';
 
-/// Aggregation expression
-/* abstract class ExpressionContent implements Builder {
-  const ExpressionContent();
-} */
-
-/// Basic aggregation operator
-/* abstract class Operator extends ExpressionContent {
-  final dynamic _args;
-  final String _name;
-  Operator(this._name, this._args);
-  @override
-  Map<String, dynamic> get rawContent =>
-      {'\$$_name': _args is ExpressionContent ? _args.rawContent : _args};
-} */
-
 /// Basic accumulation operator
 abstract class Accumulator extends OperatorExpression {
   Accumulator(super.name, super.expr);
 }
-
-/// Aggregation expression's object
-///
-/// The object is used in aggregation expressions and is aggregation expression as well
-/* class AEObject extends Iterable<MapEntry<String, dynamic>>
-    implements ExpressionContent {
-  final Iterable<MapEntry<String, dynamic>> _iterable;
-
-  factory AEObject(Map<String, dynamic> map) {
-    //if (map == null) return null;
-    return AEObject.internal(map);
-  }
-  @protected
-  AEObject.internal(Map<String, dynamic> map)
-      : _iterable = map.entries.where(_valueIsNotNull).map((entry) {
-          if (entry.value is List) {
-            return MapEntry(entry.key, AEList(entry.value as List));
-          }
-          if (entry.value is Map<String, dynamic>) {
-            return MapEntry(
-                entry.key, AEObject(entry.value as Map<String, dynamic>));
-          }
-          return entry;
-        });
-  @override
-  AEIterator<MapEntry<String, dynamic>> get iterator =>
-      AEIterator<MapEntry<String, dynamic>>(_iterable);
-  @override
-  Map<String, dynamic> get rawContent =>
-      Map.fromEntries(_iterable).map((argName, argValue) => MapEntry(argName,
-          argValue is ExpressionContent ? argValue.rawContent : argValue));
-}
- */
-
-/// Returns `true` if value is not null
-///
-/// The function is used  to filter not null elements in [AEObject] and [AEList]
-/// constuctors
-/* bool _valueIsNotNull(value) =>
-    value is MapEntry ? value.value != null : value != null; */
 
 /// Field path expression
 ///
@@ -79,14 +24,6 @@ class Field extends ExpressionContent {
   const Field(String fieldPath) : _fieldPath = fieldPath;
   @override
   String get rawContent => '\$$_fieldPath';
-}
-
-/// Constant expression
-class Const<T> extends ExpressionContent {
-  final T _value;
-  const Const(this._value);
-  @override
-  T get rawContent => _value;
 }
 
 /// Literal expression

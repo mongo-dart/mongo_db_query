@@ -217,13 +217,68 @@ void main() {
                 output: {'count': $sum(1), 'titles': $push(Field('title'))})
             .build(),
         {
-          '\$bucket': {
-            'groupBy': '\$price',
+          r'$bucket': {
+            'groupBy': r'$price',
             'boundaries': [0, 200, 400],
             'default': 'Other',
             'output': {
-              'count': {'\$sum': 1},
-              'titles': {'\$push': '\$title'}
+              'count': {r'$sum': 1},
+              'titles': {r'$push': r'$title'}
+            }
+          }
+        });
+    expect(
+        $bucket.raw({
+          'groupBy': Field('price'),
+          'boundaries': [0, 200, 400],
+          'default': 'Other',
+          'output': accumulatorsMap(
+              [fieldSum('count', 1), fieldPush('titles', Field('title'))])
+        }).build(),
+        {
+          r'$bucket': {
+            'groupBy': r'$price',
+            'boundaries': [0, 200, 400],
+            'default': 'Other',
+            'output': {
+              'count': {r'$sum': 1},
+              'titles': {r'$push': r'$title'}
+            }
+          }
+        });
+  });
+
+  test('bucketAuto', () {
+    expect(
+        $bucketAuto(
+            groupBy: Field('_id'),
+            buckets: 5,
+            granularity: Granularity.r5,
+            output: {'count': $sum(1)}).build(),
+        {
+          r'$bucketAuto': {
+            'groupBy': r'$_id',
+            'buckets': 5,
+            'granularity': 'R5',
+            'output': {
+              'count': {r'$sum': 1}
+            }
+          }
+        });
+    expect(
+        $bucketAuto.raw({
+          'groupBy': Field('_id'),
+          'buckets': 5,
+          'granularity': Granularity.r5,
+          'output': fieldSum('count', 1).build()
+        }).build(),
+        {
+          r'$bucketAuto': {
+            'groupBy': r'$_id',
+            'buckets': 5,
+            'granularity': 'R5',
+            'output': {
+              'count': {r'$sum': 1}
             }
           }
         });
@@ -245,27 +300,8 @@ void main() {
     expect(Granularity.powersof2.rawContent, 'POWERSOF2');
   });
 
-  test('bucketAuto', () {
-    expect(
-        $bucketAuto(
-            groupBy: Field('_id'),
-            buckets: 5,
-            granularity: Granularity.r5,
-            output: {'count': $sum(1)}).build(),
-        {
-          '\$bucketAuto': {
-            'groupBy': '\$_id',
-            'buckets': 5,
-            'granularity': 'R5',
-            'output': {
-              'count': {'\$sum': 1}
-            }
-          }
-        });
-  });
-
   test('count', () {
-    expect($count('myCount').build(), {'\$count': 'myCount'});
+    expect($count('myCount').build(), {r'$count': 'myCount'});
   });
 
   test('facet', () {

@@ -1,3 +1,4 @@
+import 'package:mongo_db_query/mongo_db_query.dart';
 import 'package:mongo_db_query/src/base/map_expression.dart';
 
 import '../base/common/operators_def.dart';
@@ -129,3 +130,8 @@ fieldAccumulator(String fieldName, Accumulator accumulator) =>
 
 FieldExpression fieldSum(String fieldName, expr) =>
     FieldExpression(fieldName, MapExpression.expression($sum(expr)));
+FieldExpression fieldPush(String fieldName, expr) =>
+    FieldExpression(fieldName, MapExpression.expression($push(expr)));
+
+MongoDocument accumulatorsMap(List<FieldExpression> operators) =>
+    {for (var operator in operators) ...operator.build()};

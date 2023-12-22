@@ -14,8 +14,12 @@ import 'support_classes/output.dart';
 ///
 /// ### Stage description.
 ///
-/// `$addFields` appends new fields to existing documents. You can include one
-/// or more `$addFields` stages in an aggregation pipeline.
+/// Adds new fields to documents. $addFields outputs documents that contain
+/// all existing fields from the input documents and newly added fields.
+/// The $addFields stage is equivalent to a $project stage that explicitly
+/// specifies all existing fields in the input documents and adds the
+/// new fields. You can include one or more `$addFields` stages in an
+/// aggregation pipeline.
 ///
 /// To add field or fields to embedded documents (including documents in arrays)
 /// use the dot notation.
@@ -26,10 +30,17 @@ import 'support_classes/output.dart';
 /// Example:
 ///
 /// Dart code
+/// ```dart
+/// $addFields([
+///   fieldSum('totalHomework', Field('homework')),
+///   fieldSum('totalQuiz', r'$quiz')
+/// ]).build()
 /// ```
-/// AddFields({
-///   'totalHomework': Sum(Field('homework')),
-///   'totalQuiz': Sum(Field('quiz'))
+/// or
+/// ```dart
+/// $addFields.raw({
+///   'totalHomework': $sum(Field('homework')),
+///   'totalQuiz': $sum(r'$quiz')
 /// }).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
@@ -58,13 +69,15 @@ class $addFields extends AggregationStage {
 ///
 /// Available since MongoDB version 4.2
 ///
-/// Adds new fields to documents. `$set` outputs documents that contain all
+/// Adds new fields to documents. $set outputs documents that contain all
 /// existing fields from the input documents and newly added fields.
 ///
-/// The `$set` stage is an alias for `$addFields`.
+/// The $set stage is an alias for $addFields.
 ///
-/// `$set` appends new fields to existing documents. You can include one or
-/// more $set stages in an aggregation operation.
+/// Both stages are equivalent to a $project stage that explicitly specifies
+/// all existing fields in the input documents and adds the new fields.
+///
+/// You can include one or more $set stages in an aggregation operation.
 ///
 /// To add field or fields to embedded documents (including documents in
 /// arrays) use the dot notation.
@@ -73,10 +86,17 @@ class $addFields extends AggregationStage {
 /// $concatArrays ([ConcatArrays]).
 ///
 /// Dart code:
+/// ```dart
+/// $set([
+///   fieldSum('totalHomework', Field('homework')),
+///   fieldSum('totalQuiz', r'$quiz')
+/// ]).build()
 /// ```
-/// SetStage({
-///   'totalHomework': Sum(Field('homework')),
-///   'totalQuiz': Sum(Field('quiz'))
+/// or
+/// ```dart
+/// $set.raw({
+///   ...FieldExpression('totalHomework', $sum(Field('homework'))).build(),
+///   'totalQuiz': $sum(r'$quiz')
 /// }).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
@@ -120,24 +140,56 @@ class $set extends AggregationStage {
 /// Example:
 ///
 /// Dart code:
+/// ```dart
+/// $setWindowFields(partitionBy: {
+///    r'$year': r'$orderDate'
+///  }, sortBy: {
+///    'orderDate': 1
+///  }, output: [
+///    Output('cumulativeQuantityForYear', $sum(r'$quantity'),
+//7        documents: ["unbounded", "current"]),
+///    Output('maximumQuantityForYear', $max(r'$quantity'),
+///        documents: ["unbounded", "unbounded"])
+///  ]).build()
 /// ```
-///   SetWindowFields(
-///      partitionBy: {r'$year': r"$orderDate"},
-///      sortBy: {'orderDate': 1},
-///      output: Output('cumulativeQuantityForYear', Sum(r'$quantity'),
-///          documents: ["unbounded", "current"])).build(),
+/// or
+/// ```dart
+///   $setWindowFields.raw({
+///    'partitionBy': $year(Field('orderDate')).build(),
+///    'sortBy': {'orderDate': 1},
+///    'output': {
+///      'cumulativeQuantityForYear': {
+///        ...$sum(Field('quantity')).build(),
+///        'window': {
+///          'documents': ["unbounded", "current"]
+///        }
+///      },
+///      'maximumQuantityForYear': {
+///        ...$max(Field('quantity')).build(),
+///        'window': {
+///          'documents': ["unbounded", "unbounded"]
+///        }
+///      }
+///    }
+///  }).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
 ///  {
 ///    r'$setWindowFields': {
-///      'partitionBy': {r'$year': r"$orderDate"},
+///      'partitionBy': {r'$year': r'$orderDate'},
 ///      'sortBy': {'orderDate': 1},
 ///      'output': {
 ///        'cumulativeQuantityForYear': {
-///          r'$sum': r"$quantity",
+///          r'$sum': r'$quantity',
 ///          'window': {
 ///            'documents': ["unbounded", "current"]
+///          }
+///        },
+///        'maximumQuantityForYear': {
+///          r'$max': r'$quantity',
+///          'window': {
+///            'documents': ["unbounded", "unbounded"]
 ///          }
 ///        }
 ///      }
@@ -161,10 +213,7 @@ class $setWindowFields extends AggregationStage {
   ///   The field can either an Output object, a list of Output Objects or a
   ///   document containing the explicit description of the output required
   $setWindowFields(
-      {partitionBy,
-      Map<String, int>? sortBy,
-      defaultId,
-      required dynamic output})
+      {partitionBy, IndexDocument? sortBy, defaultId, required dynamic output})
       : super(
             st$setWindowFields,
             valueToContent({
@@ -202,7 +251,7 @@ class $setWindowFields extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Unset([ "isbn", "author.first", "copies.warehouse" ]).build()
+/// $unset(['isbn', 'author.first', 'copies.warehouse']).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -212,7 +261,6 @@ class $setWindowFields extends AggregationStage {
 class $unset extends AggregationStage {
   /// Creates `$unset` aggreagation stage
   $unset(List<String> fieldNames) : super(st$unset, ListExpression(fieldNames));
-  $unset.raw(MongoDocument raw) : super.raw(st$unset, raw);
 }
 
 /// `$bucket` aggregation stage
@@ -235,15 +283,22 @@ class $unset extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Bucket(
-///   groupBy: Field('price'),
-///   boundaries: [0, 200, 400],
-///   defaultId: "Other",
-///   output: {
-///     'count': Sum(1),
-///     'titles': Push(Field('title'))
-///   }
-/// ).build()
+///  $bucket(
+///          groupBy: Field('price'),
+///          boundaries: [0, 200, 400],
+///          defaultId: 'Other',
+///          output: {'count': $sum(1), 'titles': $push(Field('title'))})
+///     .build()
+/// ```
+/// or
+/// ```
+/// $bucket.raw({
+///          'groupBy': Field('price'),
+///          'boundaries': [0, 200, 400],
+///          'default': 'Other',
+///          'output': accumulatorsMap(
+///              [fieldSum('count', 1), fieldPush('titles', Field('title'))])
+///        }).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -293,19 +348,6 @@ class $bucket extends AggregationStage {
   /// * [output] - Optional. A document that specifies the fields to include in
   /// the output documents in addition to the _id field. To specify the field
   /// to include, you must use accumulator expressions.
-  /*  $bucket(
-      {required ExpressionContent groupBy,
-      required List boundaries,
-      defaultId,
-      Map<String, Accumulator>? output})
-      : super(
-            'bucket',
-            AEObject({
-              'groupBy': groupBy,
-              'boundaries': AEList(boundaries),
-              if (defaultId != null) 'default': defaultId,
-              if (output != null) 'output': AEObject(output)
-            })); */
   $bucket(
       {required ExpressionContent groupBy,
       required List boundaries,
@@ -319,6 +361,7 @@ class $bucket extends AggregationStage {
               if (defaultId != null) 'default': defaultId,
               if (output != null) 'output': valueToContent(output)
             }));
+  $bucket.raw(MongoDocument raw) : super.raw(st$bucket, raw);
 }
 
 /// `$bucketAuto` aggregation stage
@@ -336,6 +379,30 @@ class $bucket extends AggregationStage {
 /// field that contains the number of documents in the bucket. The count
 /// field is included by default when the output is not specified.
 ///
+/// Example:
+///
+/// Dart code:
+/// ```
+///    $bucketAuto(
+///      groupBy: Field('_id'),
+///      buckets: 5,
+///      granularity: Granularity.r5,
+///      output: {'count': $sum(1)}).build()
+/// ```
+/// Equivalent mongoDB aggregation stage:
+/// ```
+/// {
+///    r'$bucketAuto': {
+///      groupBy: '$_id',
+///      buckets: 5,
+///      granularity: 'R5',
+///      output: {
+///        count: {'$sum': 1}
+///      }
+///    }
+///  }
+/// ```
+///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/
 class $bucketAuto extends AggregationStage {
   /// Creates `$bucketAuto` aggregation stage
@@ -350,19 +417,6 @@ class $bucketAuto extends AggregationStage {
   /// * [granularity] - Optional. A [Granularity] that specifies the preferred
   /// number series to use to ensure that the calculated boundary edges end on
   /// preferred round numbers or their powers of 10.
-  /*  $bucketAuto(
-      {required ExpressionContent groupBy,
-      required int buckets,
-      Map<String, Accumulator>? output,
-      Granularity? granularity})
-      : super(
-            'bucketAuto',
-            AEObject({
-              'groupBy': groupBy,
-              'buckets': buckets,
-              if (output != null) 'output': AEObject(output),
-              if (granularity != null) 'granularity': granularity
-            })); */
   $bucketAuto(
       {required ExpressionContent groupBy,
       required int buckets,
@@ -376,6 +430,7 @@ class $bucketAuto extends AggregationStage {
               if (output != null) 'output': valueToContent(output),
               if (granularity != null) 'granularity': granularity
             }));
+  $bucketAuto.raw(MongoDocument raw) : super.raw(st$bucketAuto, raw);
 }
 
 /// Granularity for [$bucketAuto]
@@ -462,22 +517,26 @@ class $bucketAuto extends AggregationStage {
 /// 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, and so on….
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/#granularity
-class Granularity extends Const<String> {
-  static const r5 = Granularity._('R5');
-  static const r10 = Granularity._('R10');
-  static const r20 = Granularity._('R20');
-  static const r40 = Granularity._('R40');
-  static const r80 = Granularity._('R80');
-  static const g125 = Granularity._('1-2-5');
-  static const e6 = Granularity._('E6');
-  static const e12 = Granularity._('E12');
-  static const e24 = Granularity._('E24');
-  static const e48 = Granularity._('E48');
-  static const e96 = Granularity._('E96');
-  static const e192 = Granularity._('E192');
-  static const powersof2 = Granularity._('POWERSOF2');
+class Granularity extends ExpressionContent {
+  const Granularity(this._value);
 
-  const Granularity._(super.value);
+  final String _value;
+  @override
+  String get rawContent => _value;
+
+  static const r5 = Granularity('R5');
+  static const r10 = Granularity('R10');
+  static const r20 = Granularity('R20');
+  static const r40 = Granularity('R40');
+  static const r80 = Granularity('R80');
+  static const g125 = Granularity('1-2-5');
+  static const e6 = Granularity('E6');
+  static const e12 = Granularity('E12');
+  static const e24 = Granularity('E24');
+  static const e48 = Granularity('E48');
+  static const e96 = Granularity('E96');
+  static const e192 = Granularity('E192');
+  static const powersof2 = Granularity('POWERSOF2');
 }
 
 /// `$count` aggregation stage
