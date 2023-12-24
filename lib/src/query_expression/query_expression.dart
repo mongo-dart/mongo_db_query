@@ -28,6 +28,8 @@ ExpressionContent valueToContent(dynamic value) {
     return ListExpression(value);
   } else if (value is Set) {
     return SetExpression(value);
+  } else if (value is QueryExpression) {
+    return value.filter;
   }
   return ValueExpression.create(value);
 }

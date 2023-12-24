@@ -1,6 +1,6 @@
-import 'package:mongo_db_query/mongo_db_query.dart';
 import 'package:mongo_db_query/src/base/map_expression.dart';
 
+import '../base/common/document_types.dart';
 import '../base/common/operators_def.dart';
 import '../base/field_expression.dart';
 import '../query_expression/query_expression.dart';

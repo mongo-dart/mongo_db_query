@@ -781,18 +781,15 @@ class $replaceWith extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Group(
-///   id: {
-///     'month': Month(Field('date')),
-///     'day': DayOfMonth(Field('date')),
-///     'year': Year(Field('date'))
-///   },
-///   fields: {
-///     'totalPrice': Sum(Multiply([Field('price'), Field('quantity')])),
-///     'averageQuantity': Avg(Field('quantity')),
-///     'count': Sum(1)
-///   }
-/// ).build()
+/// $group(id: {
+///   'month': $month(Field('date')),
+///   'day': $dayOfMonth(Field('date')),
+///   'year': $year(Field('date'))
+///  }, fields: {
+///    'totalPrice': $sum($multiply([Field('price'), Field('quantity')])),
+///    'averageQuantity': $avg(Field('quantity')),
+///   'count': $sum(1)
+///  }).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -818,14 +815,11 @@ class $replaceWith extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Group(
-///   id: BsonNull(),
-///   fields: {
-///     'totalPrice': Sum(Multiply([Field('price'), Field('quantity')])),
-///     'averageQuantity': Avg(Field('quantity')),
-///     'count': Sum(1)
-///   }
-/// ).build()
+///  $group(id: null, fields: {
+///    'totalPrice': $sum($multiply([Field('price'), Field('quantity')])),
+///    'averageQuantity': $avg(Field('quantity')),
+///    'count': $sum(1)
+///  }).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -846,7 +840,7 @@ class $replaceWith extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Group(id: Field('item')).build()
+/// $group(id: Field('item')).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -860,10 +854,8 @@ class $replaceWith extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Group(
-///   id: Field('author'),
-///   fields: {'books': Push(Field('title'))}
-/// ).build()
+/// $group(id: Field('author'), fields: {'books': $push(Field('title'))})
+///      .build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -878,7 +870,7 @@ class $replaceWith extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Group(id: Field('author'), fields: {'books': Push(Var.root)}).build()
+/// $group(id: Field('author'), fields: {'books': $push(Var.root)}).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -887,11 +879,6 @@ class $replaceWith extends AggregationStage {
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/group/
 class $group extends AggregationStage {
   /// Creates `$group` aggregation stage
-  /*  $Group({required id, Map<String, Accumulator> fields = const {}})
-      : super(
-            'group',
-            AEObject({'_id': id is Map<String, dynamic> ? AEObject(id) : id}
-              ..addAll(fields))); */
   $group({required id, Map<String, Accumulator> fields = const {}})
       : super(
             st$group,
@@ -911,11 +898,11 @@ class $group extends AggregationStage {
 ///
 /// Examples:
 ///
-/// 1. Using [SelectorBuilder] query
+/// 1. Using [QueryExpression] query
 ///
 /// Dart code:
 /// ```
-/// Match(where.eq('author', 'dave').map['\$query']).build()
+/// $match(where..$eq('author', 'dave')).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -926,7 +913,7 @@ class $group extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Match(Expr(Eq(Field('author'), 'dave'))).build()
+/// $match($expr($eq(Field('author'), 'dave'))).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -936,10 +923,8 @@ class $group extends AggregationStage {
 class $match extends AggregationStage {
   /// Creates `$match` aggreagtion stage
   ///
-  /// [query] can be either a [SelectorBuilder] query part
-  /// (`selectorBuilder.map['\$query']`) or an aggregation expression wrapped
-  /// in [Expr]
-  /*  $match(query) : super('match', query); */
+  /// [query] can be either a [QueryExpression] or an aggregation
+  /// expression wrapped in [Expr]
   $match(query) : super(st$match, valueToContent(query));
 }
 
@@ -959,12 +944,12 @@ class $match extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Lookup(
-///   from: 'inventory',
-///   localField: 'item',
-///   foreignField: 'sku',
-///   as: 'inventory_docs'
-/// ).build()
+/// $lookup(
+///          from: 'inventory',
+///          localField: 'item',
+///          foreignField: 'sku',
+///          as: 'inventory_docs')
+///      .build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -982,24 +967,22 @@ class $match extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Lookup.withPipeline(
-///   from: 'warehouses',
-///   let: {
-///     'order_item': Field('item'),
-///     'order_qty': Field('ordered')
-///   },
-///   pipeline: [
-///     Match(Expr(And([
-///       Eq(Field('stock_item'), Var('order_item')),
-///       Gte(Field('instock'), Var('order_qty'))
-///     ]))),
-///     Project({
-///       'stock_item': 0,
-///       '_id': 0
-///     })
-///   ],
-///   as: 'stockdata'
-/// ).build()
+///  $lookup
+///     .withPipeline(
+///          from: 'warehouses',
+///          let: {
+///            'order_item': Field('item'),
+///            'order_qty': Field('ordered')
+///          },
+///          pipeline: [
+///            $match($expr($and([
+///              $eq(Field('stock_item'), Var('order_item')),
+///              $gte(Field('instock'), Var('order_qty'))
+///            ]))),
+///            $project({'stock_item': 0, '_id': 0})
+///          ],
+///         as: 'stockdata')
+///      .build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -1044,19 +1027,6 @@ class $lookup extends AggregationStage {
   /// documents. The new array field contains the matching documents from the
   /// from collection. If the specified name already exists in the input
   /// document, the existing field is overwritten.
-/*   $lookup(
-      {required String from,
-      required String localField,
-      required String foreignField,
-      required String as})
-      : super(
-            'lookup',
-            AEObject({
-              'from': from,
-              'localField': localField,
-              'foreignField': foreignField,
-              'as': as
-            })); */
   $lookup(
       {required String from,
       required String localField,
@@ -1103,7 +1073,7 @@ class $lookup extends AggregationStage {
   $lookup.withPipeline(
       {required String from,
       required Map<String, dynamic> let,
-      required List<AggregationStage> pipeline,
+      required AggregationPipeline pipeline,
       required String as})
       : super(
             st$lookup,
@@ -1118,66 +1088,45 @@ class $lookup extends AggregationStage {
 /// `$graphLookup`
 ///
 /// ### Stage description
-/// Performs a recursive search on a collection, with options for restricting the search by recursion depth and query filter.
+/// Performs a recursive search on a collection, with options for restricting
+/// the search by recursion depth and query filter.
 /// [see mongo db documentation](https://docs.mongodb.com/manual/reference/operator/aggregation/graphLookup/)
 ///
 ///
 /// Dart code:
 ///
 /// ```
-///   GraphLookup(
-///           from: "follows",
-///           startWith: "user_id",
-///           connectFromField: "my_follows",
-///           connectToField: "followed",
-///           as: "same_follows",
-///           depthField: "depth",
-///           maxDepth: 3,
-///           restrictSearchWithMatch: where.ne("user_id", "user1"));
+///    $graphLookup(
+///         from: 'employees',
+///         startWith: 'reportsTo',
+///         connectFromField: 'reportsTo',
+///         connectToField: 'name',
+///         as: 'reportingHierarchy',
+///         depthField: 'depth',
+///         maxDepth: 5,
+///         restrictSearchWithMatch: where..$eq('field', 'value'))
+///     .build();
 /// ```
 ///
 /// Equivalent mongoDB aggregation stage:
 ///
 /// ```
 ///   $graphLookup: {
-///         from: "follows",
-///         startWith: "$user_id",
-///         connectFromField: "my_follows",
-///         connectToField: "followed",
-///         as: "same_follows",
-///         depthField: "depth",
-///         maxDepth : 3,
-///         restrictSearchWithMatch: {
-///            follower: {$ne: "user1"}
-///         }
-///      }
+///     from: "employees",
+///     startWith: "$reportsTo",
+///     connectFromField: "reportsTo",
+///     connectToField: "name",
+///     as : "reportingHierarchy",
+///     depthField: "depth",
+///     maxDepth: 5,
+///     restrictSearchWithMatch : {
+///       field : {$eq: "value"}
+///     }
+///   }
 /// ```
 ///
 ///
 class $graphLookup extends AggregationStage {
-  /*  $graphLookup(
-      {required String from,
-      required String startWith,
-      required String connectFromField,
-      required String connectToField,
-      required String as,
-      int? maxDepth,
-      String? depthField,
-      restrictSearchWithMatch})
-      : super(
-            'graphLookup',
-            AEObject({
-              'from': from,
-              'startWith': '\$$startWith',
-              'connectFromField': connectFromField,
-              'connectToField': connectToField,
-              'as': as,
-              if (maxDepth != null) 'maxDepth': maxDepth,
-              if (depthField != null) 'depthField': depthField,
-              if (restrictSearchWithMatch != null)
-                'restrictSearchWithMatch':
-                    _getRestrictSearchWithMatch(restrictSearchWithMatch)
-            })); */
   $graphLookup(
       {required String from,
       required String startWith,
@@ -1205,12 +1154,12 @@ class $graphLookup extends AggregationStage {
   static ExpressionContent _getRestrictSearchWithMatch(
       restrictSearchWithMatch) {
     if (restrictSearchWithMatch is QueryExpression) {
-      return valueToContent(restrictSearchWithMatch.filter.rawContent);
-    } else if (restrictSearchWithMatch is Map<String, dynamic>) {
+      return valueToContent(restrictSearchWithMatch);
+    } else if (restrictSearchWithMatch is MongoDocument) {
       return valueToContent(restrictSearchWithMatch);
     } else {
-      throw Exception(
-          'restrictSearchWithMatch must be Map<String,dynamic> or SelectorBuilder');
+      throw Exception('restrictSearchWithMatch must be '
+          'Map<String,dynamic> or QueryExpression');
     }
   }
 }
@@ -1229,7 +1178,7 @@ class $graphLookup extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Unwind(Field('sizes')).build()
+/// $unwind(Field('sizes')).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -1246,17 +1195,6 @@ class $unwind extends AggregationStage {
   /// `null`, missing, or an empty array, `$unwind` outputs the document. If
   /// `false`, `$unwind` does not output a document if the path is `null`,
   /// missing, or an empty array. The default value is `false`.
-  /*  $unwind(Field field,
-      {String? includeArrayIndex, bool? preserveNullAndEmptyArrays})
-      : super(
-            'unwind',
-            AEObject({
-              'path': field,
-              if (includeArrayIndex != null)
-                'includeArrayIndex': includeArrayIndex,
-              if (preserveNullAndEmptyArrays != null)
-                'preserveNullAndEmptyArrays': preserveNullAndEmptyArrays
-            })); */
   $unwind(Field field,
       {String? includeArrayIndex, bool? preserveNullAndEmptyArrays})
       : super(
@@ -1299,20 +1237,30 @@ class $project extends AggregationStage {
   ///
   /// Dart code:
   /// ```
-  /// Project({
-  ///   '_id': 0,
-  ///   'title': 1,
-  ///   'author': 1
-  /// }).build()
+  /// $project.raw({'_id': 0, 'title': 1, 'author': 1}).build()
+  /// ```
+  /// Equivalent mongoDB aggregation stage:
+  /// ```
+  /// { $project : { _id: 0, title : 1 , author : 1 } }
+  /// ```
+  /// or
+  /// ```
+  /// $project(included: ['title', 'author'], excluded: ['_id']).build()
   /// ```
   /// Equivalent mongoDB aggregation stage:
   /// ```
   /// { $project : { _id: 0, title : 1 , author : 1 } }
   /// ```
   /// https://docs.mongodb.com/manual/reference/operator/aggregation/project/
-  /*  $project(Map<String, dynamic> specification)
-      : super('project', AEObject(specification)); */
-  $project(Map<String, dynamic> specification)
+  ///
+  $project({List<String>? included, List<String>? excluded})
+      : super(
+            st$project,
+            MapExpression({
+              for (var element in excluded ?? []) element: 0,
+              for (var element in included ?? []) element: 1
+            }));
+  $project.raw(Map<String, dynamic> specification)
       : super(st$project, valueToContent(specification));
 }
 
@@ -1323,6 +1271,24 @@ class $project extends AggregationStage {
 /// Skips over the specified number of documents that pass into the stage and
 /// passes the remaining documents to the next stage in the pipeline.
 ///
+/// Example:
+///
+/// Dart code:
+/// ```
+/// $skip(5).build()
+/// ```
+/// Equivalent mongoDB aggregation stage:
+/// ```
+/// {$skip: 5}
+/// ```
+/// or
+/// ```
+/// $skip.query(where..skip(5)).build()
+/// ```
+/// Equivalent mongoDB aggregation stage:
+/// ```
+/// {$skip: 5}
+/// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/skip/
 class $skip extends AggregationStage {
   /// Creates `$skip` aggregation stage
@@ -1330,6 +1296,10 @@ class $skip extends AggregationStage {
   /// [count] - positive integer that specifies the maximum number of documents
   /// to skip.
   $skip(int count) : super(st$skip, valueToContent(count));
+
+  /// [query] - QueryExpression containing the number of documents to skip
+  $skip.query(QueryExpression query)
+      : super(st$skip, valueToContent(query.getSkip()));
 }
 
 /// `$limit` aggregation stage
@@ -1338,6 +1308,24 @@ class $skip extends AggregationStage {
 ///
 /// Limits the number of documents passed to the next stage in the pipeline.
 ///
+/// Example:
+///
+/// Dart code:
+/// ```
+/// $limit(5).build()
+/// ```
+/// Equivalent mongoDB aggregation stage:
+/// ```
+/// {$limit: 5}
+/// ```
+/// or
+/// ```
+/// $limit.query(where..limit(5)).build()
+/// ```
+/// Equivalent mongoDB aggregation stage:
+/// ```
+/// {$limit: 5}
+/// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/limit/
 class $limit extends AggregationStage {
   /// Creates `$limit` aggregation stage
@@ -1345,6 +1333,10 @@ class $limit extends AggregationStage {
   /// [count] - a positive integer that specifies the maximum number of
   /// documents to pass along.
   $limit(int count) : super(st$limit, valueToContent(count));
+
+  /// [query] - QueryExpression containing the number of documents to skip
+  $limit.query(QueryExpression query)
+      : super(st$limit, valueToContent(query.getLimit()));
 }
 
 /// `$sort` aggregation stage
@@ -1357,10 +1349,15 @@ class $limit extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Sort({
-///   'age': -1,
-///   'posts': 1
-/// }).build()
+/// $sort({'age': -1, 'posts': 1}).build()
+/// ```
+/// Equivalent mongoDB aggregation stage:
+/// ```
+/// { $sort : { age : -1, posts: 1 } }
+/// ```
+/// or
+/// ```
+/// $sort.query(where..sortBy({'age': -1})..sortBy('posts')).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -1380,6 +1377,9 @@ class $sort extends AggregationStage {
       : super('sort', AEObject(specification)); */
   $sort(Map<String, dynamic> specification)
       : super(st$sort, valueToContent(specification));
+
+  /// [query] - QueryExpression containing the number of documents to skip
+  $sort.query(QueryExpression query) : super(st$sort, query.sortExp);
 }
 
 /// `$sortByCount`
@@ -1394,6 +1394,24 @@ class $sort extends AggregationStage {
 /// documents belonging to that grouping or category.
 ///
 /// The documents are sorted by count in descending order.
+/// Example:
+///
+/// Dart code:
+/// ```
+/// $sortByCount(Field('employee')).build()
+/// ```
+/// Equivalent mongoDB aggregation stage:
+/// ```
+/// {$sortByCount: "$employee"}
+/// ```
+/// or
+/// ```
+/// $sortByCount($mergeObjects([Field('employee'), Field('business')])).build()
+/// ```
+/// Equivalent mongoDB aggregation stage:
+/// ```
+/// { $sortByCount : { $mergeObjects : ["$employee", "$business"] } }
+/// ```
 ///
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/
 class $sortByCount extends AggregationStage {
@@ -1441,14 +1459,14 @@ class $sortByCount extends AggregationStage {
 /// Dart code:
 ///
 /// ```
-/// GeoNear(
-///   near: Geometry.point([-73.99279, 40.719296]),
-///   distanceField: 'dist.calculated',
-///   maxDistance: 2,
-///   query: where.eq('category', 'Parks').map['\$query'],
-///   includeLocs: 'dist.location',
-///   spherical: true
-///  ).build()
+/// $geoNear(
+///       near: $geometry.point([-73.99279, 40.719296]),
+///       distanceField: 'dist.calculated',
+///       maxDistance: 2,
+///       query: where..$eq('category', 'Parks'),
+///       includeLocs: 'dist.location',
+///       spherical: true)
+///   .build()
 /// ```
 ///
 /// Equivalent mongoDB aggregation stage:
@@ -1461,41 +1479,15 @@ class $sortByCount extends AggregationStage {
 ///         },
 ///         'distanceField': 'dist.calculated',
 ///         'maxDistance': 2,
+///         'spherical': true
 ///         'query': {'category': 'Parks'},
 ///         'includeLocs': 'dist.location',
-///         'spherical': true
 ///    }
 /// }
 /// ```
 ///
 ///
 class $geoNear extends AggregationStage {
-  /*  $geoNear(
-      {required Geometry near,
-      required String distanceField,
-      num? maxDistance,
-      num? minDistance,
-      bool? spherical,
-      dynamic query,
-      num? distanceMultiplier,
-      String? includeLocs,
-      String? key})
-      : assert(near.type == GeometryObjectType.Point,
-            '\$geoNear \'near\' field must be Point'),
-        super(
-            'geoNear',
-            AEObject({
-              'near': near.rawContent[r'$geometry'],
-              'distanceField': distanceField,
-              if (maxDistance != null) 'maxDistance': maxDistance,
-              if (minDistance != null) 'minDistance': minDistance,
-              if (spherical != null) 'spherical': spherical,
-              if (query != null) 'query': _getQuery(query),
-              if (distanceMultiplier != distanceMultiplier)
-                'distanceMultiplier': distanceMultiplier,
-              if (includeLocs != null) 'includeLocs': includeLocs,
-              if (key != null) 'key': key
-            })); */
   $geoNear(
       {required $geometry near,
       required String distanceField,
@@ -1512,13 +1504,13 @@ class $geoNear extends AggregationStage {
             st$geoNear,
             valueToContent({
               // ignore: deprecated_member_use_from_same_package
-              'near': near.rawContent /* [r'$geometry'] */,
+              'near': near.rawContent,
               'distanceField': distanceField,
               if (maxDistance != null) 'maxDistance': maxDistance,
               if (minDistance != null) 'minDistance': minDistance,
               if (spherical != null) 'spherical': spherical,
               if (query != null) 'query': _getQuery(query),
-              if (distanceMultiplier != distanceMultiplier)
+              if (distanceMultiplier != null)
                 'distanceMultiplier': distanceMultiplier,
               if (includeLocs != null) 'includeLocs': includeLocs,
               if (key != null) 'key': key
@@ -1526,12 +1518,12 @@ class $geoNear extends AggregationStage {
 
   static ExpressionContent _getQuery(query) {
     if (query is QueryExpression) {
-      return valueToContent(query.filter.rawContent);
-    } else if (query is Map<String, dynamic>) {
+      return query.filter;
+    } else if (query is MongoDocument) {
       return valueToContent(query);
     } else {
       throw Exception(
-          'restrictSearchWithMatch must be Map<String,dynamic> or SelectorBuilder');
+          'restrictSearchWithMatch must be Map<String,dynamic> or QueryExpression');
     }
   }
 }
@@ -1553,15 +1545,12 @@ class $geoNear extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// UnionWith(
-///   coll: 'warehouses',
-///   pipeline: [
-///     Project({
-///       'state': 1,
-///       '_id': 0
-///     })
-///   ],
-/// ).build()
+///  $unionWith(
+///    coll: 'warehouses',
+///    pipeline: [
+///      $project.raw({'state': 1, '_id': 0})
+///    ],
+///  ).build()
 /// ```
 /// Equivalent mongoDB aggregation stage:
 /// ```
@@ -1609,14 +1598,7 @@ class $unionWith extends AggregationStage {
   /// documents. The new array field contains the matching documents from the
   /// from collection. If the specified name already exists in the input
   /// document, the existing field is overwritten.
-  /* $unionWith({required String coll, List<AggregationStage>? pipeline})
-      : super(
-            'unionWith',
-            AEObject({
-              'coll': coll,
-              if (pipeline != null) 'pipeline': AEList(pipeline),
-            })); */
-  $unionWith({required String coll, List<AggregationStage>? pipeline})
+  $unionWith({required String coll, AggregationPipeline? pipeline})
       : super(
             st$unionWith,
             valueToContent({

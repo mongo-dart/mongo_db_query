@@ -1,4 +1,3 @@
-import 'package:bson/src/types/bson_null.dart';
 import 'package:mongo_db_query/mongo_db_query.dart';
 import 'package:test/test.dart' hide Skip;
 
@@ -419,63 +418,56 @@ void main() {
             'count': {r'$sum': 1}
           }
         });
-    final nullId = BsonNull();
     expect(
-        $group(id: nullId, fields: {
+        $group(id: null, fields: {
           'totalPrice': $sum($multiply([Field('price'), Field('quantity')])),
           'averageQuantity': $avg(Field('quantity')),
           'count': $sum(1)
         }).build(),
         {
-          '\$group': {
-            '_id': nullId,
+          r'$group': {
+            '_id': null,
             'totalPrice': {
-              '\$sum': {
-                '\$multiply': ['\$price', '\$quantity']
+              r'$sum': {
+                r'$multiply': [r'$price', r'$quantity']
               }
             },
-            'averageQuantity': {'\$avg': '\$quantity'},
-            'count': {'\$sum': 1}
+            'averageQuantity': {r'$avg': r'$quantity'},
+            'count': {r'$sum': 1}
           }
         });
     expect($group(id: Field('item')).build(), {
-      '\$group': {'_id': '\$item'}
+      r'$group': {'_id': r'$item'}
     });
     expect(
         $group(id: Field('author'), fields: {'books': $push(Field('title'))})
             .build(),
         {
-          '\$group': {
-            '_id': '\$author',
-            'books': {'\$push': '\$title'}
+          r'$group': {
+            '_id': r'$author',
+            'books': {r'$push': r'$title'}
           }
         });
     expect(
         $group(id: Field('author'), fields: {'books': $push(Var.root)}).build(),
         {
-          '\$group': {
-            '_id': '\$author',
-            'books': {'\$push': '\$\$ROOT'}
+          r'$group': {
+            '_id': r'$author',
+            'books': {r'$push': r'$$ROOT'}
           }
         });
   });
 
   test('match', () {
-    expect(
-        $match((where
-                  ..$eq('author', 'dave')
-                  ..filter)
-                .rawFilter)
-            .build(),
-        {
-          '\$match': {
-            'author': {r'$eq': 'dave'}
-          }
-        });
+    expect($match(where..$eq('author', 'dave')).build(), {
+      r'$match': {
+        'author': {r'$eq': 'dave'}
+      }
+    });
     expect($match($expr($eq(Field('author'), 'dave'))).build(), {
-      '\$match': {
-        '\$expr': {
-          '\$eq': ['\$author', 'dave']
+      r'$match': {
+        r'$expr': {
+          r'$eq': ['\$author', 'dave']
         }
       }
     });
@@ -490,7 +482,7 @@ void main() {
                 as: 'inventory_docs')
             .build(),
         {
-          '\$lookup': {
+          r'$lookup': {
             'from': 'inventory',
             'localField': 'item',
             'foreignField': 'sku',
@@ -510,31 +502,31 @@ void main() {
                     $eq(Field('stock_item'), Var('order_item')),
                     $gte(Field('instock'), Var('order_qty'))
                   ]))),
-                  $project({'stock_item': 0, '_id': 0})
+                  $project.raw({'stock_item': 0, '_id': 0})
                 ],
                 as: 'stockdata')
             .build(),
         {
-          '\$lookup': {
+          r'$lookup': {
             'from': 'warehouses',
-            'let': {'order_item': '\$item', 'order_qty': '\$ordered'},
+            'let': {'order_item': r'$item', 'order_qty': r'$ordered'},
             'pipeline': [
               {
-                '\$match': {
-                  '\$expr': {
-                    '\$and': [
+                r'$match': {
+                  r'$expr': {
+                    r'$and': [
                       {
-                        '\$eq': ['\$stock_item', '\$\$order_item']
+                        r'$eq': [r'$stock_item', r'$$order_item']
                       },
                       {
-                        '\$gte': ['\$instock', '\$\$order_qty']
+                        r'$gte': [r'$instock', r'$$order_qty']
                       }
                     ]
                   }
                 }
               },
               {
-                '\$project': {'stock_item': 0, '_id': 0}
+                r'$project': {'stock_item': 0, '_id': 0}
               }
             ],
             'as': 'stockdata'
@@ -571,39 +563,53 @@ void main() {
   });
   test('unwind', () {
     expect($unwind(Field('sizes')).build(), {
-      '\$unwind': {'path': '\$sizes'}
+      r'$unwind': {'path': r'$sizes'}
     });
   });
 
   test('project', () {
-    expect($project({'_id': 0, 'title': 1, 'author': 1}).build(), {
-      '\$project': {'_id': 0, 'title': 1, 'author': 1}
+    expect($project(included: ['title', 'author'], excluded: ['_id']).build(), {
+      r'$project': {'_id': 0, 'title': 1, 'author': 1}
+    });
+    expect($project.raw({'_id': 0, 'title': 1, 'author': 1}).build(), {
+      r'$project': {'_id': 0, 'title': 1, 'author': 1}
     });
   });
 
   test('skip', () {
-    expect($skip(5).build(), {'\$skip': 5});
+    expect($skip(5).build(), {r'$skip': 5});
+    expect($skip.query(where..skip(5)).build(), {r'$skip': 5});
   });
 
   test('limit', () {
-    expect($limit(5).build(), {'\$limit': 5});
+    expect($limit(5).build(), {r'$limit': 5});
+    expect($limit.query(where..limit(5)).build(), {r'$limit': 5});
   });
 
   test('sort', () {
     expect($sort({'age': -1, 'posts': 1}).build(), {
-      '\$sort': {'age': -1, 'posts': 1}
+      r'$sort': {'age': -1, 'posts': 1}
     });
+    expect(
+        $sort
+            .query(where
+              ..sortBy({'age': -1})
+              ..sortBy('posts'))
+            .build(),
+        {
+          r'$sort': {'age': -1, 'posts': 1}
+        });
   });
 
   test('sortByCount', () {
     expect($sortByCount(Field('employee')).build(),
-        {'\$sortByCount': '\$employee'});
+        {r'$sortByCount': r'$employee'});
     expect(
         $sortByCount($mergeObjects([Field('employee'), Field('business')]))
             .build(),
         {
-          '\$sortByCount': {
-            '\$mergeObjects': ['\$employee', '\$business']
+          r'$sortByCount': {
+            r'$mergeObjects': [r'$employee', r'$business']
           }
         });
   });
@@ -614,9 +620,7 @@ void main() {
                 near: $geometry.point([-73.99279, 40.719296]),
                 distanceField: 'dist.calculated',
                 maxDistance: 2,
-                query: where
-                  ..$eq('category', 'Parks')
-                  ..filter.rawContent,
+                query: where..$eq('category', 'Parks'),
                 includeLocs: 'dist.location',
                 spherical: true)
             .build(),
@@ -628,22 +632,11 @@ void main() {
             },
             'distanceField': 'dist.calculated',
             'maxDistance': 2,
+            'spherical': true,
             'query': {
               'category': {r'$eq': 'Parks'}
             },
-            'includeLocs': 'dist.location',
-            'spherical': true
-          }
-        });
-
-    expect($sortByCount(Field('employee')).build(),
-        {'\$sortByCount': '\$employee'});
-    expect(
-        $sortByCount($mergeObjects([Field('employee'), Field('business')]))
-            .build(),
-        {
-          '\$sortByCount': {
-            '\$mergeObjects': ['\$employee', '\$business']
+            'includeLocs': 'dist.location'
           }
         });
   });
@@ -652,7 +645,7 @@ void main() {
         $unionWith(
           coll: 'warehouses',
           pipeline: [
-            $project({'state': 1, '_id': 0})
+            $project.raw({'state': 1, '_id': 0})
           ],
         ).build(),
         {
@@ -671,7 +664,7 @@ void main() {
             $eq(Field('stock_item'), Var('order_item')),
             $gte(Field('instock'), Var('order_qty'))
           ]))),
-          $project({'stock_item': 0, '_id': 0})
+          $project.raw({'stock_item': 0, '_id': 0})
         ]).build(),
         {
           r'$unionWith': {
