@@ -6,6 +6,7 @@ import '../base/list_expression.dart';
 import '../base/map_expression.dart';
 import '../query_expression/query_expression.dart';
 import 'aggregation_base.dart';
+import 'aggregation_pipeline_builder.dart';
 import 'common.dart';
 import 'support_classes/geometry_obj.dart';
 import 'support_classes/output.dart';
@@ -579,30 +580,23 @@ class $count extends AggregationStage {
 ///
 /// Dart code:
 /// ```
-/// Facet({
-///   'categorizedByTags': [
-///     Unwind(Field('tags')),
-///     SortByCount(Field('tags'))
-///   ],
-///   'categorizedByPrice': [
-///     Match(where.exists('price').map['\$query']),
-///     Bucket(
-///       groupBy: Field('price'),
-///       boundaries: [0, 150, 200, 300, 400],
-///       defaultId: 'Other',
-///       output: {
-///         'count': Sum(1),
-///         'titles': Push(Field('title'))
-///       }
-///     )
-///   ],
-///   'categorizedByYears(Auto)': [
-///     BucketAuto(
-///       groupBy: Field('year'),
-///       buckets: 4
-///     )
-///   ]
-/// }).build()
+///  $facet({
+///    'categorizedByTags': [
+///      $unwind(Field('tags')),
+///      $sortByCount(Field('tags'))
+///    ],
+///    'categorizedByPrice': [
+///      $match((where..$exists('price')).rawFilter),
+///      $bucket(
+///          groupBy: Field('price'),
+///          boundaries: [0, 150, 200, 300, 400],
+///          defaultId: 'Other',
+///          output: {'count': $sum(1), 'titles': $push(Field('title'))})
+///    ],
+///    'categorizedByYears(Auto)': [
+///      $bucketAuto(groupBy: Field('year'), buckets: 4)
+///    ]
+///  }).build()
 /// ```
 /// Equivalent aggreagtion stage:
 /// ```
@@ -640,12 +634,7 @@ class $count extends AggregationStage {
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/facet/
 class $facet extends AggregationStage {
   /// Creates `$facet` aggregation stage
-  /* $facet(Map<String, List<AggregationStage>> pipelines)
-      : super(
-            'facet',
-            AEObject(pipelines
-                .map((field, stages) => MapEntry(field, AEList(stages))))); */
-  $facet(Map<String, List<AggregationStage>> pipelines)
+  $facet(Map<String, AggregationPipeline> pipelines)
       : super(
             st$facet,
             valueToContent({
@@ -684,13 +673,9 @@ class $facet extends AggregationStage {
 /// Dart code:
 ///
 /// ```
-/// ReplaceRoot(MergeObjects([
-///   {
-///     '_id': Field('_id'),
-///     'first': '',
-///     'last': ''
-///   },
-///   Field('name')
+/// $replaceRoot($mergeObjects([
+///    {'_id': Field('_id'), 'first': '', 'last': ''},
+///    Field('name')
 /// ])).build()
 /// ```
 ///
@@ -713,7 +698,8 @@ class $replaceRoot extends AggregationStage {
   /*  $replaceRoot(replacement)
       : super('replaceRoot', AEObject({'newRoot': replacement})); */
   $replaceRoot(replacement)
-      : super(st$replaceRoot, valueToContent(replacement));
+      : super(st$replaceRoot,
+            FieldExpression('newRoot', valueToContent(replacement)));
 }
 
 /// `$replaceWith` aggregation stage
@@ -736,13 +722,13 @@ class $replaceRoot extends AggregationStage {
 /// Dart code:
 ///
 /// ```
-/// ReplaceWith(Field('name')).build()
+/// $replaceWith(Field('name')).build()
 /// ```
 ///
 /// Equivalent mongoDB aggregation stage:
 ///
 /// ```
-/// { $replaceWith: { newRoot: "$name" } }
+/// {r'$replaceWith': r'$name'}
 /// ```
 ///
 /// 2.
@@ -750,13 +736,9 @@ class $replaceRoot extends AggregationStage {
 /// Dart code:
 ///
 /// ```
-/// ReplaceWith(MergeObjects([
-///   {
-///     '_id': Field('_id'),
-///     'first': '',
-///     'last': ''
-///   },
-///   Field('name')
+/// $replaceWith($mergeObjects([
+///    {'_id': Field('_id'), 'first': '', 'last': ''},
+///    Field('name')
 /// ])).build()
 /// ```
 ///
@@ -764,9 +746,7 @@ class $replaceRoot extends AggregationStage {
 ///
 /// ```
 /// { $replaceWith: {
-///   newRoot: {
 ///     $mergeObjects: [ { _id: "$_id", first: "", last: "" }, "$name" ]
-///   }
 /// }}
 /// ```
 /// https://docs.mongodb.com/manual/reference/operator/aggregation/replaceWith/

@@ -3,10 +3,12 @@ import 'package:meta/meta.dart';
 import '../base/builder.dart';
 import 'aggregation_base.dart';
 
+typedef AggregationPipeline = List<AggregationStage>;
+
 /// Aggregation pipeline builder
 class AggregationPipelineBuilder implements Builder {
   @protected
-  final stages = <AggregationStage>[];
+  final AggregationPipeline stages = <AggregationStage>[];
 
   /// Adds stage to the pipeline
   AggregationPipelineBuilder addStage(AggregationStage stage) {
@@ -22,5 +24,4 @@ class AggregationPipelineBuilder implements Builder {
   List<Map<String, Object>> build() => [
         for (var stage in stages) <String, Object>{...stage.build()}
       ];
-  //stages.map((stage) => stage.build()).toList();
 }

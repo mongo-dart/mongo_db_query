@@ -324,52 +324,69 @@ void main() {
           ]
         }).build(),
         {
-          '\$facet': {
+          r'$facet': {
             'categorizedByTags': [
               {
-                '\$unwind': {'path': '\$tags'}
+                r'$unwind': {'path': r'$tags'}
               },
-              {'\$sortByCount': '\$tags'}
+              {r'$sortByCount': r'$tags'}
             ],
             'categorizedByPrice': [
               {
-                '\$match': {
-                  'price': {'\$exists': true}
+                r'$match': {
+                  'price': {r'$exists': true}
                 }
               },
               {
-                '\$bucket': {
-                  'groupBy': '\$price',
+                r'$bucket': {
+                  'groupBy': r'$price',
                   'boundaries': [0, 150, 200, 300, 400],
                   'default': 'Other',
                   'output': {
-                    'count': {'\$sum': 1},
-                    'titles': {'\$push': '\$title'}
+                    'count': {r'$sum': 1},
+                    'titles': {r'$push': r'$title'}
                   }
                 }
               }
             ],
             'categorizedByYears(Auto)': [
               {
-                '\$bucketAuto': {'groupBy': '\$year', 'buckets': 4}
+                r'$bucketAuto': {'groupBy': r'$year', 'buckets': 4}
               }
             ]
           }
         });
   });
 
+  test('replaeceRoot', () {
+    expect(
+        $replaceRoot($mergeObjects([
+          {'_id': Field('_id'), 'first': '', 'last': ''},
+          Field('name')
+        ])).build(),
+        {
+          r'$replaceRoot': {
+            'newRoot': {
+              r'$mergeObjects': [
+                {'_id': r"$_id", 'first': "", 'last': ""},
+                r'$name'
+              ]
+            }
+          }
+        });
+  });
   test('replaceWith', () {
-    expect($replaceWith(Field('name')).build(), {'\$replaceWith': '\$name'});
+    expect($replaceWith(Field('name')).build(), {r'$replaceWith': r'$name'});
     expect(
         $replaceWith($mergeObjects([
           {'_id': Field('_id'), 'first': '', 'last': ''},
           Field('name')
         ])).build(),
         {
-          '\$replaceWith': {
-            '\$mergeObjects': [
-              {'_id': '\$_id', 'first': '', 'last': ''},
-              '\$name'
+          r'$replaceWith': {
+            r'$mergeObjects': [
+              {'_id': r'$_id', 'first': '', 'last': ''},
+              r'$name'
             ]
           }
         });
