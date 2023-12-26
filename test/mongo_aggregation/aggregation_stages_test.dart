@@ -303,6 +303,67 @@ void main() {
   test('count', () {
     expect($count('myCount').build(), {r'$count': 'myCount'});
   });
+  test('collStats', () {
+    expect($collStats(histograms: true).build(), {
+      r'$collStats': {
+        'latencyStats': {'histograms': true}
+      }
+    });
+    expect(
+        $collStats.raw({
+          'latencyStats': {'histograms': true}
+        }).build(),
+        {
+          r'$collStats': {
+            'latencyStats': {'histograms': true}
+          }
+        });
+  });
+  test('densify', () {
+    expect(
+        $densify('timestamp', step: 1, unit: 'hour', bounds: [
+          DateTime.parse('2021-05-18T00:00:00.000Z'),
+          DateTime.parse('2021-05-18T08:00:00.000Z')
+        ]).build(),
+        {
+          r'$densify': {
+            'field': "timestamp",
+            'range': {
+              'step': 1,
+              'unit': "hour",
+              'bounds': [
+                DateTime.parse('2021-05-18T00:00:00.000Z'),
+                DateTime.parse('2021-05-18T08:00:00.000Z')
+              ]
+            }
+          }
+        });
+    expect(
+        $densify.raw({
+          'field': "timestamp",
+          'range': {
+            'step': 1,
+            'unit': "hour",
+            'bounds': [
+              DateTime.parse('2021-05-18T00:00:00.000Z'),
+              DateTime.parse('2021-05-18T08:00:00.000Z')
+            ]
+          }
+        }).build(),
+        {
+          r'$densify': {
+            'field': "timestamp",
+            'range': {
+              'step': 1,
+              'unit': "hour",
+              'bounds': [
+                DateTime.parse('2021-05-18T00:00:00.000Z'),
+                DateTime.parse('2021-05-18T08:00:00.000Z')
+              ]
+            }
+          }
+        });
+  });
 
   test('facet', () {
     expect(
@@ -697,7 +758,10 @@ void main() {
     expect($changeStream().build(), {r'$changeStream': {}});
     expect($changeStream.raw({}).build(), {r'$changeStream': {}});
   });
-
+  test('changeStreamSplitLargeEvent', () {
+    expect($changeStreamSplitLargeEvent().build(),
+        {r'$changeStreamSplitLargeEvent': {}});
+  });
   test('currentOp', () {
     expect($currentOp(allUsers: true, idleSessions: true).build(), {
       r'$currentOp': {'allUsers': true, 'idleSessions': true}

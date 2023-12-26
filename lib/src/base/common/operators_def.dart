@@ -171,7 +171,9 @@ const op$year = r'$year';
 const st$addFields = r'$addFields';
 const st$bucket = r'$bucket';
 const st$bucketAuto = r'$bucketAuto';
+const st$collStats = r'$collStats';
 const st$count = r'$count';
+const st$densify = r'$densify';
 const st$facet = r'$facet';
 const st$geoNear = r'$geoNear';
 const st$graphLookup = r'$graphLookup';
@@ -193,6 +195,7 @@ const st$unwind = r'$unwind';
 
 // **** Db Stages
 const st$changeStream = r'$changeStream';
+const st$changeStreamSplitLargeEvent = r'$changeStreamSplitLargeEvent';
 const st$currentOp = r'$currentOp';
 const st$documents = r'$documents';
 const st$listLocalSessions = r'$listLocalSessions';

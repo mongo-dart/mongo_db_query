@@ -540,6 +540,54 @@ class Granularity extends ExpressionContent {
   static const powersof2 = Granularity('POWERSOF2');
 }
 
+/// `$collStats ` aggregation stage
+///
+/// ### Stage description
+///
+/// Returns statistics regarding a collection or view.
+///
+/// https://docs.mongodb.com/manual/reference/operator/aggregation/collStats /
+class $collStats extends AggregationStage {
+  /// Creates `$collStats ` aggregation stage
+  ///
+  /// [latencyStats] - Adds latency statistics to the return document.
+  /// [histograms] - Adds latency histogram information to the embedded
+  /// documents in latencyStats if true. Implies latencyStats = True if not null
+  /// [storageStats] - Adds storage statistics to the return document.
+  /// [scaleFactor] - Implies storageStats = true if not null.
+  /// - Specify an empty document (i.e. storageStats: {}) to use the default
+  /// scale factor of 1 for the various size data.
+  /// Scale factor of 1 displays the returned sizes in bytes.
+  /// (StorageStats = true, scaleFactor = null)
+  /// - Specify the scale factor (i.e. storageStats: { scale: <number> }) to
+  /// use the specified scale factor for the various size data. For example,
+  /// to display kilobytes rather than bytes, specify a scale value of 1024.
+  ///
+  /// The scale factor does not affect those sizes that specify the unit of
+  /// measurement in the field name, such as "bytes currently in the cache".
+  /// [count] - Adds the total number of documents in the collection to the
+  /// return document. Is based on the collection's metadata, which provides a
+  /// fast but sometimes inaccurate count for sharded clusters.
+  /// [queryExecStats] - Adds query execution statistics to the return document.
+  /// New in version 4.4.
+  $collStats(
+      {bool? latencyStats,
+      bool? histograms,
+      bool? storageStats,
+      int? scaleFactor,
+      bool? count,
+      bool? queryExecStats})
+      : super(
+            st$collStats,
+            MapExpression({
+              if ((latencyStats != null && latencyStats) || histograms != null)
+                'latencyStats': {
+                  if (histograms != null) 'histograms': histograms
+                },
+            }));
+  $collStats.raw(MongoDocument raw) : super.raw(st$collStats, raw);
+}
+
 /// `$count` aggregation stage
 ///
 /// ### Stage description
@@ -555,6 +603,88 @@ class $count extends AggregationStage {
   /// value. [fieldName] must be a non-empty string and must not contain the `.`
   /// character.
   $count(String fieldName) : super(st$count, valueToContent(fieldName));
+}
+
+/// `$densify` aggregation stage
+///
+/// ### Stage description
+///
+///     New in version 5.1.
+///
+/// Creates new documents in a sequence of documents where certain values in a
+/// field are missing.
+/// You can use $densify to:
+/// - Fill gaps in time series data.
+/// - Add missing values between groups of data.
+/// - Populate your data with a specified range of values.
+/// https://docs.mongodb.com/manual/reference/operator/aggregation/densify/
+class $densify extends AggregationStage {
+  /// Creates `$densify` aggregation stage
+  ///
+  /// [field] - The field to densify. The values of the specified field
+  /// must either be all numeric values or all dates.
+  /// Documents that do not contain the specified field continue through the
+  /// pipeline unmodified.
+  /// To specify a <field> in an embedded document or in an array,
+  /// use dot notation.
+  /// [partitionByFields] - The set of fields to act as the compound key to
+  /// group the documents. In the $densify stage, each group of documents
+  /// is known as a partition.
+  ///
+  /// If you omit this field, $densify uses one partition for the entire
+  /// collection.
+  /// [bounds] - You can specify range.bounds as either:
+  ///  An array: [ < lower bound >, < upper bound > ],
+  ///  A string: either "full" or "partition".
+  ///  If bounds is an array:
+  ///  - $densify adds documents spanning the range of values within the
+  /// specified bounds.
+  ///    The data type for the bounds must correspond to the data type in the
+  /// field being densified.
+  ///
+  /// If bounds is "full":
+  /// - $densify adds documents spanning the full range of values of the field
+  /// being densified.
+  ///
+  /// If bounds is "partition":
+  /// - $densify adds documents to each partition, similar to if you had run a
+  /// full range densification on each partition individually.
+  /// [step] - The amount to increment the field value in each document.
+  /// $densify creates a new document for each step between the existing
+  /// documents.
+  ///
+  /// If range.unit is specified, step must be an integer. Otherwise, step can
+  /// be any numeric value.
+  /// [unit] - Required if field is a date. The unit to apply to the step
+  /// field when incrementing date values in field.
+  /// You can specify one of the following values for unit as a string:
+  /// - millisecond
+  /// - second
+  /// - minute
+  /// - hour
+  /// - day
+  /// - week
+  /// - month
+  /// - quarter
+  /// - year
+  $densify(String field,
+      {List<String>? partitionByFields,
+      required bounds,
+      required num? step,
+      String? unit})
+      : super(
+            st$densify,
+            MapExpression({
+              'field': field,
+              if (partitionByFields != null)
+                'partitionByFields': ListExpression(partitionByFields),
+              'range': MapExpression({
+                'step': step,
+                if (unit != null) 'unit': unit,
+                'bounds': valueToContent(bounds),
+              })
+            }));
+  $densify.raw(MongoDocument raw) : super.raw(st$densify, raw);
 }
 
 /// `$facet` aggregation stage
