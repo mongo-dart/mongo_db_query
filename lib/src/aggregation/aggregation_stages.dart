@@ -695,8 +695,6 @@ class $replaceRoot extends AggregationStage {
   /// The [replacement] document can be any valid expression that resolves to
   /// a document. The stage errors and fails if [replacement] is not
   /// a document.
-  /*  $replaceRoot(replacement)
-      : super('replaceRoot', AEObject({'newRoot': replacement})); */
   $replaceRoot(replacement)
       : super(st$replaceRoot,
             FieldExpression('newRoot', valueToContent(replacement)));

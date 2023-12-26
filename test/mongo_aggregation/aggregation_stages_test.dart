@@ -1,4 +1,5 @@
 import 'package:mongo_db_query/mongo_db_query.dart';
+import 'package:mongo_db_query/src/aggregation/db_aggregation_stages.dart';
 import 'package:test/test.dart' hide Skip;
 
 void main() {
@@ -690,5 +691,44 @@ void main() {
             ]
           }
         });
+  });
+
+  test('changeStream', () {
+    expect($changeStream().build(), {r'$changeStream': {}});
+    expect($changeStream.raw({}).build(), {r'$changeStream': {}});
+  });
+
+  test('currentOp', () {
+    expect($currentOp(allUsers: true, idleSessions: true).build(), {
+      r'$currentOp': {'allUsers': true, 'idleSessions': true}
+    });
+    expect($currentOp.raw({'allUsers': true, 'idleSessions': true}).build(), {
+      r'$currentOp': {'allUsers': true, 'idleSessions': true}
+    });
+  });
+
+  test('documents', () {
+    expect(
+        $documents([
+          {'x': 10},
+          {'x': 2},
+          {'x': 5}
+        ]).build(),
+        {
+          r'$documents': [
+            {'x': 10},
+            {'x': 2},
+            {'x': 5}
+          ]
+        });
+  });
+
+  test('listLocalSessions', () {
+    expect($listLocalSessions(allUsers: true).build(), {
+      r'$listLocalSessions': {'allUsers': true}
+    });
+    expect($listLocalSessions.raw({'allUsers': true}).build(), {
+      r'$listLocalSessions': {'allUsers': true}
+    });
   });
 }

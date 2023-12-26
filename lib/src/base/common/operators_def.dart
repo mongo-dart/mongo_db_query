@@ -191,6 +191,12 @@ const st$unionWith = r'$unionWith';
 const st$unset = r'$unset';
 const st$unwind = r'$unwind';
 
+// **** Db Stages
+const st$changeStream = r'$changeStream';
+const st$currentOp = r'$currentOp';
+const st$documents = r'$documents';
+const st$listLocalSessions = r'$listLocalSessions';
+
 // **** String
 const op$concat = r'$concat';
 const op$indexOfBytes = r'$indexOfBytes';
