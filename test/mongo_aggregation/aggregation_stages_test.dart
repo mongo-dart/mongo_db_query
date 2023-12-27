@@ -1,5 +1,6 @@
 import 'package:mongo_db_query/mongo_db_query.dart';
 import 'package:mongo_db_query/src/aggregation/db_aggregation_stages.dart';
+import 'package:mongo_db_query/src/base/map_expression.dart';
 import 'package:test/test.dart' hide Skip;
 
 void main() {
@@ -419,6 +420,43 @@ void main() {
         });
   });
 
+  test('fill', () {
+    expect(
+        $fill(sortBy: {
+          'date': 1
+        }, partitionBy: {
+          'restaurant': r'$restaurant'
+        }, output: [
+          FieldExpression('score', MapExpression({'method': 'locf'}))
+        ]).build(),
+        {
+          r'$fill': {
+            'partitionBy': {'restaurant': r'$restaurant'},
+            'sortBy': {'date': 1},
+            'output': {
+              'score': {'method': 'locf'}
+            }
+          }
+        });
+    expect(
+        $fill.raw({
+          'partitionBy': {'restaurant': r'$restaurant'},
+          'sortBy': {'date': 1},
+          'output': {
+            'score': {'method': 'locf'}
+          }
+        }).build(),
+        {
+          r'$fill': {
+            'partitionBy': {'restaurant': r'$restaurant'},
+            'sortBy': {'date': 1},
+            'output': {
+              'score': {'method': 'locf'}
+            }
+          }
+        });
+  });
+
   test('replaeceRoot', () {
     expect(
         $replaceRoot($mergeObjects([
@@ -518,6 +556,10 @@ void main() {
             'books': {r'$push': r'$$ROOT'}
           }
         });
+  });
+
+  test('indexStats', () {
+    expect($indexStats().build(), {r'$indexStats': {}});
   });
 
   test('match', () {
