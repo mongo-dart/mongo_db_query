@@ -1,7 +1,7 @@
 import '../base/common/operators_def.dart';
 import '../base/operator_expression.dart';
 import '../query_expression/query_expression.dart';
-import 'aggregation_base.dart';
+import 'base/aggregation_base.dart';
 
 /// `$arrayElemAt` operator
 ///

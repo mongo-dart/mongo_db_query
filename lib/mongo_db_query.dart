@@ -12,7 +12,7 @@ export 'src/base/logical_expression.dart';
 export 'src/base/common/document_types.dart';
 export 'src/base/common/operators_def.dart';
 
-export 'src/aggregation/aggregation_base.dart';
+export 'src/aggregation/base/aggregation_base.dart';
 export 'src/aggregation/aggregation_pipeline_builder.dart';
 export 'src/aggregation/aggregation_stages.dart';
 export 'src/aggregation/arithmetic_operators.dart';

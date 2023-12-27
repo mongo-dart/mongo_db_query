@@ -1,5 +1,6 @@
 import 'package:mongo_db_query/mongo_db_query.dart';
 import 'package:mongo_db_query/src/aggregation/db_aggregation_stages.dart';
+import 'package:mongo_db_query/src/aggregation/stage/out.dart';
 import 'package:mongo_db_query/src/base/map_expression.dart';
 import 'package:test/test.dart' hide Skip;
 
@@ -636,6 +637,47 @@ void main() {
             'as': 'stockdata'
           }
         });
+  });
+
+  test('merge', () {
+    expect(
+        $merge(
+                into: 'myOutput',
+                on: '_id',
+                whenMatched: 'replace',
+                whenNotMatched: 'insert')
+            .build(),
+        {
+          r'$merge': {
+            'into': "myOutput",
+            'on': "_id",
+            'whenMatched': "replace",
+            'whenNotMatched': "insert"
+          }
+        });
+    expect(
+        $merge.raw({
+          'into': "myOutput",
+          'on': "_id",
+          'whenMatched': "replace",
+          'whenNotMatched': "insert"
+        }).build(),
+        {
+          r'$merge': {
+            'into': "myOutput",
+            'on': "_id",
+            'whenMatched': "replace",
+            'whenNotMatched': "insert"
+          }
+        });
+  });
+  test('out', () {
+    expect($out(db: 'reporting', coll: 'authors').build(), {
+      r'$out': {'db': 'reporting', 'coll': 'authors'}
+    });
+    expect($out.raw({'db': 'reporting', 'coll': 'authors'}).build(), {
+      r'$out': {'db': 'reporting', 'coll': 'authors'}
+    });
   });
 
   test('graphLookup', () {

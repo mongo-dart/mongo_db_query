@@ -1,7 +1,7 @@
 import '../../base/map_expression.dart';
 import '../../query_expression/query_expression.dart';
-import '../aggregation_base.dart';
-import '../common.dart';
+import '../base/aggregation_base.dart';
+import 'common.dart';
 
 /// Creates an "output" document for the setWindowsFields stage
 /// * [fieldName] -Specifies the field to append to the documents in the

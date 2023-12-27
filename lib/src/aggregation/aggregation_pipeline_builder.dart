@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
 import '../base/builder.dart';
-import 'aggregation_base.dart';
+import 'base/aggregation_base.dart';
 
 typedef AggregationPipeline = List<AggregationStage>;
 
