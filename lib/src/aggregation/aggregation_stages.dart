@@ -26,10 +26,10 @@ export 'stage/merge.dart';
 export 'stage/out.dart';
 export 'stage/plan_cache_stats.dart';
 export 'stage/project.dart';
-// TODO $redact
+export 'stage/redact.dart';
 export 'stage/replace_root.dart';
 export 'stage/replace_with.dart';
-// TODO $sample
+export 'stage/sample.dart';
 // TODO $search
 // TODO $searchMeta
 export 'stage/set.dart';

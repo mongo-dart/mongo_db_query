@@ -301,6 +301,15 @@ void main() {
     expect(Granularity.powersof2.rawContent, 'POWERSOF2');
   });
 
+  test('changeStream', () {
+    expect($changeStream().build(), {r'$changeStream': {}});
+    expect($changeStream.raw({}).build(), {r'$changeStream': {}});
+  });
+  test('changeStreamSplitLargeEvent', () {
+    expect($changeStreamSplitLargeEvent().build(),
+        {r'$changeStreamSplitLargeEvent': {}});
+  });
+
   test('count', () {
     expect($count('myCount').build(), {r'$count': 'myCount'});
   });
@@ -457,36 +466,57 @@ void main() {
         });
   });
 
-  test('replaeceRoot', () {
+  test('geoNear', () {
     expect(
-        $replaceRoot($mergeObjects([
-          {'_id': Field('_id'), 'first': '', 'last': ''},
-          Field('name')
-        ])).build(),
+        $geoNear(
+                near: $geometry.point([-73.99279, 40.719296]),
+                distanceField: 'dist.calculated',
+                maxDistance: 2,
+                query: where..$eq('category', 'Parks'),
+                includeLocs: 'dist.location',
+                spherical: true)
+            .build(),
         {
-          r'$replaceRoot': {
-            'newRoot': {
-              r'$mergeObjects': [
-                {'_id': r"$_id", 'first': "", 'last': ""},
-                r'$name'
-              ]
-            }
+          r'$geoNear': {
+            'near': {
+              'type': 'Point',
+              'coordinates': [-73.99279, 40.719296]
+            },
+            'distanceField': 'dist.calculated',
+            'maxDistance': 2,
+            'spherical': true,
+            'query': {
+              'category': {r'$eq': 'Parks'}
+            },
+            'includeLocs': 'dist.location'
           }
         });
   });
-  test('replaceWith', () {
-    expect($replaceWith(Field('name')).build(), {r'$replaceWith': r'$name'});
+
+  test('graphLookup', () {
     expect(
-        $replaceWith($mergeObjects([
-          {'_id': Field('_id'), 'first': '', 'last': ''},
-          Field('name')
-        ])).build(),
+        $graphLookup(
+                from: 'employees',
+                startWith: 'reportsTo',
+                connectFromField: 'reportsTo',
+                connectToField: 'name',
+                as: 'reportingHierarchy',
+                depthField: 'depth',
+                maxDepth: 5,
+                restrictSearchWithMatch: where..$eq('field', 'value'))
+            .build(),
         {
-          r'$replaceWith': {
-            r'$mergeObjects': [
-              {'_id': r'$_id', 'first': '', 'last': ''},
-              r'$name'
-            ]
+          r'$graphLookup': {
+            'from': 'employees',
+            'startWith': r'$reportsTo',
+            'connectFromField': 'reportsTo',
+            'connectToField': 'name',
+            'as': 'reportingHierarchy',
+            'depthField': 'depth',
+            'maxDepth': 5,
+            'restrictSearchWithMatch': {
+              'field': {r'$eq': 'value'}
+            }
           }
         });
   });
@@ -560,6 +590,11 @@ void main() {
 
   test('indexStats', () {
     expect($indexStats().build(), {r'$indexStats': {}});
+  });
+
+  test('limit', () {
+    expect($limit(5).build(), {r'$limit': 5});
+    expect($limit.query(where..limit(5)).build(), {r'$limit': 5});
   });
 
   test('listLocalSessions', () {
@@ -712,38 +747,6 @@ void main() {
   test('planCacheStats', () {
     expect($planCacheStats().build(), {r'$planCacheStats': {}});
   });
-  test('graphLookup', () {
-    expect(
-        $graphLookup(
-                from: 'employees',
-                startWith: 'reportsTo',
-                connectFromField: 'reportsTo',
-                connectToField: 'name',
-                as: 'reportingHierarchy',
-                depthField: 'depth',
-                maxDepth: 5,
-                restrictSearchWithMatch: where..$eq('field', 'value'))
-            .build(),
-        {
-          r'$graphLookup': {
-            'from': 'employees',
-            'startWith': r'$reportsTo',
-            'connectFromField': 'reportsTo',
-            'connectToField': 'name',
-            'as': 'reportingHierarchy',
-            'depthField': 'depth',
-            'maxDepth': 5,
-            'restrictSearchWithMatch': {
-              'field': {r'$eq': 'value'}
-            }
-          }
-        });
-  });
-  test('unwind', () {
-    expect($unwind(Field('sizes')).build(), {
-      r'$unwind': {'path': r'$sizes'}
-    });
-  });
 
   test('project', () {
     expect($project(included: ['title', 'author'], excluded: ['_id']).build(), {
@@ -754,14 +757,125 @@ void main() {
     });
   });
 
+  test('redact', () {
+    expect(
+        $redact($cond(
+                ifExpr: $gt(
+                    $size($setIntersection([
+                      Field('tags'),
+                      valueToContent(['STLW', 'G'])
+                    ])),
+                    0),
+                thenExpr: Var.descend,
+                elseExpr: Var.prune))
+            .build(),
+        {
+          r'$redact': {
+            r'$cond': [
+              {
+                r'$gt': [
+                  {
+                    r'$size': {
+                      r'$setIntersection': [
+                        r'$tags',
+                        ['STLW', 'G']
+                      ]
+                    }
+                  },
+                  0
+                ]
+              },
+              r'$$DESCEND',
+              r'$$PRUNE'
+            ]
+          }
+        });
+    expect(
+        $redact.raw({
+          r'$cond': {
+            'if': {
+              r'$gt': [
+                {
+                  r'$size': {
+                    r'$setIntersection': [
+                      r'$tags',
+                      ['STLW', 'G']
+                    ]
+                  }
+                },
+                0
+              ]
+            },
+            'then': r'$$DESCEND',
+            'else': r'$$PRUNE'
+          }
+        }).build(),
+        {
+          r'$redact': {
+            r'$cond': {
+              'if': {
+                r'$gt': [
+                  {
+                    r'$size': {
+                      r'$setIntersection': [
+                        r'$tags',
+                        ['STLW', 'G']
+                      ]
+                    }
+                  },
+                  0
+                ]
+              },
+              'then': r'$$DESCEND',
+              'else': r'$$PRUNE'
+            }
+          }
+        });
+  });
+
+  test('replaceRoot', () {
+    expect(
+        $replaceRoot($mergeObjects([
+          {'_id': Field('_id'), 'first': '', 'last': ''},
+          Field('name')
+        ])).build(),
+        {
+          r'$replaceRoot': {
+            'newRoot': {
+              r'$mergeObjects': [
+                {'_id': r"$_id", 'first': "", 'last': ""},
+                r'$name'
+              ]
+            }
+          }
+        });
+  });
+  test('replaceWith', () {
+    expect($replaceWith(Field('name')).build(), {r'$replaceWith': r'$name'});
+    expect(
+        $replaceWith($mergeObjects([
+          {'_id': Field('_id'), 'first': '', 'last': ''},
+          Field('name')
+        ])).build(),
+        {
+          r'$replaceWith': {
+            r'$mergeObjects': [
+              {'_id': r'$_id', 'first': '', 'last': ''},
+              r'$name'
+            ]
+          }
+        });
+  });
+
+  test('sample', () {
+    expect($sample(3).build(), {
+      r'$sample': {'size': 3}
+    });
+  });
+
   test('skip', () {
     expect($skip(5).build(), {r'$skip': 5});
     expect($skip.query(where..skip(5)).build(), {r'$skip': 5});
-  });
-
-  test('limit', () {
-    expect($limit(5).build(), {r'$limit': 5});
-    expect($limit.query(where..limit(5)).build(), {r'$limit': 5});
   });
 
   test('sort', () {
@@ -788,33 +902,6 @@ void main() {
         {
           r'$sortByCount': {
             r'$mergeObjects': [r'$employee', r'$business']
-          }
-        });
-  });
-
-  test('geoNear', () {
-    expect(
-        $geoNear(
-                near: $geometry.point([-73.99279, 40.719296]),
-                distanceField: 'dist.calculated',
-                maxDistance: 2,
-                query: where..$eq('category', 'Parks'),
-                includeLocs: 'dist.location',
-                spherical: true)
-            .build(),
-        {
-          r'$geoNear': {
-            'near': {
-              'type': 'Point',
-              'coordinates': [-73.99279, 40.719296]
-            },
-            'distanceField': 'dist.calculated',
-            'maxDistance': 2,
-            'spherical': true,
-            'query': {
-              'category': {r'$eq': 'Parks'}
-            },
-            'includeLocs': 'dist.location'
           }
         });
   });
@@ -869,15 +956,6 @@ void main() {
           }
         });
   });
-
-  test('changeStream', () {
-    expect($changeStream().build(), {r'$changeStream': {}});
-    expect($changeStream.raw({}).build(), {r'$changeStream': {}});
-  });
-  test('changeStreamSplitLargeEvent', () {
-    expect($changeStreamSplitLargeEvent().build(),
-        {r'$changeStreamSplitLargeEvent': {}});
-  });
   test('currentOp', () {
     expect($currentOp(allUsers: true, idleSessions: true).build(), {
       r'$currentOp': {'allUsers': true, 'idleSessions': true}
@@ -901,5 +979,11 @@ void main() {
             {'x': 5}
           ]
         });
+  });
+
+  test('unwind', () {
+    expect($unwind(Field('sizes')).build(), {
+      r'$unwind': {'path': r'$sizes'}
+    });
   });
 }

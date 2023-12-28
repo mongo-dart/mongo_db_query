@@ -82,7 +82,7 @@ class Var extends ExpressionContent {
 
   /// One of the allowed results of a
   /// [$redact](https://docs.mongodb.com/manual/reference/operator/aggregation/redact/#pipe._S_redact) expression.
-  static const discend = Var('DISCEND');
+  static const descend = Var('DESCEND');
 
   /// One of the allowed results of a
   /// [$redact](https://docs.mongodb.com/manual/reference/operator/aggregation/redact/#pipe._S_redact) expression.
@@ -91,6 +91,15 @@ class Var extends ExpressionContent {
   /// One of the allowed results of a
   /// [$redact](https://docs.mongodb.com/manual/reference/operator/aggregation/redact/#pipe._S_redact) expression.
   static const keep = Var('KEEP');
+
+  /// A variable that stores the metadata results of an
+  /// [Atlas Search](https://www.mongodb.com/docs/atlas/atlas-search/)
+  /// query. In all supported aggregation pipeline stages, a field set to the
+  /// variable $$SEARCH_META returns the metadata results for the query.
+  static const searchMeta = Var('SEARC_META');
+
+  ///Returns the roles assigned to the current user.
+  static const userRoles = Var('USER_ROLES');
 
   final String _name;
 

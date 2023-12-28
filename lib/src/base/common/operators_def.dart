@@ -47,6 +47,7 @@ const op$search = r'$search';
 const op$language = r'$language';
 const op$caseSensitive = r'$caseSensitive';
 const op$diacriticSensitive = r'$diacriticSensitive';
+const op$setIntersection = r'$setIntersection';
 
 // ************* Geometry
 const op$center = r'$center';
