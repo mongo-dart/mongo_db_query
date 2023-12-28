@@ -1,5 +1,4 @@
 import 'package:mongo_db_query/mongo_db_query.dart';
-import 'package:mongo_db_query/src/aggregation/db_aggregation_stages.dart';
 import 'package:mongo_db_query/src/aggregation/stage/out.dart';
 import 'package:mongo_db_query/src/base/map_expression.dart';
 import 'package:test/test.dart' hide Skip;
@@ -563,18 +562,33 @@ void main() {
     expect($indexStats().build(), {r'$indexStats': {}});
   });
 
-  test('match', () {
-    expect($match(where..$eq('author', 'dave')).build(), {
-      r'$match': {
-        'author': {r'$eq': 'dave'}
-      }
+  test('listLocalSessions', () {
+    expect($listLocalSessions(allUsers: true).build(), {
+      r'$listLocalSessions': {'allUsers': true}
     });
-    expect($match($expr($eq(Field('author'), 'dave'))).build(), {
-      r'$match': {
-        r'$expr': {
-          r'$eq': ['\$author', 'dave']
-        }
-      }
+    expect($listLocalSessions.raw({'allUsers': true}).build(), {
+      r'$listLocalSessions': {'allUsers': true}
+    });
+  });
+
+  test('listSampledQueries', () {
+    expect($listSampledQueries(namespace: 'social.post').build(), {
+      r'$listSampledQueries': {'namespace': 'social.post'}
+    });
+  });
+
+  test('listSearchIndexes', () {
+    expect($listSearchIndexes(name: 'synonym-mappings').build(), {
+      r'$listSearchIndexes': {'name': "synonym-mappings"}
+    });
+  });
+
+  test('listSessions', () {
+    expect($listSessions(allUsers: true).build(), {
+      r'$listSessions': {'allUsers': true}
+    });
+    expect($listSessions.raw({'allUsers': true}).build(), {
+      r'$listSessions': {'allUsers': true}
     });
   });
 
@@ -639,6 +653,21 @@ void main() {
         });
   });
 
+  test('match', () {
+    expect($match(where..$eq('author', 'dave')).build(), {
+      r'$match': {
+        'author': {r'$eq': 'dave'}
+      }
+    });
+    expect($match($expr($eq(Field('author'), 'dave'))).build(), {
+      r'$match': {
+        r'$expr': {
+          r'$eq': ['\$author', 'dave']
+        }
+      }
+    });
+  });
+
   test('merge', () {
     expect(
         $merge(
@@ -680,6 +709,9 @@ void main() {
     });
   });
 
+  test('planCacheStats', () {
+    expect($planCacheStats().build(), {r'$planCacheStats': {}});
+  });
   test('graphLookup', () {
     expect(
         $graphLookup(
@@ -869,14 +901,5 @@ void main() {
             {'x': 5}
           ]
         });
-  });
-
-  test('listLocalSessions', () {
-    expect($listLocalSessions(allUsers: true).build(), {
-      r'$listLocalSessions': {'allUsers': true}
-    });
-    expect($listLocalSessions.raw({'allUsers': true}).build(), {
-      r'$listLocalSessions': {'allUsers': true}
-    });
   });
 }
