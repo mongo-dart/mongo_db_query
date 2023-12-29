@@ -1,6 +1,6 @@
 import '../../base/common/operators_def.dart';
 import '../../base/map_expression.dart';
-import '../base/aggregation_base.dart';
+import '../base/aggregation_stage.dart';
 
 /// `$indexStats` aggregation stage
 ///

@@ -4,7 +4,7 @@ import '../../base/field_expression.dart';
 import '../../base/list_expression.dart';
 import '../../base/map_expression.dart';
 import '../../query_expression/query_expression.dart';
-import '../base/aggregation_base.dart';
+import '../base/aggregation_stage.dart';
 
 /// `$fill` aggregation stage
 ///

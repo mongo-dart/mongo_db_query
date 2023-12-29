@@ -1,6 +1,6 @@
 import '../../base/common/operators_def.dart';
 import '../../base/list_expression.dart';
-import '../base/aggregation_base.dart';
+import '../base/aggregation_stage.dart';
 
 /// `$unset` aggregation stage
 ///

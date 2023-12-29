@@ -2,7 +2,7 @@ import '../../base/common/document_types.dart';
 import '../../base/common/operators_def.dart';
 import '../../base/expression_content.dart';
 import '../../query_expression/query_expression.dart';
-import '../base/aggregation_base.dart';
+import '../base/aggregation_stage.dart';
 
 /// `$graphLookup`
 ///

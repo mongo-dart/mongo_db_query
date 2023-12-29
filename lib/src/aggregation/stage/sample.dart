@@ -1,7 +1,7 @@
 import 'package:mongo_db_query/src/base/map_expression.dart';
 
 import '../../base/common/operators_def.dart';
-import '../base/aggregation_base.dart';
+import '../base/aggregation_stage.dart';
 
 /// `$sample` aggregation stage
 ///

@@ -244,3 +244,9 @@ const op$toObjectId = r'$toObjectId';
 
 // **** Type Expression
 const op$let = r'$let';
+
+// ***** Atlas Operators
+const opNear = 'near';
+
+// ***** Atlas Collectors
+const coFacet = 'facet';

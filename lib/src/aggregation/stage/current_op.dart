@@ -1,7 +1,7 @@
 import '../../base/common/document_types.dart';
 import '../../base/common/operators_def.dart';
 import '../../base/map_expression.dart';
-import '../base/aggregation_base.dart';
+import '../base/aggregation_stage.dart';
 
 /// `$currentOp ` aggregation stage
 ///

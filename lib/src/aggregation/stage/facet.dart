@@ -1,7 +1,7 @@
 import '../../base/common/operators_def.dart';
 import '../../query_expression/query_expression.dart';
-import '../base/aggregation_base.dart';
 import '../aggregation_pipeline_builder.dart';
+import '../base/aggregation_stage.dart';
 
 /// `$facet` aggregation stage
 ///
