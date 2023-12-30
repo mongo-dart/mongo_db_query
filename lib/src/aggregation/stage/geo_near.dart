@@ -3,7 +3,8 @@ import '../../base/common/operators_def.dart';
 import '../../base/expression_content.dart';
 import '../../query_expression/query_expression.dart';
 import '../base/aggregation_stage.dart';
-import '../support_classes/geometry_obj.dart';
+import '../support_classes/geo/geo_json_type.dart';
+import '../support_classes/geo/geometry.dart';
 
 /// `$geoNear`
 ///
@@ -45,7 +46,7 @@ import '../support_classes/geometry_obj.dart';
 ///
 class $geoNear extends AggregationStage {
   $geoNear(
-      {required $geometry near,
+      {required Geometry near,
       required String distanceField,
       num? maxDistance,
       num? minDistance,
@@ -54,7 +55,7 @@ class $geoNear extends AggregationStage {
       num? distanceMultiplier,
       String? includeLocs,
       String? key})
-      : assert(near.type == GeometryObjectType.Point,
+      : assert(near.rawContent['type'] == GeoJsonType.point.name,
             r"$geoNear 'near' field must be Point"),
         super(
             st$geoNear,

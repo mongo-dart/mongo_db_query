@@ -1,5 +1,4 @@
 import '../../../base/common/operators_def.dart';
-import '../../../base/map_expression.dart';
 import '../../base/atlas_collector.dart';
 import '../../base/atlas_operator.dart';
 import 'support/facet_type.dart';

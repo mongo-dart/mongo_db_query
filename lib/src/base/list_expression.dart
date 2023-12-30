@@ -10,7 +10,7 @@ class ListExpression extends ExpressionContainer {
   ListExpression(this.values);
   ListExpression.empty() : values = [];
 
-  List values;
+  final List values;
 
   int get length => values.length;
 

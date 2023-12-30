@@ -1,5 +1,9 @@
 library test_lib;
 
+import 'package:mongo_db_query/src/aggregation/operator/box.dart';
+import 'package:mongo_db_query/src/aggregation/operator/center.dart';
+import 'package:mongo_db_query/src/aggregation/operator/geometry.dart';
+import 'package:mongo_db_query/src/aggregation/support_classes/geo/geo_json_type.dart';
 import 'package:test/test.dart';
 import 'package:bson/bson.dart';
 import 'package:mongo_db_query/mongo_db_query.dart';
@@ -305,7 +309,7 @@ void main() {
       ..$eq('field', 'value')
       ..$gt('num_field', 5)
       ..and
-      ..$nearSphere('geo_obj', $geometry.point([35.0, 35.0]));
+      ..$nearSphere('geo_obj', Geometry.point([35.0, 35.0]));
 
     var copied = QueryExpression.copyWith(selector);
 
@@ -316,7 +320,7 @@ void main() {
     var selector = where
       ..$nearSphere(
           'geo_field',
-          $geometry(type: GeometryObjectType.Polygon, coordinates: [
+          Geometry(type: GeoJsonType.polygon, coordinates: [
             [0, 0],
             [1, 8],
             [12, 30],
@@ -359,7 +363,7 @@ void main() {
     var selector = where
       ..$geoIntersects(
           'geo_field',
-          $geometry(type: GeometryObjectType.Polygon, coordinates: [
+          Geometry(type: GeoJsonType.polygon, coordinates: [
             [0, 0],
             [1, 8],
             [12, 30],
@@ -389,12 +393,13 @@ void main() {
     var selector = where
       ..$geoWithin(
           'geo_field',
-          $geometry(type: GeometryObjectType.Polygon, coordinates: [
+          $geometry(
+              geometry: Geometry(type: GeoJsonType.polygon, coordinates: [
             [0, 0],
             [1, 8],
             [12, 30],
             [0, 0]
-          ]));
+          ])));
 
     expect(
         selector.filter.rawContent,

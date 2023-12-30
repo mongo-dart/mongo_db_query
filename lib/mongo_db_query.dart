@@ -24,5 +24,5 @@ export 'src/aggregation/logic_operators.dart';
 export 'src/aggregation/string_operators.dart';
 export 'src/aggregation/type_expression_operators.dart';
 export 'src/aggregation/uncategorized_operators.dart';
-export 'src/aggregation/support_classes/geometry_obj.dart';
+export 'src/aggregation/support_classes/geo/geometry.dart';
 export 'src/aggregation/support_classes/output.dart';

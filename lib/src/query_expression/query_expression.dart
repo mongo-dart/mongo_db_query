@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:bson/bson.dart';
 
-import '../aggregation/support_classes/geometry_obj.dart';
+import '../aggregation/base/shape_operator.dart';
+import '../aggregation/support_classes/geo/geometry.dart';
 import '../base/common/constant.dart';
 import '../base/common/document_types.dart';
 import '../base/common/operators_def.dart';
@@ -185,12 +186,12 @@ class QueryExpression {
       {bool caseInsensitive = false,
       bool multiLineAnchorMatch = false,
       bool extendedIgnoreWhiteSpace = false,
-      bool dotMAtchAll = false,
+      bool dotMatchAll = false,
       bool escapePattern = false}) {
     var options = '${caseInsensitive ? 'i' : ''}'
         '${multiLineAnchorMatch ? 'm' : ''}'
         '${extendedIgnoreWhiteSpace ? 'x' : ''}'
-        '${dotMAtchAll ? 's' : ''}';
+        '${dotMatchAll ? 's' : ''}';
 
     filter.addFieldOperator(FieldExpression(
         fieldName,
@@ -229,11 +230,11 @@ class QueryExpression {
   // ***************************************************
 
   /// Geospatial operators return data based on geospatial expression conditions
-  void $geoIntersects(String fieldName, $geometry coordinate) =>
+  void $geoIntersects(String fieldName, Geometry coordinate) =>
       filter.addFieldOperator(FieldExpression(
           fieldName,
           OperatorExpression(
-              op$geoIntersects, MapExpression(coordinate.build()))));
+              op$geoIntersects, MapExpression(coordinate.rawContent))));
 
   /// Selects documents with geospatial data that exists entirely
   /// within a specified shape.
@@ -259,7 +260,7 @@ class QueryExpression {
   /// Specifies a point for which a geospatial query returns the documents
   /// from nearest to farthest.
   /// Only support geometry of point
-  void $nearSphere(String fieldName, $geometry point,
+  void $nearSphere(String fieldName, Geometry point,
           {double? maxDistance, double? minDistance}) =>
       filter.addFieldOperator(FieldExpression(
           fieldName,
@@ -268,7 +269,7 @@ class QueryExpression {
               MapExpression({
                 if (minDistance != null) op$minDistance: minDistance,
                 if (maxDistance != null) op$maxDistance: maxDistance
-              }..addAll(point.build())))));
+              }..addAll(point.rawContent)))));
 
   // ***************************************************
   // ***************** Array Query Operator

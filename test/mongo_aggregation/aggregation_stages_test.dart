@@ -1,5 +1,4 @@
 import 'package:mongo_db_query/mongo_db_query.dart';
-import 'package:mongo_db_query/src/aggregation/stage/out.dart';
 import 'package:mongo_db_query/src/base/map_expression.dart';
 import 'package:test/test.dart' hide Skip;
 
@@ -469,7 +468,7 @@ void main() {
   test('geoNear', () {
     expect(
         $geoNear(
-                near: $geometry.point([-73.99279, 40.719296]),
+                near: Geometry.point([-73.99279, 40.719296]),
                 distanceField: 'dist.calculated',
                 maxDistance: 2,
                 query: where..$eq('category', 'Parks'),
