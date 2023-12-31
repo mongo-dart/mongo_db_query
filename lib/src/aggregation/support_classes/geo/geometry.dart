@@ -5,6 +5,9 @@ import 'geo_position.dart';
 
 part 'geo_point.dart';
 part 'geo_line_string.dart';
+part 'geo_linear_ring.dart';
+part 'geo_polygon.dart';
+
 part 'geo_multi_point.dart';
 
 base class Geometry extends MapExpression {
@@ -21,6 +24,9 @@ base class Geometry extends MapExpression {
 
   factory Geometry.lineString(List<List<double>> points) =>
       GeoLineString.coordinates(points);
+
+  factory Geometry.polygon(List<List<List<double>>> rings) =>
+      GeoPolygon.coordinates(rings);
 
   GeoJsonType type;
 }
