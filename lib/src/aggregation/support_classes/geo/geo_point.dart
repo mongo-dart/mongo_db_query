@@ -4,7 +4,17 @@ final class GeoPoint extends Geometry {
   GeoPoint(GeoPosition position)
       : super(type: GeoJsonType.point, coordinates: position.rawContent);
   GeoPoint.coordinates(List<double> coordinates)
-      : super(type: GeoJsonType.point, coordinates: coordinates);
+      : super(type: GeoJsonType.point, coordinates: [
+          if (coordinates.isNotEmpty)
+            coordinates.first
+          else
+            throw ArgumentError('Missing longitude'),
+          if (coordinates.length > 1)
+            coordinates[1]
+          else
+            throw ArgumentError('Missing latitude'),
+          if (coordinates.length > 2) coordinates[2]
+        ]);
 
   @override
   int get hashCode => Object.hashAll((valueMap['coordinates'].length > 2

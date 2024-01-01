@@ -3,17 +3,17 @@ import '../../../base/list_expression.dart';
 class GeoPosition extends ListExpression {
   GeoPosition(double longitude, double latitude, {double? altitude})
       : super([longitude, latitude, if (altitude != null) altitude]);
-  GeoPosition.coordinates(List<double> positions)
+  GeoPosition.coordinates(List<double> coordinates)
       : super([
-          if (positions.isNotEmpty)
-            positions.first
+          if (coordinates.isNotEmpty)
+            coordinates.first
           else
             throw ArgumentError('Missing longitude'),
-          if (positions.length > 1)
-            positions[1]
+          if (coordinates.length > 1)
+            coordinates[1]
           else
             throw ArgumentError('Missing latitude'),
-          if (positions.length > 2) positions[2]
+          if (coordinates.length > 2) coordinates[2]
         ]);
 
   @override

@@ -21,7 +21,7 @@ void main() {
     expect(Var.root.rawContent, '\$\$ROOT');
     expect(Var.current.rawContent, '\$\$CURRENT');
     expect(Var.remove.rawContent, '\$\$REMOVE');
-    expect(Var.descend.rawContent, '\$\$DISCEND');
+    expect(Var.descend.rawContent, '\$\$DESCEND');
     expect(Var.prune.rawContent, '\$\$PRUNE');
     expect(Var.keep.rawContent, '\$\$KEEP');
   });

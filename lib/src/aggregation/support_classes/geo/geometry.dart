@@ -9,6 +9,8 @@ part 'geo_linear_ring.dart';
 part 'geo_polygon.dart';
 
 part 'geo_multi_point.dart';
+part 'geo_multi_line_string.dart';
+part 'geo_multi_polygon.dart';
 
 base class Geometry extends MapExpression {
   Geometry({required this.type, required List coordinates})

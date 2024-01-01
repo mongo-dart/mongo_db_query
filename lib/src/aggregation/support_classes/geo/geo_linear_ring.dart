@@ -11,29 +11,6 @@ final class GeoLinearRing extends GeoLineString {
   GeoLinearRing.coordinates(List<List<double>> coordinates)
       : super.coordinates(_checkClosedLineStringCoordinates(coordinates));
 
-  // TODO remove
-  static List<List<double>> _checkClosedLineStringCoordinates_old(
-      List<List<double>> coordinates) {
-    if (coordinates.length < 4) {
-      throw ArgumentError('At least four coordinate pairs are required');
-    }
-    var firstPoint = coordinates.first;
-    var lastPoint = coordinates.last;
-    if (firstPoint.length == 2) {
-      firstPoint.add(0.0);
-    }
-    if (lastPoint.length == 2) {
-      lastPoint.add(0.0);
-    }
-    for (var i = 0; i < 3; i++) {
-      if (firstPoint[i] != lastPoint[i]) {
-        throw ArgumentError(
-            'Not a linear ring, first and last position must be equal');
-      }
-    }
-    return coordinates;
-  }
-
   static List<List<double>> _checkClosedLineStringCoordinates(
       List<List<double>> coordinates) {
     List<GeoPosition> positions = [
