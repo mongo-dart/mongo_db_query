@@ -1,7 +1,7 @@
 import 'package:mongo_db_query/src/base/field_expression.dart';
 
-import '../../../../base/common/document_types.dart';
-import '../../../../base/map_expression.dart';
+import '../../../base/map_expression.dart';
+import '../../../base/common/document_types.dart';
 
 part 'string_facet.dart';
 part 'numeric_facet.dart';

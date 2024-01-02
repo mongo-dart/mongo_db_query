@@ -1,4 +1,7 @@
 import 'package:mongo_db_query/mongo_db_query.dart';
+import 'package:mongo_db_query/src/aggregation/atlas_operator_collector.dart';
+import 'package:mongo_db_query/src/aggregation/stage/search.dart';
+import 'package:mongo_db_query/src/aggregation/stage/search_meta.dart';
 import 'package:mongo_db_query/src/base/map_expression.dart';
 import 'package:test/test.dart' hide Skip;
 
@@ -870,6 +873,112 @@ void main() {
     expect($sample(3).build(), {
       r'$sample': {'size': 3}
     });
+  });
+
+  test('search', () {
+    expect(
+        $search(
+                operator: Near(
+                    path: 'released',
+                    origin: DateTime.utc(2011, 09, 01),
+                    pivot: 7776000000),
+                count: Count(type: 'total'))
+            .build(),
+        {
+          r'$search': {
+            'near': {
+              'path': 'released',
+              'origin': DateTime.parse("2011-09-01T00:00:00.000+00:00"),
+              'pivot': 7776000000
+            },
+            'count': {'type': 'total'}
+          }
+        });
+    expect(
+        $search(
+                operator:
+                    Text(path: 'description', query: ['variety', 'bunch']),
+                highlight: Highlight(path: 'description'))
+            .build(),
+        {
+          r'$search': {
+            'text': {
+              'path': 'description',
+              'query': ['variety', 'bunch']
+            },
+            'highlight': {'path': 'description'}
+          }
+        });
+    expect(
+        $search(
+                operator: Text(path: 'title', query: 'summer'),
+                tracking: Tracking('summer'))
+            .build(),
+        {
+          r'$search': {
+            'text': {
+              'path': 'title',
+              'query': 'summer',
+            },
+            'tracking': {'searchTerms': 'summer'}
+          }
+        });
+  });
+
+  test('searchMeta', () {
+    expect(
+        $searchMeta(
+                operator: Range(path: 'year', gte: 1998, lt: 1999),
+                count: Count(type: 'total'))
+            .build(),
+        {
+          r'$searchMeta': {
+            'range': {'path': 'year', 'gte': 1998, 'lt': 1999},
+            'count': {'type': 'total'}
+          }
+        });
+    expect(
+        $searchMeta(
+                collector: Facet(
+                    <FacetType>[StringFacet('genresFacet', 'genres')],
+                    operator: Range(path: 'year', gte: 2000, lte: 2015)))
+            .build(),
+        {
+          r'$searchMeta': {
+            'facet': {
+              'operator': {
+                'range': {'path': 'year', 'gte': 2000, 'lte': 2015}
+              },
+              'facets': {
+                'genresFacet': {'type': 'string', 'path': 'genres'}
+              }
+            }
+          }
+        });
+    expect(
+        $searchMeta(
+                collector: Facet(<FacetType>[
+          NumericFacet('yearFacet', 'year', [1981, 1990, 2000],
+              additionalBucket: 'other')
+        ], operator: Range(path: 'year', gt: 1980, lte: 2000)))
+            .build(),
+        {
+          r'$searchMeta': {
+            'facet': {
+              'operator': {
+                'range': {'path': 'year', 'gt': 1980, 'lte': 2000}
+              },
+              'facets': {
+                'yearFacet': {
+                  'type': 'number',
+                  'path': 'year',
+                  'boundaries': [1981, 1990, 2000],
+                  'default': 'other'
+                }
+              }
+            }
+          }
+        });
   });
 
   test('skip', () {

@@ -246,7 +246,27 @@ const op$toObjectId = r'$toObjectId';
 const op$let = r'$let';
 
 // ***** Atlas Operators
+const opAutocomplete = 'autocomplete';
+const opCompound = 'compound';
+const opEmbeddedDocument = 'embeddedDocument';
+const opEquals = 'equals';
+const opExists = 'exists';
+const opGeoShape = 'geoShape';
+const opGeoWithin = 'geoWithin';
+const opIn = 'in';
+const opMoreLikeThis = 'moreLikeThis';
 const opNear = 'near';
+const opPhrase = 'phrase';
+const opQueryString = 'queryString';
+const opRange = 'range';
+const opRegex = 'regex';
+const opText = 'text';
+const opWildcard = 'wildcard';
 
 // ***** Atlas Collectors
 const coFacet = 'facet';
+
+// ***** Atlas Options
+const optCount = 'count';
+const optHighlight = 'highlight';
+const optTracking = 'tracking';

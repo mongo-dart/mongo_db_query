@@ -1,9 +1,9 @@
 import '../../../base/common/operators_def.dart';
 import '../../base/atlas_collector.dart';
 import '../../base/atlas_operator.dart';
-import 'support/facet_type.dart';
+import '../support/facet_type.dart';
 
-export 'support/facet_type.dart';
+export '../support/facet_type.dart';
 
 /// The facet collector groups results by values or ranges in the specified
 /// faceted fields and returns the count for each of those groups.
