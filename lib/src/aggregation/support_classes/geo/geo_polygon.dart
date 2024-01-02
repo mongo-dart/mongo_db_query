@@ -42,7 +42,7 @@ part of 'geometry.dart';
 ///  ]
 /// }
 /// ```
-final class GeoPolygon extends Geometry {
+final class GeoPolygon extends GeoShape {
   GeoPolygon(List<GeoLinearRing> rings)
       : super(type: GeoJsonType.polygon, coordinates: [
           for (var ring in rings) ring.rawContent['coordinates']

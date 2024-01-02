@@ -1,3 +1,4 @@
+import '../base/builder.dart';
 import '../base/common/document_types.dart';
 import '../base/expression_content.dart';
 import '../base/field_expression.dart';
@@ -10,9 +11,11 @@ enum LogicType { and, or, nor }
 
 // a = 5 and b = 6 or a = 7 and (b = 9 or c = 4) or c = 2
 
-class FilterExpression extends MapExpression {
+class FilterExpression extends Builder /* MapExpression */ {
   //FilterExpression({this.level = 0}) : super(op$And, ListExpression.empty());
-  FilterExpression({this.level = 0}) : super.empty();
+  FilterExpression({this.level = 0}) /* : super.empty() */;
+
+  final _expression = MapExpression.empty();
 
   LogicType? logicType;
   int level = 0;
@@ -25,13 +28,17 @@ class FilterExpression extends MapExpression {
 
   bool get isOpenSublevel => _openChild != null;
   bool get notEmpty => _sequence.isNotEmpty;
-  MongoDocument get content =>
-      expressionProcessed ? <String, dynamic>{...valueMap} : rawContent;
+  /*  MongoDocument get content =>
+      expressionProcessed ? <String, dynamic>{...valueMap} : rawContent; */
+
+  @Deprecated('use build() instead')
+  MongoDocument get rawContent => build();
 
   @override
-  MongoDocument get rawContent {
+  MongoDocument build() /*get  rawContent */ {
     if (isOpenSublevel) {
-      _sequence.add(MapExpression(_openChild!.rawContent));
+      _sequence
+          .add(MapExpression(_openChild!.build() /* _openChild!.rawContent */));
       _openChild = null;
       expressionProcessed = false;
     }
@@ -39,7 +46,7 @@ class FilterExpression extends MapExpression {
       processExpression();
     }
     //return key == op$And ? content.mergeContent2map : super.raw;
-    return valueMap;
+    return _expression.rawContent; //valueMap;
   }
 
   // TODO Revert after debug
@@ -109,7 +116,8 @@ class FilterExpression extends MapExpression {
         }
       }
     }
-    valueMap.addAll(actualContainer?.build() ?? emptyMongoDocument);
+    //valueMap.addAll(actualContainer?.build() ?? emptyMongoDocument);
+    _expression.setMap(actualContainer?.build() ?? emptyMongoDocument);
   }
 
   void addDocument(MongoDocument document) {
@@ -154,7 +162,7 @@ class FilterExpression extends MapExpression {
     }
     if (_openChild!.notEmpty) {
       _openChild!.processExpression();
-      _sequence.add(_openChild!);
+      _sequence.add(MapExpression(_openChild!.build()));
     }
 
     _openChild = null;

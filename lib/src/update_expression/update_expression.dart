@@ -1,5 +1,6 @@
 import 'package:fixnum/fixnum.dart';
 
+import '../base/builder.dart';
 import '../base/common/document_types.dart';
 import '../base/common/operators_def.dart';
 import '../base/field_expression.dart';
@@ -9,11 +10,14 @@ import '../base/value_expression.dart';
 
 UpdateExpression get modify => UpdateExpression();
 
-class UpdateExpression {
+class UpdateExpression extends Builder {
   final _expression = MapExpression.empty();
 
   //UpdateDocument get raw => _expression.rawContent as UpdateDocument;
+  @Deprecated('use build() instead')
   MongoDocument get raw => _expression.rawContent;
+  @override
+  MongoDocument build() => _expression.rawContent;
 
   @override
   String toString() => 'UpdateExpression($_expression)';
@@ -128,7 +132,6 @@ class UpdateExpression {
       _updateOperation(op$Bit, fieldName, {opBitAnd: value});
 
   ///  performs a bitwise "and" update of a field with a 64 bit int
-
   void bitAnd64(String fieldName, Int64 value) =>
       _updateOperation(op$Bit, fieldName, {opBitAnd: value});
 

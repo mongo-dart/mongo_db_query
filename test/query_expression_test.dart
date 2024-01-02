@@ -2,9 +2,6 @@ library test_lib;
 
 import 'dart:convert';
 
-import 'package:mongo_db_query/src/aggregation/operator/box.dart';
-import 'package:mongo_db_query/src/aggregation/operator/center.dart';
-import 'package:mongo_db_query/src/aggregation/operator/geometry.dart';
 import 'package:mongo_db_query/src/aggregation/support_classes/geo/geo_json_type.dart';
 import 'package:test/test.dart';
 import 'package:bson/bson.dart';
@@ -14,16 +11,16 @@ import 'package:mongo_db_query/mongo_db_query.dart';
 void main() {
   test('SelectorBuilder Creation', () {
     var selector = where;
-    expect(selector.filter.rawContent, isMap);
-    expect(selector.filter.rawContent, isEmpty);
+    expect(selector.filter.build(), isMap);
+    expect(selector.filter.build(), isEmpty);
   });
 
   test('testSelectorBuilderOnObjectId', () {
     var id = ObjectId();
     var selector = where..id(id);
-    expect(selector.filter.rawContent.isNotEmpty, isTrue);
+    expect(selector.filter.build().isNotEmpty, isTrue);
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           '_id': {r'$eq': id}
         }));
@@ -35,9 +32,9 @@ void main() {
     var id = ObjectId();
     selector.id(id);
     //expect(selector.map is Map, isTrue);
-    expect(selector.filter.rawContent.isNotEmpty, isTrue);
+    expect(selector.filter.build().isNotEmpty, isTrue);
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           'name': 'joe',
           '_id': {r'$eq': id}
@@ -48,21 +45,21 @@ void main() {
     var selector = where
       ..$gt('my_field', 995)
       ..sortBy('my_field');
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'my_field': {r'$gt': 995}
     });
     expect(selector.sortExp.rawContent, {'my_field': 1});
     selector = where
       ..inRange('my_field', 700, 703, minInclude: false)
       ..sortBy({'my_field': -1});
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'my_field': {r'$gt': 700, r'$lt': 703}
     });
     expect(selector.sortExp.rawContent, {'my_field': -1});
     selector = where
       ..$eq('my_field', 17)
       ..selectFields(['str_field']);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'my_field': {r'$eq': 17}
     });
     expect(selector.fields.rawContent, {'str_field': 1});
@@ -70,7 +67,7 @@ void main() {
     selector = where
       ..sortBy('a')
       ..skip(300);
-    expect(selector.filter.rawContent, {});
+    expect(selector.filter.build(), {});
     expect(selector.sortExp.rawContent, {'a': 1});
     expect(selector.getSkip(), 300);
 
@@ -79,7 +76,7 @@ void main() {
       ..hint('baz', descending: true)
       ..explain();
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           '\$query': {},
           '\$hint': {'bar': 1, 'baz': -1},
@@ -87,14 +84,14 @@ void main() {
         })); */
     /*   selector = where..hintIndex('foo');
     expect(
-        selector.filter.rawContent, equals({'\$query': {}, '\$hint': 'foo'})); */
+        selector.filter.build(), equals({'\$query': {}, '\$hint': 'foo'})); */
   });
 
   test('testQueryComposition', () {
     var selector = where
       ..$gt('a', 995)
       ..$eq('b', 'bbb');
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'a': {r'$gt': 995},
       'b': {r'$eq': 'bbb'}
     });
@@ -105,7 +102,7 @@ void main() {
       ..$gt('a', 995)
       ..$lt('a', 1000);
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           'a': {r'$gt': 995, r'$lt': 1000},
         }));
@@ -121,7 +118,7 @@ void main() {
       ..$gt('c', 2000)
       ..close;
 
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'a': {r'$gt': 995},
       r'$or': [
         {
@@ -142,7 +139,7 @@ void main() {
       ..$gt('c', 2000)
       ..close
       ..$gt('a', 995);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       r'$or': [
         {
           'b': {r'$lt': 1000}
@@ -162,7 +159,7 @@ void main() {
       ..$gt('c', 2000)
       ..$and
       ..$gt('a', 995);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       r'$or': [
         {
           'b': {r'$lt': 1000}
@@ -181,7 +178,7 @@ void main() {
       ..$gt('c', 2000)
       ..$and
       ..$lt('c', 995);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       r'$or': [
         {
           'b': {r'$lt': 1000}
@@ -200,7 +197,7 @@ void main() {
       ..$gt('c', 2000)
       ..$or
       ..$gt('a', 995);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       r'$or': [
         {
           'b': {r'$lt': 1000}
@@ -224,7 +221,7 @@ void main() {
       ..$or
       ..$eq('sale', true)
       ..close;
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'price': {r'$eq': 1.99},
       r'$or': [
         {
@@ -243,7 +240,7 @@ void main() {
       ..$lt('qty', 20)
       ..$or
       ..$eq('sale', true);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'price': {r'$eq': 1.99},
       r'$or': [
         {
@@ -263,7 +260,7 @@ void main() {
       ..$lt('qty', 20)
       ..$and
       ..$eq('sale', true);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'price': {r'$eq': 1.99},
       'qty': {r'$lt': 20},
       'sale': {r'$eq': true}
@@ -275,7 +272,7 @@ void main() {
       ..$eq('price', 1.99)
       ..$lt('qty', 20)
       ..$eq('sale', true);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'price': {r'$eq': 1.99},
       'qty': {'\$lt': 20},
       'sale': {r'$eq': true}
@@ -288,7 +285,7 @@ void main() {
       ..$or
       ..$eq('foo', null)
       ..$eq('name', 'jack');
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       r'$or': [
         {
           'foo': {r'$eq': 'bar'}
@@ -308,7 +305,7 @@ void main() {
       ..$eq('foo', null)
       ..$and
       ..$eq('name', 'jack');
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       r'$or': [
         {
           'foo': {r'$eq': 'bar'}
@@ -327,7 +324,7 @@ void main() {
       ..$eq('foo', 'test')
       ..$or
       ..$eq('name', 'jack');
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       r'$or': [
         {
           'foo': {r'$eq': 'bar'}
@@ -349,7 +346,7 @@ void main() {
       ..$eq('name', 'jack')
       ..$or
       ..$eq('name', 'Tom');
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       r'$or': [
         {
           'foo': {r'$eq': 'bar'}
@@ -372,7 +369,7 @@ void main() {
       ..$or
       ..$eq('foo', null)
       ..$eq('name', 'jack');
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       r'$or': [
         {
           'foo': {r'$eq': 'bar'}
@@ -395,7 +392,7 @@ void main() {
       ..$eq('foo', 'bar')
       ..$or
       ..$eq('name', 'Tom');
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       r'$or': [
         {
           'foo': {r'$eq': null},
@@ -457,28 +454,20 @@ void main() {
     var selector = where
       ..$nearSphere(
           'geo_field',
-          Geometry(type: GeoJsonType.polygon, coordinates: [
+          GeoPoint.coordinates(
             [0, 0],
-            [1, 8],
-            [12, 30],
-            [0, 0]
-          ]),
+          ),
           maxDistance: 1000,
           minDistance: 500);
 
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           'geo_field': {
             r'$nearSphere': {
               r'$geometry': {
-                'type': 'Polygon',
-                'coordinates': [
-                  [0, 0],
-                  [1, 8],
-                  [12, 30],
-                  [0, 0]
-                ]
+                'type': 'Point',
+                'coordinates': [0, 0]
               },
               r'$minDistance': 500,
               r'$maxDistance': 1000
@@ -499,7 +488,7 @@ void main() {
           ]));
 
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           'geo_field': {
             r'$geoIntersects': {
@@ -521,26 +510,29 @@ void main() {
     var selector = where
       ..$geoWithin(
           'geo_field',
-          $geometry(
-              geometry: Geometry(type: GeoJsonType.polygon, coordinates: [
-            [0, 0],
-            [1, 8],
-            [12, 30],
-            [0, 0]
-          ])));
+          GeoPolygon.coordinates([
+            [
+              [0, 0],
+              [1, 8],
+              [12, 30],
+              [0, 0]
+            ]
+          ]));
 
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           'geo_field': {
             r'$geoWithin': {
               r'$geometry': {
                 'type': 'Polygon',
                 'coordinates': [
-                  [0, 0],
-                  [1, 8],
-                  [12, 30],
-                  [0, 0]
+                  [
+                    [0, 0],
+                    [1, 8],
+                    [12, 30],
+                    [0, 0]
+                  ]
                 ]
               }
             }
@@ -548,13 +540,13 @@ void main() {
         }));
   });
 
-  test('geoWithin_box', () {
+  /*  test('geoWithin_box', () {
     var selector = where
       ..$geoWithin(
           'geo_field', $box(bottomLeft: [5, 8], upperRight: [8.8, 10.5]));
 
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           'geo_field': {
             r'$geoWithin': {
@@ -565,14 +557,14 @@ void main() {
             }
           }
         }));
-  });
+  }); */
 
-  test('geoWithin_center', () {
+  /*  test('geoWithin_center', () {
     var selector = where
       ..$geoWithin('geo_field', $center(center: [5, 8], radius: 50.2));
 
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           'geo_field': {
             r'$geoWithin': {
@@ -582,6 +574,6 @@ void main() {
               ]
             }
           }
-        }));
-  });
+        })); 
+  });*/
 }

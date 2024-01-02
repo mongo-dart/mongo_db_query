@@ -1,8 +1,5 @@
 library test_lib;
 
-import 'package:mongo_db_query/src/aggregation/operator/box.dart';
-import 'package:mongo_db_query/src/aggregation/operator/center.dart';
-import 'package:mongo_db_query/src/aggregation/operator/geometry.dart';
 import 'package:mongo_db_query/src/aggregation/support_classes/geo/geo_json_type.dart';
 import 'package:test/test.dart';
 import 'package:bson/bson.dart';
@@ -12,15 +9,15 @@ void main() {
   test('SelectorBuilder Creation', () {
     var selector = where;
     //expect(selector.map is Map, isTrue);
-    expect(selector.filter.rawContent, isEmpty);
+    expect(selector.filter.build(), isEmpty);
   });
 
   test('testSelectorBuilderOnObjectId', () {
     var id = ObjectId();
     var selector = where..id(id);
     //expect(selector.map is Map, isTrue);
-    expect(selector.filter.rawContent.length, greaterThan(0));
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build().length, greaterThan(0));
+    expect(selector.filter.build(), {
       '_id': {r'$eq': id}
     });
   });
@@ -30,9 +27,9 @@ void main() {
 
     var id = ObjectId();
     selector.id(id);
-    expect(selector.filter.rawContent, isMap);
-    expect(selector.filter.rawContent.length, 2);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), isMap);
+    expect(selector.filter.build().length, 2);
+    expect(selector.filter.build(), {
       'name': 'joe',
       '_id': {r'$eq': id}
     });
@@ -42,35 +39,35 @@ void main() {
     var selector = where
       ..$gt('my_field', 995)
       ..sortBy('my_field');
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'my_field': {r'$gt': 995}
     });
     expect(selector.sortExp.rawContent, {'my_field': 1});
     selector = where
       ..inRange('my_field', 700, 703, minInclude: false)
       ..sortBy('my_field');
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'my_field': {r'$gt': 700, r'$lt': 703}
     });
     expect(selector.sortExp.rawContent, {'my_field': 1});
     selector = where
       ..$eq('my_field', 17)
       ..selectFields(['str_field']);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'my_field': {r'$eq': 17}
     });
     expect(selector.fields.rawContent, {'str_field': 1});
 
     selector = where
       ..$regex('address', 'john.doe@nowhere.com', escapePattern: true);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'address': {r'$regex': RegExp('john\\.doe@nowhere\\.com').pattern}
     });
 
     selector = where
       ..sortBy('a')
       ..skip(300);
-    expect(selector.filter.rawContent, equals({}));
+    expect(selector.filter.build(), equals({}));
     expect(selector.sortExp.rawContent, {'a': 1});
     expect(selector.getSkip(), 300);
     /*  selector = where.hint('bar').hint('baz', descending: true).explain();
@@ -89,14 +86,14 @@ void main() {
     var selector = where
       ..$gt('a', 995)
       ..$eq('b', 'bbb');
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'a': {r'$gt': 995},
       'b': {r'$eq': 'bbb'}
     });
     selector = where
       ..$gt('a', 995)
       ..$lt('a', 1000);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'a': {r'$gt': 995, r'$lt': 1000}
     });
     selector = where
@@ -107,7 +104,7 @@ void main() {
       ..$or
       ..$gt('c', 2000)
       ..close;
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'a': {'\$gt': 995},
       '\$or': [
         {
@@ -126,7 +123,7 @@ void main() {
       ..close
       ..$and
       ..$gt('a', 995);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       '\$or': [
         {
           'b': {'\$lt': 1000}
@@ -142,7 +139,7 @@ void main() {
       ..$or
       ..$gt('c', 2000)
       ..$gt('a', 995);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       '\$or': [
         {
           'b': {'\$lt': 1000}
@@ -159,7 +156,7 @@ void main() {
       ..$gt('c', 2000)
       ..$or
       ..$gt('a', 995);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       '\$or': [
         {
           'b': {'\$lt': 1000}
@@ -179,7 +176,7 @@ void main() {
       ..$lt('qty', 20)
       ..$or
       ..$eq('sale', true);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'price': {r'$eq': 1.99},
       '\$or': [
         {
@@ -196,7 +193,7 @@ void main() {
       ..$lt('qty', 20)
       ..$and
       ..$eq('sale', true);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'price': {r'$eq': 1.99},
       'qty': {'\$lt': 20},
       'sale': {r'$eq': true}
@@ -205,7 +202,7 @@ void main() {
       ..$eq('price', 1.99)
       ..$lt('qty', 20)
       ..$eq('sale', true);
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       'price': {r'$eq': 1.99},
       'qty': {'\$lt': 20},
       'sale': {r'$eq': true}
@@ -215,7 +212,7 @@ void main() {
       ..$or
       ..$eq('foo', null)
       ..$eq('name', 'jack');
-    expect(selector.filter.rawContent, {
+    expect(selector.filter.build(), {
       r'$or': [
         {
           'foo': {r'$eq': 'bar'}
@@ -234,7 +231,7 @@ void main() {
         ..$set('a', 995)
         ..$set('b', 'bbb');
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$set': {'a': 995, 'b': 'bbb'}
           }));
@@ -242,7 +239,7 @@ void main() {
         ..$unset('a')
         ..$unset('b');
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$unset': {'a': 1, 'b': 1}
           }));
@@ -252,7 +249,7 @@ void main() {
         ..$set('a', 995)
         ..$mul('b', 5);
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$set': {'a': 995},
             r'$mul': {'b': 5}
@@ -261,7 +258,7 @@ void main() {
         ..$mul('a', 7.0)
         ..$mul('b', 3);
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$mul': {'a': 7.0, 'b': 3}
           }));
@@ -269,7 +266,7 @@ void main() {
     test('addEachToSet', () {
       var modifier = modify..addEachToSet('a', [1, 2, 3]);
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$addToSet': {
               'a': {
@@ -318,30 +315,17 @@ void main() {
 
   test('nearSphere', () {
     var selector = where
-      ..$nearSphere(
-          'geo_field',
-          Geometry(type: GeoJsonType.polygon, coordinates: [
-            [0, 0],
-            [1, 8],
-            [12, 30],
-            [0, 0]
-          ]),
-          maxDistance: 1000,
-          minDistance: 500);
+      ..$nearSphere('geo_field', GeoPoint.coordinates([0, 0]),
+          maxDistance: 1000, minDistance: 500);
 
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           'geo_field': {
             r'$nearSphere': {
               r'$geometry': {
-                'type': 'Polygon',
-                'coordinates': [
-                  [0, 0],
-                  [1, 8],
-                  [12, 30],
-                  [0, 0]
-                ]
+                'type': 'Point',
+                'coordinates': [0, 0]
               },
               r'$minDistance': 500,
               r'$maxDistance': 1000
@@ -352,11 +336,11 @@ void main() {
 
   test('Match', () {
     var selector = where..$regex('testField', 'john.doe@noone.com');
-    expect(selector.filter.rawContent['testField'][r'$regex'],
+    expect(selector.filter.build()['testField'][r'$regex'],
         RegExp('john.doe@noone.com').pattern);
     selector = where
       ..$regex('testField', 'john.doe@noone.com', escapePattern: true);
-    expect(selector.filter.rawContent['testField'][r'$regex'],
+    expect(selector.filter.build()['testField'][r'$regex'],
         RegExp(r'john\.doe@noone\.com').pattern);
   });
   test('geoIntersects', () {
@@ -371,7 +355,7 @@ void main() {
           ]));
 
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           'geo_field': {
             r'$geoIntersects': {
@@ -393,26 +377,29 @@ void main() {
     var selector = where
       ..$geoWithin(
           'geo_field',
-          $geometry(
-              geometry: Geometry(type: GeoJsonType.polygon, coordinates: [
-            [0, 0],
-            [1, 8],
-            [12, 30],
-            [0, 0]
-          ])));
+          GeoPolygon.coordinates([
+            [
+              [0, 0],
+              [1, 8],
+              [12, 30],
+              [0, 0]
+            ]
+          ]));
 
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           'geo_field': {
             r'$geoWithin': {
               r'$geometry': {
                 'type': 'Polygon',
                 'coordinates': [
-                  [0, 0],
-                  [1, 8],
-                  [12, 30],
-                  [0, 0]
+                  [
+                    [0, 0],
+                    [1, 8],
+                    [12, 30],
+                    [0, 0]
+                  ]
                 ]
               }
             }
@@ -420,13 +407,13 @@ void main() {
         }));
   });
 
-  test('geoWithin_box', () {
+  /*  test('geoWithin_box', () {
     var selector = where
       ..$geoWithin(
           'geo_field', $box(bottomLeft: [5, 8], upperRight: [8.8, 10.5]));
 
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           'geo_field': {
             r'$geoWithin': {
@@ -437,14 +424,14 @@ void main() {
             }
           }
         }));
-  });
+  }); */
 
-  test('geoWithin_center', () {
+  /*  test('geoWithin_center', () {
     var selector = where
       ..$geoWithin('geo_field', $center(center: [5, 8], radius: 50.2));
 
     expect(
-        selector.filter.rawContent,
+        selector.filter.build(),
         equals({
           'geo_field': {
             r'$geoWithin': {
@@ -455,5 +442,5 @@ void main() {
             }
           }
         }));
-  });
+  }); */
 }

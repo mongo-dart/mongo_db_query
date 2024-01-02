@@ -13,7 +13,7 @@ void main() {
         ..$currentDate('b', asTimestamp: true)
         ..$currentDate('c', asTimestamp: false);
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$currentDate': {
               'a': {r'$type': 'date'},
@@ -30,7 +30,7 @@ void main() {
         ..$max('c', null)
         ..$max('d', 200);
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$inc': {'a': 5},
             r'$min': {'b': 'Set'},
@@ -42,7 +42,7 @@ void main() {
         ..$set('a', 995)
         ..$mul('b', 5);
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$set': {'a': 995},
             r'$mul': {'b': 5}
@@ -51,7 +51,7 @@ void main() {
         ..$mul('a', 7.0)
         ..$mul('b', 3);
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$mul': {'a': 7.0, 'b': 3}
           }));
@@ -59,7 +59,7 @@ void main() {
     test('Rename', () {
       var modifier = modify..$rename('nmae', "name");
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$rename': {'nmae': 'name'}
           }));
@@ -71,7 +71,7 @@ void main() {
         ..$set('b', 'bbb')
         ..$setOnInsert('c', true);
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$set': {'a': 995, 'b': 'bbb'},
             r'$setOnInsert': {'c': true}
@@ -80,7 +80,7 @@ void main() {
         ..$unset('a')
         ..$unset('b');
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$unset': {'a': 1, 'b': 1}
           }));
@@ -89,7 +89,7 @@ void main() {
     test('Add to Set', () {
       var modifier = modify..$addToSet('colors', 'mauve');
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$addToSet': {'colors': 'mauve'}
           }));
@@ -97,7 +97,7 @@ void main() {
     test('Add each to Set', () {
       var modifier = modify..addEachToSet('colors', ['green', 'orange']);
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$addToSet': {
               'colors': {
@@ -111,7 +111,7 @@ void main() {
         ..popFirst('colors')
         ..popLast('name');
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$pop': {'colors': -1, 'name': 1}
           }));
@@ -123,7 +123,7 @@ void main() {
         })
         ..$pull('vegetables', 'carrots');
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$pull': {
               'fruits': {
@@ -149,7 +149,7 @@ void main() {
         ..pushEach('names', ['John', 'Ann', 'Lou'],
             position: -1, sort: descending);
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$push': {
               'scores': 89,
@@ -178,7 +178,7 @@ void main() {
         ..$pullAll('scores', [0, 5])
         ..$pull('vegetables', 'carrots');
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$pullAll': {
               'scores': [0, 5]
@@ -193,7 +193,7 @@ void main() {
         ..bitXor('days', 16)
         ..bitAnd64('series', Int64(8));
       expect(
-          modifier.raw,
+          modifier.build(),
           equals({
             r'$bit': {
               'expdata': {'and': 10},

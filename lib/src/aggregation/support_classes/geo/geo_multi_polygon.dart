@@ -1,3 +1,3 @@
 part of 'geometry.dart';
 
-// TODO  GeoMultiPolygon extends Geometry {
+// TODO  GeoMultiPolygon extends GeoShape {
