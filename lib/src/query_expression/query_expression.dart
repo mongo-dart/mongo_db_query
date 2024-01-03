@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:bson/bson.dart';
 
-import '../aggregation/base/shape_operator.dart';
 import '../aggregation/support_classes/geo/geo_shape.dart';
 import '../aggregation/support_classes/geo/geometry.dart';
 import '../base/common/constant.dart';

@@ -1,4 +1,5 @@
 import '../../base/common/operators_def.dart';
+import '../../base/map_expression.dart';
 import '../../query_expression/query_expression.dart';
 import '../base/aggregation_stage.dart';
 
@@ -42,5 +43,6 @@ class $sort extends AggregationStage {
       : super(st$sort, valueToContent(specification));
 
   /// [query] - QueryExpression containing the number of documents to skip
-  $sort.query(QueryExpression query) : super(st$sort, query.sortExp);
+  $sort.query(QueryExpression query)
+      : super(st$sort, MapExpression(query.sortExp.build()));
 }

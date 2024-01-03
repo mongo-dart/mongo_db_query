@@ -1,51 +1,60 @@
+import '../base/builder.dart';
 import '../base/common/document_types.dart';
 import '../base/map_expression.dart';
 
-class SortExpression extends MapExpression {
-  SortExpression() : super.empty();
+class SortExpression extends Builder /* MapExpression */ {
+  SortExpression() /* : super.empty() */;
+
+  final _expression = MapExpression.empty();
 
   bool expressionProcessed = false;
   final _sequence = <MapExpression>[];
 
   bool get notEmpty => _sequence.isNotEmpty;
-  IndexDocument get content =>
-      expressionProcessed ? <String, Object>{...valueMap} : rawContent;
+  /* IndexDocument get content =>
+      expressionProcessed ? <String, Object>{...valueMap} : rawContent; */
+
+  @Deprecated('use build() instead')
+  MongoDocument get rawContent => build();
 
   @override
-  IndexDocument get rawContent {
+  IndexDocument build() {
     if (!expressionProcessed) {
       processExpression();
     }
-    return content;
+    return <String, Object>{..._expression.rawContent};
+
+    /*  return content; */
   }
 
-  @override
-  String toString() => 'SortExpression($rawContent)';
+  //@override
+  //String toString() => 'SortExpression($rawContent)';
 
   void processExpression() {
     expressionProcessed = true;
-    valueMap.clear();
+    //valueMap.clear();
+    _expression.setMap({});
+
     for (var element in _sequence) {
-      var insertMap = <String, Object>{...element.rawContent};
-      valueMap.addAll(insertMap);
+      //var insertMap = <String, Object>{...element.rawContent};
+      //valueMap.addAll(insertMap);
+      _expression.addMapExpression(element);
     }
   }
 
   /// Set a Map
   /// Clears the original content and add the new one
-  @override
-  void setMap(MongoDocument map) => valueMap = <String, Object>{...map};
+  void setMap(MongoDocument map) =>
+      _expression.setMap(<String, Object>{...map});
 
   /// Add a Map
   /// Add a map content to the actual content.
   /// If any key alreay exists, it is substituted
-  @override
-  void addMap(MongoDocument map) => valueMap.addAll(map as IndexDocument);
+  void addMap(MongoDocument map) => _expression.addMap(map as IndexDocument);
 
   /// Add a key-value pair
   /// If the key already exists, the value is substituted
-  @override
-  void addEntry(String key, value) => valueMap[key] = value as Object;
+  void addEntry(String key, value) => _expression.addEntry(key, value);
 
   /// adds a {$meta : testScore} for field text search
   void add$meta(String fieldName) => _sequence.add(MapExpression({

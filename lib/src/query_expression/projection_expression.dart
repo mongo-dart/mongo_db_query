@@ -1,54 +1,59 @@
+import '../base/builder.dart';
 import '../base/common/constant.dart';
 import '../base/common/document_types.dart';
 import '../base/common/operators_def.dart';
 import '../base/map_expression.dart';
 import 'filter_expression.dart';
 
-class ProjectionExpression extends MapExpression {
-  ProjectionExpression() : super.empty();
+class ProjectionExpression extends Builder /* MapExpression */ {
+  ProjectionExpression() /*  : super.empty() */;
+
+  final _expression = MapExpression.empty();
 
   bool expressionProcessed = false;
   final _sequence = <MapExpression>[];
 
   bool get notEmpty => _sequence.isNotEmpty;
-  ProjectionDocument get content =>
-      expressionProcessed ? <String, Object>{...valueMap} : rawContent;
-
+  /* ProjectionDocument get content =>
+      expressionProcessed ? <String, Object>{...valueMap} : rawContent; */
+  @Deprecated('use build() instead')
+  MongoDocument get rawContent => build();
   @override
-  ProjectionDocument get rawContent {
+  ProjectionDocument build() {
     if (!expressionProcessed) {
       processExpression();
     }
-    return content;
+    return <String, Object>{..._expression.rawContent};
+/*     return content; */
   }
 
-  @override
-  String toString() => 'ProjectionExpression($rawContent)';
+  //@override
+  //String toString() => 'ProjectionExpression($rawContent)';
 
   void processExpression() {
     expressionProcessed = true;
-    valueMap.clear();
+    _expression.setMap({});
     for (var element in _sequence) {
-      var insertMap = <String, Object>{...element.rawContent};
-      valueMap.addAll(insertMap);
+      /*    var insertMap = <String, Object>{...element.rawContent}; */
+      _expression.addMapExpression(element);
+      /*  _expression.addAll(insertMap); */
     }
   }
 
   /// Set a Map
   /// Clears the original content and add the new one
-  @override
-  void setMap(MongoDocument map) => valueMap = <String, Object>{...map};
+  void setMap(MongoDocument map) =>
+      _expression.setMap(<String, Object>{...map});
 
   /// Add a Map
   /// Add a map content to the actual content.
   /// If any key alreay exists, it is substituted
-  @override
-  void addMap(MongoDocument map) => valueMap.addAll(map as ProjectionDocument);
+  void addMap(MongoDocument map) =>
+      _expression.addMap(map as ProjectionDocument);
 
   /// Add a key-value pair
   /// If the key already exists, the value is substituted
-  @override
-  void addEntry(String key, value) => valueMap[key] = value as Object;
+  void addEntry(String key, value) => _expression.addEntry(key, value);
 
   /// adds a {$meta : testScore} for search score projection
   void add$metaTextScore(String fieldName) => _sequence.add(MapExpression({
@@ -88,7 +93,7 @@ class ProjectionExpression extends MapExpression {
   /// embedded documents.
   void $elemMatch(String fieldName, FilterExpression condition) =>
       _sequence.add(MapExpression({
-        fieldName: {op$elemMatch: condition.rawContent}
+        fieldName: {op$elemMatch: condition.build()}
       }));
 
   /// The $slice projection operator specifies the number of elements in an
