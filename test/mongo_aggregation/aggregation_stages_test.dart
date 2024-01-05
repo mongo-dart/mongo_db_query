@@ -1,7 +1,5 @@
 import 'package:mongo_db_query/mongo_db_query.dart';
 import 'package:mongo_db_query/src/aggregation/atlas_operator_collector.dart';
-import 'package:mongo_db_query/src/aggregation/stage/search.dart';
-import 'package:mongo_db_query/src/aggregation/stage/search_meta.dart';
 import 'package:mongo_db_query/src/base/map_expression.dart';
 import 'package:test/test.dart' hide Skip;
 

@@ -42,21 +42,21 @@ void main() {
     expect(selector.filter.build(), {
       'my_field': {r'$gt': 995}
     });
-    expect(selector.sortExp.rawContent, {'my_field': 1});
+    expect(selector.sortExp.build(), {'my_field': 1});
     selector = where
       ..inRange('my_field', 700, 703, minInclude: false)
       ..sortBy('my_field');
     expect(selector.filter.build(), {
       'my_field': {r'$gt': 700, r'$lt': 703}
     });
-    expect(selector.sortExp.rawContent, {'my_field': 1});
+    expect(selector.sortExp.build(), {'my_field': 1});
     selector = where
       ..$eq('my_field', 17)
       ..selectFields(['str_field']);
     expect(selector.filter.build(), {
       'my_field': {r'$eq': 17}
     });
-    expect(selector.fields.rawContent, {'str_field': 1});
+    expect(selector.fields.build(), {'str_field': 1});
 
     selector = where
       ..$regex('address', 'john.doe@nowhere.com', escapePattern: true);
@@ -68,7 +68,7 @@ void main() {
       ..sortBy('a')
       ..skip(300);
     expect(selector.filter.build(), equals({}));
-    expect(selector.sortExp.rawContent, {'a': 1});
+    expect(selector.sortExp.build(), {'a': 1});
     expect(selector.getSkip(), 300);
     /*  selector = where.hint('bar').hint('baz', descending: true).explain();
     expect(
@@ -298,7 +298,7 @@ void main() {
       ..selectMetaTextScore('score');
 
     expect(selector.getQueryString(), r'{"$text":{"$eq":{"$search":"sText"}}}');
-    expect(selector.sortExp.rawContent, {fieldName: 1});
+    expect(selector.sortExp.build(), {fieldName: 1});
   });
 
   test('copyWith_clone', () {

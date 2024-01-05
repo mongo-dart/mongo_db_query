@@ -1,5 +1,6 @@
 import '../base/builder.dart';
 import '../base/common/document_types.dart';
+import '../base/expression_container.dart';
 import '../base/expression_content.dart';
 import '../base/field_expression.dart';
 import '../base/logical_expression.dart';
@@ -11,8 +12,8 @@ enum LogicType { and, or, nor }
 
 // a = 5 and b = 6 or a = 7 and (b = 9 or c = 4) or c = 2
 
-class FilterExpression extends Builder /* MapExpression */ {
-  //FilterExpression({this.level = 0}) : super(op$And, ListExpression.empty());
+class FilterExpression
+    implements ExpressionContainer, Builder /* MapExpression */ {
   FilterExpression({this.level = 0}) /* : super.empty() */;
 
   final _expression = MapExpression.empty();
@@ -27,10 +28,20 @@ class FilterExpression extends Builder /* MapExpression */ {
   FilterExpression? _openChild;
 
   bool get isOpenSublevel => _openChild != null;
+  @Deprecated('use isNotEmpty() instead')
   bool get notEmpty => _sequence.isNotEmpty;
   /*  MongoDocument get content =>
       expressionProcessed ? <String, dynamic>{...valueMap} : rawContent; */
 
+  @override
+  bool get isEmpty =>
+      expressionProcessed ? _expression.isEmpty : _sequence.isEmpty;
+
+  @override
+  bool get isNotEmpty =>
+      expressionProcessed ? _expression.isNotEmpty : _sequence.isNotEmpty;
+
+  @override
   @Deprecated('use build() instead')
   MongoDocument get rawContent => build();
 
@@ -160,7 +171,7 @@ class FilterExpression extends Builder /* MapExpression */ {
     if (_openChild == null) {
       throw StateError('No open parenthesis found');
     }
-    if (_openChild!.notEmpty) {
+    if (_openChild!.isNotEmpty) {
       _openChild!.processExpression();
       _sequence.add(MapExpression(_openChild!.build()));
     }

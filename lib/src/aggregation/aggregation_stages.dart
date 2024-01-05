@@ -30,8 +30,8 @@ export 'stage/redact.dart';
 export 'stage/replace_root.dart';
 export 'stage/replace_with.dart';
 export 'stage/sample.dart';
-// TODO $search
-// TODO $searchMeta
+export 'stage/search.dart';
+export 'stage/search_meta.dart';
 export 'stage/set.dart';
 export 'stage/set_window_fields.dart';
 // TODO $shardedDataDistribution

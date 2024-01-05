@@ -1,8 +1,10 @@
 import '../base/builder.dart';
 import '../base/common/document_types.dart';
+import '../base/expression_container.dart';
 import '../base/map_expression.dart';
 
-class SortExpression extends Builder /* MapExpression */ {
+class SortExpression
+    implements ExpressionContainer, Builder /* MapExpression */ {
   SortExpression() /* : super.empty() */;
 
   final _expression = MapExpression.empty();
@@ -10,10 +12,20 @@ class SortExpression extends Builder /* MapExpression */ {
   bool expressionProcessed = false;
   final _sequence = <MapExpression>[];
 
+  @Deprecated('use isNotEmpty() instead')
   bool get notEmpty => _sequence.isNotEmpty;
   /* IndexDocument get content =>
       expressionProcessed ? <String, Object>{...valueMap} : rawContent; */
 
+  @override
+  bool get isEmpty =>
+      expressionProcessed ? _expression.isEmpty : _sequence.isEmpty;
+
+  @override
+  bool get isNotEmpty =>
+      expressionProcessed ? _expression.isNotEmpty : _sequence.isNotEmpty;
+
+  @override
   @Deprecated('use build() instead')
   MongoDocument get rawContent => build();
 

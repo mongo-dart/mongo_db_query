@@ -6,7 +6,6 @@ import 'expression_content.dart';
 import 'list_expression.dart';
 import 'map_expression.dart';
 import 'operator_expression.dart';
-import 'value_expression.dart';
 
 class NotExpression extends OperatorExpression {
   NotExpression(OperatorExpression operatorExp) : super(op$not, operatorExp);
@@ -37,7 +36,7 @@ class AndExpression extends LogicalExpression {
       }
       return;
     } else if (operatorExp is FilterExpression) {
-      content.add(ValueExpression.create(operatorExp.rawContent));
+      content.add(operatorExp);
       return;
     } else if (operatorExp is MapExpression) {
       content.add(operatorExp);

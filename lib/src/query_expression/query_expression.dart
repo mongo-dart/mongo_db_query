@@ -30,7 +30,7 @@ ExpressionContent valueToContent(dynamic value) {
   } else if (value is Set) {
     return SetExpression(value);
   } else if (value is QueryExpression) {
-    return MapExpression(value.filter.build());
+    return value.filter;
   }
   return ValueExpression.create(value);
 }
@@ -39,7 +39,7 @@ class QueryExpression {
   static final RegExp objectIdRegexp = RegExp('.ObjectId...([0-9a-f]{24})....');
 
   FilterExpression filter = FilterExpression();
-  QueryFilter get rawFilter => filter.rawContent;
+  QueryFilter get rawFilter => filter.build();
 
   SortExpression sortExp = SortExpression();
   ProjectionExpression fields = ProjectionExpression();
@@ -47,7 +47,7 @@ class QueryExpression {
   int _limit = 0;
 
   /// Returns a Json version of the filter
-  String getQueryString() => json.encode(filter.rawContent);
+  String getQueryString() => json.encode(filter.build());
 
   /// Inserts a raw document as filter
   void raw(MongoDocument document) => filter.addDocument(document);
@@ -414,9 +414,9 @@ class QueryExpression {
   /// Copy to new instance
   static QueryExpression copyWith(QueryExpression other) {
     return QueryExpression()
-      ..filter.addDocument(other.filter.rawContent)
-      ..sortExp.addMap(other.sortExp.rawContent)
-      ..fields.addMap(other.fields.rawContent)
+      ..filter.addDocument(other.filter.build())
+      ..sortExp.addMap(other.sortExp.build())
+      ..fields.addMap(other.fields.build())
       ..limit(other.getLimit())
       ..skip(other.getSkip());
   }
@@ -448,7 +448,7 @@ class QueryExpression {
     } else {
       var expressions = [rawFilter];
       expressions.add(expr);
-      filter.rawContent['\$query'] = {'\$and': expressions};
+      filter.build()['\$query'] = {'\$and': expressions};
     }
   }
 
@@ -528,22 +528,22 @@ class QueryExpression {
 
   void explain() {
     rawFilter;
-    filter.rawContent['\$explain'] = true;
+    filter.build()['\$explain'] = true;
   }
 
   void snapshot() {
     rawFilter;
-    filter.rawContent['\$snapshot'] = true;
+    filter.build()['\$snapshot'] = true;
   }
 
   void showDiskLoc() {
     rawFilter;
-    filter.rawContent['\$showDiskLoc'] = true;
+    filter.build()['\$showDiskLoc'] = true;
   }
 
   void returnKey() {
     rawFilter;
-    filter.rawContent['\$sreturnKey'] = true;
+    filter.build()['\$sreturnKey'] = true;
   }
 
   void jsQuery(String javaScriptCode) =>
@@ -588,7 +588,7 @@ class QueryExpression {
     } else {
       var expressions = [rawFilter];
       expressions.add(other.rawFilter);
-      filter.rawContent['\$query'] = {'\$or': expressions};
+      filter.build()['\$query'] = {'\$or': expressions};
     }
     return this;
   }

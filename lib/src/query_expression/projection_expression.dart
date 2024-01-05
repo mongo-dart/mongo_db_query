@@ -2,10 +2,12 @@ import '../base/builder.dart';
 import '../base/common/constant.dart';
 import '../base/common/document_types.dart';
 import '../base/common/operators_def.dart';
+import '../base/expression_container.dart';
 import '../base/map_expression.dart';
 import 'filter_expression.dart';
 
-class ProjectionExpression extends Builder /* MapExpression */ {
+class ProjectionExpression
+    implements ExpressionContainer, Builder /* MapExpression */ {
   ProjectionExpression() /*  : super.empty() */;
 
   final _expression = MapExpression.empty();
@@ -13,9 +15,20 @@ class ProjectionExpression extends Builder /* MapExpression */ {
   bool expressionProcessed = false;
   final _sequence = <MapExpression>[];
 
+  @Deprecated('Use isNotEmpty() instead')
   bool get notEmpty => _sequence.isNotEmpty;
+
+  @override
+  bool get isEmpty =>
+      expressionProcessed ? _expression.isEmpty : _sequence.isEmpty;
+
+  @override
+  bool get isNotEmpty =>
+      expressionProcessed ? _expression.isNotEmpty : _sequence.isNotEmpty;
+
   /* ProjectionDocument get content =>
       expressionProcessed ? <String, Object>{...valueMap} : rawContent; */
+  @override
   @Deprecated('use build() instead')
   MongoDocument get rawContent => build();
   @override

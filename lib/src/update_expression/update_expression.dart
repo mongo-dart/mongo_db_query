@@ -3,6 +3,7 @@ import 'package:fixnum/fixnum.dart';
 import '../base/builder.dart';
 import '../base/common/document_types.dart';
 import '../base/common/operators_def.dart';
+import '../base/expression_container.dart';
 import '../base/field_expression.dart';
 import '../base/map_expression.dart';
 import '../base/operator_expression.dart';
@@ -10,14 +11,25 @@ import '../base/value_expression.dart';
 
 UpdateExpression get modify => UpdateExpression();
 
-class UpdateExpression extends Builder {
+class UpdateExpression implements ExpressionContainer, Builder {
   final _expression = MapExpression.empty();
 
   //UpdateDocument get raw => _expression.rawContent as UpdateDocument;
   @Deprecated('use build() instead')
   MongoDocument get raw => _expression.rawContent;
+
+  @override
+  @Deprecated('use build() instead')
+  MongoDocument get rawContent => _expression.rawContent;
+
   @override
   MongoDocument build() => _expression.rawContent;
+
+  @override
+  bool get isEmpty => _expression.isEmpty;
+
+  @override
+  bool get isNotEmpty => _expression.isNotEmpty;
 
   @override
   String toString() => 'UpdateExpression($_expression)';

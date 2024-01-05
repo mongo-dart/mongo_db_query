@@ -48,27 +48,27 @@ void main() {
     expect(selector.filter.build(), {
       'my_field': {r'$gt': 995}
     });
-    expect(selector.sortExp.rawContent, {'my_field': 1});
+    expect(selector.sortExp.build(), {'my_field': 1});
     selector = where
       ..inRange('my_field', 700, 703, minInclude: false)
       ..sortBy({'my_field': -1});
     expect(selector.filter.build(), {
       'my_field': {r'$gt': 700, r'$lt': 703}
     });
-    expect(selector.sortExp.rawContent, {'my_field': -1});
+    expect(selector.sortExp.build(), {'my_field': -1});
     selector = where
       ..$eq('my_field', 17)
       ..selectFields(['str_field']);
     expect(selector.filter.build(), {
       'my_field': {r'$eq': 17}
     });
-    expect(selector.fields.rawContent, {'str_field': 1});
+    expect(selector.fields.build(), {'str_field': 1});
 
     selector = where
       ..sortBy('a')
       ..skip(300);
     expect(selector.filter.build(), {});
-    expect(selector.sortExp.rawContent, {'a': 1});
+    expect(selector.sortExp.build(), {'a': 1});
     expect(selector.getSkip(), 300);
 
     /* selector = where
@@ -432,7 +432,7 @@ void main() {
       ..sortExp.add$meta('score');
 
     expect(selector.getQueryString(), r'{"$text":{"$search":"sText"}}');
-    expect(selector.sortExp.rawContent, {
+    expect(selector.sortExp.build(), {
       "fName": 1,
       'score': {r'$meta': 'textScore'}
     });
