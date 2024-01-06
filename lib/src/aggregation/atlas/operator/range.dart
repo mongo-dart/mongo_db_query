@@ -1,7 +1,7 @@
-import '../../../base/common/document_types.dart';
 import '../../../base/common/operators_def.dart';
 import '../../../query_expression/query_expression.dart';
 import '../../base/atlas_operator.dart';
+import '../options/score_modify.dart';
 
 /// The range operator supports querying and scoring numeric and date values.
 /// This operator can be used to perform a search over:
@@ -56,13 +56,18 @@ class Range extends AtlasOperator {
   /// type.
   /// - For date fields, the value must be an DateTime object.
   ///
-  Range({required path, gt, gte, lt, lte, MongoDocument? score})
+  /// [score] - Modify the score assigned to matching search results.
+  /// You can modify the default score using the following options:
+  /// - boost: multiply the result score by the given number.
+  /// - constant: replace the result score with the given number.
+  /// - function: replace the result score with the given expression.
+  Range({required path, gt, gte, lt, lte, ScoreModify? score})
       : super(opRange, {
           'path': valueToContent(path),
           if (gt != null) 'gt': valueToContent(gt),
           if (gte != null) 'gte': valueToContent(gte),
           if (lt != null) 'lt': valueToContent(lt),
           if (lte != null) 'lte': valueToContent(lte),
-          if (score != null) 'score': valueToContent(score),
+          if (score != null) ...score.build(),
         });
 }

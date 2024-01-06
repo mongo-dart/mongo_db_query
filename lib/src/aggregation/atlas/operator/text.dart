@@ -1,8 +1,8 @@
-import '../../../base/common/document_types.dart';
 import '../../../base/common/operators_def.dart';
 import '../../../query_expression/query_expression.dart';
 import '../../atlas_operator_collector.dart';
 import '../../base/atlas_operator.dart';
+import '../options/score_modify.dart';
 
 ///
 ///
@@ -84,13 +84,13 @@ class Text extends AtlasOperator {
       {required path,
       required query,
       Fuzzy? fuzzy,
-      MongoDocument? score,
+      ScoreModify? score,
       String? synonyms})
       : super(opText, {
           'path': valueToContent(path),
           'query': valueToContent(query),
           if (fuzzy != null) ...fuzzy.build(),
-          if (score != null) 'score': valueToContent(score),
+          if (score != null) ...score.build(),
           if (synonyms != null) 'synonyms': valueToContent(synonyms),
         });
 }

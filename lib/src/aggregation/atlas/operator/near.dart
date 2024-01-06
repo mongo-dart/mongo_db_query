@@ -1,6 +1,7 @@
 import '../../../base/common/operators_def.dart';
 import '../../../query_expression/query_expression.dart';
 import '../../base/atlas_operator.dart';
+import '../options/score_modify.dart';
 
 /// The near operator supports querying and scoring numeric, date, and GeoJSON
 /// point values. This operator can be used to perform a search over:
@@ -72,11 +73,11 @@ class Near extends AtlasOperator {
   ///    - boost: multiply the result score by the given number.
   ///    - constant: replace the result score with the given number.
   ///    - function: replace the result score with the given expression.
-  Near({required path, required origin, required num pivot, score})
+  Near({required path, required origin, required num pivot, ScoreModify? score})
       : super(opNear, {
           'path': valueToContent(path),
           'origin': valueToContent(origin),
           'pivot': valueToContent(pivot),
-          if (score != null) 'score': valueToContent(score),
+          if (score != null) ...score.build(),
         });
 }

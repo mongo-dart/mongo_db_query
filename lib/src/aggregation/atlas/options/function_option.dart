@@ -1,5 +1,5 @@
 import '../../../base/common/operators_def.dart';
-import '../../../query_expression/query_expression.dart';
+import '../../base/atlas_expression.dart';
 import '../../base/atlas_score_options.dart';
 
 /// The function option allows you to alter the final score of the document
@@ -19,11 +19,9 @@ import '../../base/atlas_score_options.dart';
 ///
 ///https://www.mongodb.com/docs/atlas/atlas-search/score/modify-score/#function
 class FunctionOption extends AtlasScoreOption {
-  /// [value] - replace the score  with the specified constant value
+  /// [expression] - expression for computing the score.
   ///
 
-  FunctionOption({required double value})
-      : super(optFunction, {
-          'value': valueToContent(value),
-        });
+  FunctionOption({required AtlasExpression expression})
+      : super(optFunction, {...expression.build()});
 }

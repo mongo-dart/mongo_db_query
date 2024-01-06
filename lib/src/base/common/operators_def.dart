@@ -273,6 +273,7 @@ const optCount = 'count';
 const optEmbedded = 'embedded';
 const optFunction = 'function';
 const optHighlight = 'highlight';
+const optScore = 'score';
 const optTracking = 'tracking';
 
 // ***** Atlas Expression
