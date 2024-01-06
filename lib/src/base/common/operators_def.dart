@@ -267,6 +267,20 @@ const opWildcard = 'wildcard';
 const coFacet = 'facet';
 
 // ***** Atlas Options
+const optBoost = 'boost';
+const optConstant = 'constant';
 const optCount = 'count';
+const optEmbedded = 'embedded';
+const optFunction = 'function';
 const optHighlight = 'highlight';
 const optTracking = 'tracking';
+
+// ***** Atlas Expression
+const expAdd = 'add';
+const expConstant = 'constant';
+const expGauss = 'gauss';
+const expLog = 'log';
+const expLog1p = 'log1p';
+const expMultiply = 'multiply';
+const expPath = 'path';
+const expScore = 'score';
