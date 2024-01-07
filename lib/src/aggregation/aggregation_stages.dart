@@ -34,10 +34,11 @@ export 'stage/search.dart';
 export 'stage/search_meta.dart';
 export 'stage/set.dart';
 export 'stage/set_window_fields.dart';
-// TODO $shardedDataDistribution
+export 'stage/sharded_data_distribution.dart';
 export 'stage/skip.dart';
 export 'stage/sort.dart';
 export 'stage/sort_by_count.dart';
 export 'stage/union_with.dart';
 export 'stage/unset.dart';
 export 'stage/unwind.dart';
+export 'stage/vector_search.dart';

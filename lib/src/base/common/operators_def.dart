@@ -211,6 +211,7 @@ const st$sortByCount = r'$sortByCount';
 const st$unionWith = r'$unionWith';
 const st$unset = r'$unset';
 const st$unwind = r'$unwind';
+const st$vectorSearch = r'$vectorSearch';
 
 // **** String
 const op$concat = r'$concat';
