@@ -40,175 +40,6 @@ void main() {
         });
   });
 
-  test('set', () {
-    expect(
-        $set([
-          fieldSum('totalHomework', Field('homework')),
-          fieldSum('totalQuiz', r'$quiz')
-        ]).build(),
-        {
-          r'$set': {
-            'totalHomework': {r'$sum': r'$homework'},
-            'totalQuiz': {r'$sum': r'$quiz'}
-          }
-        });
-    expect(
-        $set.raw({
-          'totalHomework': {r'$sum': r'$homework'},
-          'totalQuiz': {r'$sum': r'$quiz'}
-        }).build(),
-        {
-          r'$set': {
-            'totalHomework': {r'$sum': r'$homework'},
-            'totalQuiz': {r'$sum': r'$quiz'}
-          }
-        });
-    expect(
-        $set.raw({
-          ...FieldExpression('totalHomework', $sum(Field('homework'))).build(),
-          'totalQuiz': $sum(r'$quiz')
-        }).build(),
-        {
-          r'$set': {
-            'totalHomework': {r'$sum': r'$homework'},
-            'totalQuiz': {r'$sum': r'$quiz'}
-          }
-        });
-  });
-
-  test('setWindowFields', () {
-    expect(
-        $setWindowFields(
-            partitionBy: {r'$year': r"$orderDate"},
-            sortBy: {'orderDate': 1},
-            output: Output('cumulativeQuantityForYear', $sum(r'$quantity'),
-                documents: ["unbounded", "current"])).build(),
-        {
-          r'$setWindowFields': {
-            'partitionBy': {r'$year': r"$orderDate"},
-            'sortBy': {'orderDate': 1},
-            'output': {
-              'cumulativeQuantityForYear': {
-                r'$sum': r"$quantity",
-                'window': {
-                  'documents': ["unbounded", "current"]
-                }
-              }
-            }
-          }
-        });
-    expect(
-        $setWindowFields(
-                partitionBy: r'$state',
-                sortBy: {'orderDate': 1},
-                output: Output('recentOrders', $push(r'$orderDate'),
-                    range: ["unbounded", -10], unit: "month"))
-            .build(),
-        {
-          r'$setWindowFields': {
-            'partitionBy': r"$state",
-            'sortBy': {'orderDate': 1},
-            'output': {
-              'recentOrders': {
-                r'$push': r"$orderDate",
-                'window': {
-                  'range': ["unbounded", -10],
-                  'unit': "month"
-                }
-              }
-            }
-          }
-        });
-    expect(
-        $setWindowFields(output: Output('recentOrders', $avg(r'$orderDate')))
-            .build(),
-        {
-          r'$setWindowFields': {
-            'output': {
-              'recentOrders': {
-                r'$avg': r"$orderDate",
-              }
-            }
-          }
-        });
-    expect(
-        $setWindowFields(partitionBy: {
-          r'$year': r'$orderDate'
-        }, sortBy: {
-          'orderDate': 1
-        }, output: [
-          Output('cumulativeQuantityForYear', $sum(r'$quantity'),
-              documents: ["unbounded", "current"]),
-          Output('maximumQuantityForYear', $max(r'$quantity'),
-              documents: ["unbounded", "unbounded"])
-        ]).build(),
-        {
-          r'$setWindowFields': {
-            'partitionBy': {r'$year': r'$orderDate'},
-            'sortBy': {'orderDate': 1},
-            'output': {
-              'cumulativeQuantityForYear': {
-                r'$sum': r'$quantity',
-                'window': {
-                  'documents': ["unbounded", "current"]
-                }
-              },
-              'maximumQuantityForYear': {
-                r'$max': r'$quantity',
-                'window': {
-                  'documents': ["unbounded", "unbounded"]
-                }
-              }
-            }
-          }
-        });
-    expect(
-        $setWindowFields.raw({
-          'partitionBy': $year(Field('orderDate')).build(),
-          'sortBy': {'orderDate': 1},
-          'output': {
-            'cumulativeQuantityForYear': {
-              ...$sum(Field('quantity')).build(),
-              'window': {
-                'documents': ["unbounded", "current"]
-              }
-            },
-            'maximumQuantityForYear': {
-              ...$max(Field('quantity')).build(),
-              'window': {
-                'documents': ["unbounded", "unbounded"]
-              }
-            }
-          }
-        }).build(),
-        {
-          r'$setWindowFields': {
-            'partitionBy': {r'$year': r'$orderDate'},
-            'sortBy': {'orderDate': 1},
-            'output': {
-              'cumulativeQuantityForYear': {
-                r'$sum': r'$quantity',
-                'window': {
-                  'documents': ["unbounded", "current"]
-                }
-              },
-              'maximumQuantityForYear': {
-                r'$max': r'$quantity',
-                'window': {
-                  'documents': ["unbounded", "unbounded"]
-                }
-              }
-            }
-          }
-        });
-  });
-
-  test('unset', () {
-    expect($unset(['isbn', 'author.first', 'copies.warehouse']).build(), {
-      '\$unset': ['isbn', 'author.first', 'copies.warehouse']
-    });
-  });
-
   test('bucket', () {
     expect(
         $bucket(
@@ -309,10 +140,6 @@ void main() {
     expect($changeStreamSplitLargeEvent().build(),
         {r'$changeStreamSplitLargeEvent': {}});
   });
-
-  test('count', () {
-    expect($count('myCount').build(), {r'$count': 'myCount'});
-  });
   test('collStats', () {
     expect($collStats(histograms: true).build(), {
       r'$collStats': {
@@ -329,6 +156,20 @@ void main() {
           }
         });
   });
+
+  test('count', () {
+    expect($count('myCount').build(), {r'$count': 'myCount'});
+  });
+
+  test('currentOp', () {
+    expect($currentOp(allUsers: true, idleSessions: true).build(), {
+      r'$currentOp': {'allUsers': true, 'idleSessions': true}
+    });
+    expect($currentOp.raw({'allUsers': true, 'idleSessions': true}).build(), {
+      r'$currentOp': {'allUsers': true, 'idleSessions': true}
+    });
+  });
+
   test('densify', () {
     expect(
         $densify('timestamp', step: 1, unit: 'hour', bounds: [
@@ -372,6 +213,22 @@ void main() {
               ]
             }
           }
+        });
+  });
+
+  test('documents', () {
+    expect(
+        $documents([
+          {'x': 10},
+          {'x': 2},
+          {'x': 5}
+        ]).build(),
+        {
+          r'$documents': [
+            {'x': 10},
+            {'x': 2},
+            {'x': 5}
+          ]
         });
   });
 
@@ -979,6 +836,173 @@ void main() {
         });
   });
 
+  test('set', () {
+    expect(
+        $set([
+          fieldSum('totalHomework', Field('homework')),
+          fieldSum('totalQuiz', r'$quiz')
+        ]).build(),
+        {
+          r'$set': {
+            'totalHomework': {r'$sum': r'$homework'},
+            'totalQuiz': {r'$sum': r'$quiz'}
+          }
+        });
+    expect(
+        $set.raw({
+          'totalHomework': {r'$sum': r'$homework'},
+          'totalQuiz': {r'$sum': r'$quiz'}
+        }).build(),
+        {
+          r'$set': {
+            'totalHomework': {r'$sum': r'$homework'},
+            'totalQuiz': {r'$sum': r'$quiz'}
+          }
+        });
+    expect(
+        $set.raw({
+          ...FieldExpression('totalHomework', $sum(Field('homework'))).build(),
+          'totalQuiz': $sum(r'$quiz')
+        }).build(),
+        {
+          r'$set': {
+            'totalHomework': {r'$sum': r'$homework'},
+            'totalQuiz': {r'$sum': r'$quiz'}
+          }
+        });
+  });
+
+  test('setWindowFields', () {
+    expect(
+        $setWindowFields(
+            partitionBy: {r'$year': r"$orderDate"},
+            sortBy: {'orderDate': 1},
+            output: Output('cumulativeQuantityForYear', $sum(r'$quantity'),
+                documents: ["unbounded", "current"])).build(),
+        {
+          r'$setWindowFields': {
+            'partitionBy': {r'$year': r"$orderDate"},
+            'sortBy': {'orderDate': 1},
+            'output': {
+              'cumulativeQuantityForYear': {
+                r'$sum': r"$quantity",
+                'window': {
+                  'documents': ["unbounded", "current"]
+                }
+              }
+            }
+          }
+        });
+    expect(
+        $setWindowFields(
+                partitionBy: r'$state',
+                sortBy: {'orderDate': 1},
+                output: Output('recentOrders', $push(r'$orderDate'),
+                    range: ["unbounded", -10], unit: "month"))
+            .build(),
+        {
+          r'$setWindowFields': {
+            'partitionBy': r"$state",
+            'sortBy': {'orderDate': 1},
+            'output': {
+              'recentOrders': {
+                r'$push': r"$orderDate",
+                'window': {
+                  'range': ["unbounded", -10],
+                  'unit': "month"
+                }
+              }
+            }
+          }
+        });
+    expect(
+        $setWindowFields(output: Output('recentOrders', $avg(r'$orderDate')))
+            .build(),
+        {
+          r'$setWindowFields': {
+            'output': {
+              'recentOrders': {
+                r'$avg': r"$orderDate",
+              }
+            }
+          }
+        });
+    expect(
+        $setWindowFields(partitionBy: {
+          r'$year': r'$orderDate'
+        }, sortBy: {
+          'orderDate': 1
+        }, output: [
+          Output('cumulativeQuantityForYear', $sum(r'$quantity'),
+              documents: ["unbounded", "current"]),
+          Output('maximumQuantityForYear', $max(r'$quantity'),
+              documents: ["unbounded", "unbounded"])
+        ]).build(),
+        {
+          r'$setWindowFields': {
+            'partitionBy': {r'$year': r'$orderDate'},
+            'sortBy': {'orderDate': 1},
+            'output': {
+              'cumulativeQuantityForYear': {
+                r'$sum': r'$quantity',
+                'window': {
+                  'documents': ["unbounded", "current"]
+                }
+              },
+              'maximumQuantityForYear': {
+                r'$max': r'$quantity',
+                'window': {
+                  'documents': ["unbounded", "unbounded"]
+                }
+              }
+            }
+          }
+        });
+    expect(
+        $setWindowFields.raw({
+          'partitionBy': $year(Field('orderDate')).build(),
+          'sortBy': {'orderDate': 1},
+          'output': {
+            'cumulativeQuantityForYear': {
+              ...$sum(Field('quantity')).build(),
+              'window': {
+                'documents': ["unbounded", "current"]
+              }
+            },
+            'maximumQuantityForYear': {
+              ...$max(Field('quantity')).build(),
+              'window': {
+                'documents': ["unbounded", "unbounded"]
+              }
+            }
+          }
+        }).build(),
+        {
+          r'$setWindowFields': {
+            'partitionBy': {r'$year': r'$orderDate'},
+            'sortBy': {'orderDate': 1},
+            'output': {
+              'cumulativeQuantityForYear': {
+                r'$sum': r'$quantity',
+                'window': {
+                  'documents': ["unbounded", "current"]
+                }
+              },
+              'maximumQuantityForYear': {
+                r'$max': r'$quantity',
+                'window': {
+                  'documents': ["unbounded", "unbounded"]
+                }
+              }
+            }
+          }
+        });
+  });
+
+  test('shardedDataDistribution', () {
+    expect(
+        $shardedDataDistribution().build(), {r'$shardedDataDistribution': {}});
+  });
   test('skip', () {
     expect($skip(5).build(), {r'$skip': 5});
     expect($skip.query(where..skip(5)).build(), {r'$skip': 5});
@@ -1062,34 +1086,67 @@ void main() {
           }
         });
   });
-  test('currentOp', () {
-    expect($currentOp(allUsers: true, idleSessions: true).build(), {
-      r'$currentOp': {'allUsers': true, 'idleSessions': true}
-    });
-    expect($currentOp.raw({'allUsers': true, 'idleSessions': true}).build(), {
-      r'$currentOp': {'allUsers': true, 'idleSessions': true}
-    });
-  });
 
-  test('documents', () {
-    expect(
-        $documents([
-          {'x': 10},
-          {'x': 2},
-          {'x': 5}
-        ]).build(),
-        {
-          r'$documents': [
-            {'x': 10},
-            {'x': 2},
-            {'x': 5}
-          ]
-        });
+  test('unset', () {
+    expect($unset(['isbn', 'author.first', 'copies.warehouse']).build(), {
+      '\$unset': ['isbn', 'author.first', 'copies.warehouse']
+    });
   });
 
   test('unwind', () {
     expect($unwind(Field('sizes')).build(), {
       r'$unwind': {'path': r'$sizes'}
     });
+  });
+
+  test('vectorSearch', () {
+    expect(
+        $vectorSearch(
+                index: 'vector_index',
+                path: 'plot_embedding',
+                queryVector: [-0.0016261312, -0.028070757, -0.011342932],
+                numCandidates: 150,
+                limit: 10)
+            .build(),
+        {
+          r'$vectorSearch': {
+            'index': 'vector_index',
+            'path': 'plot_embedding',
+            'queryVector': [-0.0016261312, -0.028070757, -0.011342932],
+            'numCandidates': 150,
+            'limit': 10
+          }
+        });
+    expect(
+        $vectorSearch(
+                index: 'vector-search-tutorial',
+                path: 'plot_embedding',
+                filter: (where
+                      ..$gt('year', 1955)
+                      ..$lt('year', 1975))
+                    .filter,
+                queryVector: [0.02421053, -0.022372592, -0.006231137],
+                numCandidates: 150,
+                limit: 10)
+            .build(),
+        {
+          r'$vectorSearch': {
+            'index': 'vector-search-tutorial',
+            'path': 'plot_embedding',
+            'filter': {
+              r'$and': [
+                {
+                  'year': {r'$gt': 1955}
+                },
+                {
+                  'year': {r'$lt': 1975}
+                }
+              ]
+            },
+            'queryVector': [0.02421053, -0.022372592, -0.006231137],
+            'numCandidates': 150,
+            'limit': 10
+          }
+        });
   });
 }

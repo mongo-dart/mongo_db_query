@@ -1,3 +1,6 @@
+import 'package:mongo_db_query/mongo_db_query.dart';
+import 'package:mongo_db_query/src/base/operator_expression.dart';
+
 import '../../base/common/document_types.dart';
 import '../../base/common/operators_def.dart';
 import '../../base/map_expression.dart';
@@ -64,15 +67,17 @@ class $vectorSearch extends AggregationStage {
       required int limit,
       required int numCandidates,
       required String path,
-      required List<num> queryVector})
+      required List<num> queryVector,
+      FilterExpression? filter})
       : super(
             st$vectorSearch,
             MapExpression({
               'index': valueToContent(index),
-              'limit': valueToContent(limit),
-              'numCandidates': valueToContent(numCandidates),
               'path': valueToContent(path),
+              if (filter != null) 'filter': filter.build(),
               'queryVector': valueToContent(queryVector),
+              'numCandidates': valueToContent(numCandidates),
+              'limit': valueToContent(limit),
             }));
   $vectorSearch.raw(MongoDocument raw) : super.raw(st$vectorSearch, raw);
 }
