@@ -1122,8 +1122,9 @@ void main() {
                 index: 'vector-search-tutorial',
                 path: 'plot_embedding',
                 filter: (where
-                      ..$gt('year', 1955)
-                      ..$lt('year', 1975))
+                      ..$gt('year', 1975)
+                      ..$or
+                      ..$lt('year', 1955))
                     .filter,
                 queryVector: [0.02421053, -0.022372592, -0.006231137],
                 numCandidates: 150,
@@ -1134,12 +1135,12 @@ void main() {
             'index': 'vector-search-tutorial',
             'path': 'plot_embedding',
             'filter': {
-              r'$and': [
+              r'$or': [
                 {
-                  'year': {r'$gt': 1955}
+                  'year': {r'$gt': 1975}
                 },
                 {
-                  'year': {r'$lt': 1975}
+                  'year': {r'$lt': 1955}
                 }
               ]
             },

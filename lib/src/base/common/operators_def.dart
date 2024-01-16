@@ -274,6 +274,7 @@ const optCount = 'count';
 const optEmbedded = 'embedded';
 const optFunction = 'function';
 const optHighlight = 'highlight';
+const optFuzzy = 'fuzzy';
 const optScore = 'score';
 const optTracking = 'tracking';
 
