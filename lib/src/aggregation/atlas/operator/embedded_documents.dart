@@ -38,8 +38,8 @@ class EmbeddedDocument extends AtlasOperator {
       required String path,
       ScoreModify? score})
       : super(opEmbeddedDocument, {
-          ...operator.build(),
           'path': valueToContent(path),
+          'operator': operator,
           if (score != null) ...score.build(),
         });
 }
