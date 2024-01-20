@@ -27,7 +27,7 @@ class Multiply extends AtlasExpression {
   ///
   Multiply({required List<AtlasExpression> expressions})
       : super(
-          expAdd,
+          expMultiply,
           ListExpression(expressions),
         );
 }
