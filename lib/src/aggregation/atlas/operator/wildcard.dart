@@ -52,9 +52,9 @@ class Wildcard extends AtlasOperator {
       required path,
       bool allowAnalyzedField = false,
       ScoreModify? score})
-      : super(opRegex, {
-          'query': valueToContent(query),
+      : super(opWildcard, {
           'path': valueToContent(path),
+          'query': valueToContent(query),
           if (allowAnalyzedField) 'allowAnalyzedField': allowAnalyzedField,
           if (score != null) ...score.build(),
         });
