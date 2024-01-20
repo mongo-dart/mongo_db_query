@@ -3,7 +3,6 @@ import 'package:mongo_db_query/src/aggregation/atlas/options/embedded.dart';
 import 'package:mongo_db_query/src/aggregation/atlas/options/score_modify.dart';
 import 'package:mongo_db_query/src/aggregation/atlas_operator_collector.dart';
 import 'package:mongo_db_query/src/aggregation/support_classes/geo/box.dart';
-import 'package:mongo_db_query/src/aggregation/support_classes/geo/geo_json_type.dart';
 import 'package:mongo_db_query/src/aggregation/support_classes/geo/geo_position.dart';
 import 'package:mongo_db_query/src/aggregation/support_classes/geo/geometry.dart';
 import 'package:test/test.dart';
