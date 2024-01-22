@@ -5,16 +5,17 @@ import 'base/aggregation_stage.dart';
 
 typedef AggregationPipeline = List<AggregationStage>;
 
+AggregationPipelineBuilder pipeline = AggregationPipelineBuilder();
+
 /// Aggregation pipeline builder
 class AggregationPipelineBuilder implements Builder {
+  AggregationPipelineBuilder([AggregationPipeline? stages])
+      : stages = stages ?? <AggregationStage>[];
   @protected
-  final AggregationPipeline stages = <AggregationStage>[];
+  final AggregationPipeline stages;
 
   /// Adds stage to the pipeline
-  AggregationPipelineBuilder addStage(AggregationStage stage) {
-    stages.add(stage);
-    return this;
-  }
+  void addStage(AggregationStage stage) => stages.add(stage);
 
   /// Builds pipeline
   ///
