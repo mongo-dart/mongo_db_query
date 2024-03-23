@@ -12,8 +12,8 @@ class SortExpression
   bool expressionProcessed = false;
   final _sequence = <MapExpression>[];
 
-  @Deprecated('use isNotEmpty() instead')
-  bool get notEmpty => _sequence.isNotEmpty;
+  /* @Deprecated('use isNotEmpty() instead')
+  bool get notEmpty => _sequence.isNotEmpty; */
   /* IndexDocument get content =>
       expressionProcessed ? <String, Object>{...valueMap} : rawContent; */
 
