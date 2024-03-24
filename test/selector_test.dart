@@ -305,7 +305,7 @@ void main() {
     var selector = where
       ..$eq('field', 'value')
       ..$gt('num_field', 5)
-      ..and
+      ..$and
       ..$nearSphere('geo_obj', Geometry.point([35.0, 35.0]));
 
     var copied = QueryExpression.copyWith(selector);

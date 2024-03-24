@@ -3,19 +3,13 @@ import '../base/common/document_types.dart';
 import '../base/expression_container.dart';
 import '../base/map_expression.dart';
 
-class SortExpression
-    implements ExpressionContainer, Builder /* MapExpression */ {
-  SortExpression() /* : super.empty() */;
+class SortExpression implements ExpressionContainer, Builder {
+  SortExpression();
 
   final _expression = MapExpression.empty();
 
   bool expressionProcessed = false;
   final _sequence = <MapExpression>[];
-
-  /* @Deprecated('use isNotEmpty() instead')
-  bool get notEmpty => _sequence.isNotEmpty; */
-  /* IndexDocument get content =>
-      expressionProcessed ? <String, Object>{...valueMap} : rawContent; */
 
   @override
   bool get isEmpty =>
@@ -35,22 +29,43 @@ class SortExpression
       processExpression();
     }
     return <String, Object>{..._expression.rawContent};
-
-    /*  return content; */
   }
-
-  //@override
-  //String toString() => 'SortExpression($rawContent)';
 
   void processExpression() {
     expressionProcessed = true;
-    //valueMap.clear();
     _expression.setMap({});
 
     for (var element in _sequence) {
-      //var insertMap = <String, Object>{...element.rawContent};
-      //valueMap.addAll(insertMap);
       _expression.addMapExpression(element);
+    }
+  }
+
+  void sortBy(Object field) {
+    if (field is String) {
+      addField(field);
+    } else if (field is IndexDocument) {
+      for (var entry in field.entries) {
+        if (entry.value is int) {
+          if (entry.value == -1) {
+            addField(entry.key, descending: true);
+          } else {
+            addField(entry.key);
+          }
+        } else if (entry.value is IndexDocument) {
+          if ((entry.value as IndexDocument).length == 1 &&
+              (entry.value as IndexDocument).entries.first.key == r'$meta' &&
+              (entry.value as IndexDocument).entries.first.value ==
+                  'textScore') {
+            add$meta(entry.key);
+          } else {
+            throw ArgumentError(
+                'The received document seems to be not correct ("${entry.value}")');
+          }
+        }
+      }
+    } else {
+      throw ArgumentError(
+          'The received field seems to be not correct ("$field")');
     }
   }
 

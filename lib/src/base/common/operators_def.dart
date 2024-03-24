@@ -65,8 +65,16 @@ const op$nor = r'$nor';
 const op$all = r'$all';
 const op$size = r'$size';
 
+// ************* bit wise
+const op$bitsAllClear = r'$bitsAllClear';
+const op$bitsAllSet = r'$bitsAllSet';
+const op$bitsAnyClear = r'$bitsAnyClear';
+const op$bitsAnySet = r'$bitsAnySet';
+
 // ************* miscellaneous
 const op$comment = r'$comment';
+const op$rand = r'$rand';
+const op$natural = r'$natural';
 
 const op$addToSet = r'$addToSet';
 const op$pop = r'$pop';

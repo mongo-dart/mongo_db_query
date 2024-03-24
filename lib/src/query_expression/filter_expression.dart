@@ -1,3 +1,5 @@
+import 'package:bson/bson.dart';
+
 import '../aggregation/support_classes/geo/geo_shape.dart';
 import '../aggregation/support_classes/geo/geometry.dart';
 import '../base/builder.dart';
@@ -30,14 +32,12 @@ class FilterExpression
   /// Or or Nor Nodes int the top level
   bool topNodes = false;
   bool expressionProcessed = false;
-  final /* List<Expression> */ _sequence = <ExpressionContent>[];
+  final _sequence = <ExpressionContent>[];
   FilterExpression? _openChild;
 
   bool get isOpenSublevel => _openChild != null;
   @Deprecated('use isNotEmpty() instead')
   bool get notEmpty => _sequence.isNotEmpty;
-  /*  MongoDocument get content =>
-      expressionProcessed ? <String, dynamic>{...valueMap} : rawContent; */
 
   @override
   bool get isEmpty =>
@@ -133,7 +133,6 @@ class FilterExpression
         }
       }
     }
-    //valueMap.addAll(actualContainer?.build() ?? emptyMongoDocument);
     _expression.setMap(actualContainer?.build() ?? emptyMongoDocument);
   }
 
@@ -149,8 +148,8 @@ class FilterExpression
     }
   }
 
-  void _addFieldOperator(FieldExpression expression) => isOpenSublevel
-      ? _openChild!._addFieldOperator(expression)
+  void addFieldOperator(FieldExpression expression) => isOpenSublevel
+      ? _openChild!.addFieldOperator(expression)
       : _sequence.add(expression);
 
   void addOperator(OperatorExpression expression) {
@@ -297,33 +296,33 @@ class FilterExpression
   // ***************************************************
 
   /// Matches values that are equal to a specified value.
-  void $eq(String fieldName, value) => _addFieldOperator(FieldExpression(
+  void $eq(String fieldName, value) => addFieldOperator(FieldExpression(
       fieldName, OperatorExpression(op$eq, valueToContent(value))));
 
   void id(value) => $eq(field_id, value);
 
   /// Matches values that are greater than a specified value.
-  void $gt(String fieldName, value) => _addFieldOperator(FieldExpression(
+  void $gt(String fieldName, value) => addFieldOperator(FieldExpression(
       fieldName, OperatorExpression(op$gt, valueToContent(value))));
 
   /// Matches values that are greater than or equal to a specified value.
-  void $gte(String fieldName, value) => _addFieldOperator(FieldExpression(
+  void $gte(String fieldName, value) => addFieldOperator(FieldExpression(
       fieldName, OperatorExpression(op$gte, valueToContent(value))));
 
   /// Matches any of the values specified in an array.
-  void $in(String fieldName, List values) => _addFieldOperator(FieldExpression(
+  void $in(String fieldName, List values) => addFieldOperator(FieldExpression(
       fieldName, OperatorExpression(op$in, ListExpression(values))));
 
   /// Matches values that are less than a specified value.
-  void $lt(String fieldName, value) => _addFieldOperator(FieldExpression(
+  void $lt(String fieldName, value) => addFieldOperator(FieldExpression(
       fieldName, OperatorExpression(op$lt, valueToContent(value))));
 
   /// Matches values that are less than or equal to a specified value.
-  void $lte(String fieldName, value) => _addFieldOperator(FieldExpression(
+  void $lte(String fieldName, value) => addFieldOperator(FieldExpression(
       fieldName, OperatorExpression(op$lte, valueToContent(value))));
 
   /// Matches all values that are not equal to a specified value.
-  void $ne(String fieldName, value) => _addFieldOperator(FieldExpression(
+  void $ne(String fieldName, value) => addFieldOperator(FieldExpression(
       fieldName, OperatorExpression(op$ne, valueToContent(value))));
 
   /// Matches none of the values specified in an array.
@@ -336,11 +335,11 @@ class FilterExpression
 
   /// $exists matches the documents that contain the field,
   /// including documents where the field value is null.
-  void $exists(String fieldName) => _addFieldOperator(FieldExpression(
+  void $exists(String fieldName) => addFieldOperator(FieldExpression(
       fieldName, OperatorExpression(op$exists, valueToContent(true))));
 
   ///  notExist reTurns only the documents that do not contain the field.
-  void notExists(String fieldName) => _addFieldOperator(FieldExpression(
+  void notExists(String fieldName) => addFieldOperator(FieldExpression(
       fieldName, OperatorExpression(op$exists, valueToContent(false))));
 
   /// $type selects documents where the value of the field is an instance
@@ -363,8 +362,9 @@ class FilterExpression
   ///   Timestamp      17             "timestamp"       bsonDataTimestamp
   ///   64-bit integer 18             "long"            bsonDataLong
   ///   Decimal128     19             "decimal"         bsonDecimal128
-  void $type(String fieldName, List types) => _addFieldOperator(FieldExpression(
+  void $type(String fieldName, List types) => addFieldOperator(FieldExpression(
       fieldName, OperatorExpression(op$type, ListExpression(types))));
+
   // ***************************************************
   // ***************** Evaluation Query Operators
   // ***************************************************
@@ -384,7 +384,7 @@ class FilterExpression
   /// select documents).
   /// The reminder defaults to zero
   void $mod(String fieldName, int value, {int reminder = 0}) =>
-      _addFieldOperator(FieldExpression(fieldName,
+      addFieldOperator(FieldExpression(fieldName,
           OperatorExpression(op$mod, ListExpression([value, reminder]))));
 
   /// Provides regular expression capabilities for pattern matching
@@ -401,7 +401,7 @@ class FilterExpression
         '${extendedIgnoreWhiteSpace ? 'x' : ''}'
         '${dotMatchAll ? 's' : ''}';
 
-    _addFieldOperator(FieldExpression(
+    addFieldOperator(FieldExpression(
         fieldName,
         MapExpression({
           op$regex:
@@ -439,7 +439,7 @@ class FilterExpression
 
   /// Geospatial operators return data based on geospatial expression conditions
   void $geoIntersects(String fieldName, Geometry geometry) =>
-      _addFieldOperator(FieldExpression(
+      addFieldOperator(FieldExpression(
           fieldName,
           OperatorExpression(
               op$geoIntersects, MapExpression({op$geometry: geometry}))));
@@ -449,7 +449,7 @@ class FilterExpression
   /// Only support GeoShape
   /// Available ShapeOperator instances: Box , Center, CenterSphere, Geometry
   void $geoWithin(String fieldName, GeoShape shape) =>
-      _addFieldOperator(FieldExpression(
+      addFieldOperator(FieldExpression(
           fieldName,
           OperatorExpression(
               op$geoWithin, MapExpression({op$geometry: shape}))));
@@ -458,7 +458,7 @@ class FilterExpression
   /// from nearest to farthest.
   void $near(String fieldName, var value,
       {double? maxDistance, double? minDistance}) {
-    _addFieldOperator(FieldExpression(
+    addFieldOperator(FieldExpression(
         fieldName,
         MapExpression({
           op$near: value,
@@ -472,7 +472,7 @@ class FilterExpression
   /// Only support geometry of point
   void $nearSphere(String fieldName, GeoPoint point,
           {double? maxDistance, double? minDistance}) =>
-      _addFieldOperator(FieldExpression(
+      addFieldOperator(FieldExpression(
           fieldName,
           OperatorExpression(
               op$nearSphere,
@@ -488,17 +488,17 @@ class FilterExpression
 
   /// The $all operator selects the documents where the value of a field is
   /// an array that contains all the specified elements.
-  void $all(String fieldName, List values) => _addFieldOperator(FieldExpression(
+  void $all(String fieldName, List values) => addFieldOperator(FieldExpression(
       fieldName, OperatorExpression(op$all, ListExpression(values))));
 
   /// The $elemMatch operator matches documents that contain an array
   /// field with at least one element that matches all the specified query criteria.
   void $elemMatch(String fieldName, List values) =>
-      _addFieldOperator(FieldExpression(
+      addFieldOperator(FieldExpression(
           fieldName, OperatorExpression(op$elemMatch, ListExpression(values))));
 
   void $size(String fieldName, int numElements) =>
-      _addFieldOperator(FieldExpression(
+      addFieldOperator(FieldExpression(
           fieldName, OperatorExpression(op$size, valueToContent(numElements))));
 
   /*  void match(String fieldName, String pattern,
@@ -527,17 +527,284 @@ class FilterExpression
     } else {
       mapExp.addExpression(OperatorExpression(op$lt, valueToContent(max)));
     }
-    _addFieldOperator(FieldExpression(fieldName, mapExp));
+    addFieldOperator(FieldExpression(fieldName, mapExp));
   }
 
   // ***************************************************
   // **************    Bit wise operators
   // ***************************************************
 
-  // TODO Missing  $bitsAllClear
-  // TODO Missing $bitsAllSet
-  // TODO Missing $bitsAnyClear
-  // TODO Missing $bitsAnySet
+  /// $bitsAllClear matches documents where all of the bit positions given by
+  /// the query are clear (i.e. 0) in field.
+  /// ```
+  ///  { <field>: { $bitsAllClear: <numeric bitmask> } }
+  ///  { <field>: { $bitsAllClear: < BsonBinary bitmask> } }
+  ///  { <field>: { $bitsAllClear: [ <position1>, <position2>, ... ] } }
+  /// ```
+  /// The field value must be either numeric or a BinData instance. Otherwise,
+  /// $bitsAllClear will not match the current document.
+  ///
+  /// __Numeric Bitmask__
+  /// You can provide a numeric bitmask to be matched against the operand field.
+  /// It must be representable as a non-negative 32-bit signed integer.
+  /// Otherwise, $bitsAllClear will return an error.
+  ///
+  /// __BinData Bitmask__
+  /// You can also use an arbitrarily large BinData instance as a bitmask.
+  ///
+  /// __Position List__
+  /// If querying a list of bit positions, each <position> must be a
+  /// non-negative integer. Bit positions start at 0 from the least significant
+  /// bit. For example, the decimal number 254 would have the following
+  /// bit positions:
+  ///
+  ///   Bit Value  1  1  1  1  1  1  1  0
+  ///   Position   7  6  5  4  3  2  1  0
+  ///
+  /// ***Behavior***
+  ///
+  /// __Indexes__
+  /// Queries cannot use indexes for the $bitsAllClear portion of a query,
+  /// although the other portions of a query can use indexes, if applicable.
+  ///
+  /// __Floating Point Values__
+  /// $bitsAllClear will not match numerical values that cannot be represented as
+  /// a signed 64-bit integer. This can be the case if a value is either too
+  /// large or too small to fit in a signed 64-bit integer, or if it has a
+  /// fractional component.
+  ///
+  /// __Sign Extension__
+  /// Numbers are sign extended. For example, $bitsAllClear considers bit
+  /// position 200 to be set for the negative number -5, but bit position 200 to
+  /// be clear for the positive number +5.
+  /// In contrast, BinData instances are zero-extended. For example, given the
+  /// following document:
+  /// ```
+  /// db.collection.insertOne({ x:  BsonBinary.fromHexString('11'),
+  ///            binaryValueofA: "00010001" })
+  /// ```
+  /// $bitsAllClear will consider all bits outside of x to be clear.
+  ///
+  /// [see](https://www.mongodb.com/docs/rapid/reference/operator/query/bitsAllClear/)
+  void $bitsAllClear(String fieldName, bitMask) {
+    if (bitMask is int) {
+      addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$bitsAllClear, valueToContent(bitMask))));
+    } else if (bitMask is BsonBinary) {
+      addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$bitsAllClear, valueToContent(bitMask))));
+    } else if (bitMask is List<int>) {
+      addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$bitsAllClear, valueToContent(bitMask))));
+    } else {
+      throw ArgumentError(
+          'Unexpected type ${bitMask.runtimeType} in operator "bitsAllClear"');
+    }
+  }
+
+  /// $bitsAllSet matches documents where all of the bit positions given by
+  /// the query are set (i.e. 1) in field.
+  /// ```
+  ///  { <field>: { $bitsAllSet: <numeric bitmask> } }
+  ///  {  <field>: { $bitsAllSet: < BinData bitmask> } }
+  ///  { <field>: { $bitsAllSet: [ <position1>, <position2>, ... ] } }
+  /// ```
+  /// The field value must be either numeric or a BinData instance. Otherwise,
+  /// $bitsAllSet will not match the current document.
+  ///
+  /// __Numeric Bitmask__
+  /// You can provide a numeric bitmask to be matched against the operand
+  /// field. It must be representable as a non-negative 32-bit signed integer.
+  /// Otherwise, $bitsAllSet will return an error.
+  ///
+  /// __BinData Bitmask__
+  /// You can also use an arbitrarily large BinData instance as a bitmask.
+  ///
+  /// __Position List__
+  /// If querying a list of bit positions, each <position> must be a
+  /// non-negative integer. Bit positions start at 0 from the least significant
+  /// bit. For example, the decimal number 254 would have the following bit
+  /// positions:
+  ///
+  ///   Bit Value  1  1  1  1  1  1  1  0
+  ///   Position   7  6  5  4  3  2  1  0
+  ///
+  /// ***Behavior***
+  ///
+  /// __Indexes__
+  /// Queries cannot use indexes for the $bitsAllSet portion of a query,
+  /// although the other portions of a query can use indexes, if applicable.
+  ///
+  /// __Floating Point Values__
+  /// $bitsAllSet will not match numerical values that cannot be represented
+  /// as a signed 64-bit integer. This can be the case if a value is either
+  /// too large or too small to fit in a signed 64-bit integer, or if it has
+  /// a fractional component.
+  ///
+  /// __Sign Extension__
+  /// Numbers are sign extended. For example, $bitsAllSet considers bit
+  /// position 200 to be set for the negative number -5, but bit position 200
+  /// to be clear for the positive number +5.
+  /// In contrast, BinData instances are zero-extended. For example, given the
+  /// following document:
+  /// ```
+  /// db.collection.insertOne({ x: BinData(0, "ww=="),
+  ///              binaryValueofA: "11000011" })
+  /// ```
+  /// $bitsAllSet will consider all bits outside of x to be clear.
+  ///
+  /// [see](https://www.mongodb.com/docs/rapid/reference/operator/query/bitsAllSet/)
+  void $bitsAllSet(String fieldName, bitMask) {
+    if (bitMask is int) {
+      addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$bitsAllSet, valueToContent(bitMask))));
+    } else if (bitMask is BsonBinary) {
+      addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$bitsAllSet, valueToContent(bitMask))));
+    } else if (bitMask is List<int>) {
+      addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$bitsAllSet, valueToContent(bitMask))));
+    } else {
+      throw ArgumentError(
+          'Unexpected type ${bitMask.runtimeType} in operator "bitsAllSet"');
+    }
+  }
+
+  /// $bitsAnyClear matches documents where any of the bit positions given by
+  /// the query are clear (i.e. 0) in field.
+  /// ```
+  ///  { <field>: { $bitsAnyClear: <numeric bitmask> } }
+  ///  {  <field>: { $bitsAnyClear: < BinData bitmask> } }
+  ///  { <field>: { $bitsAnyClear: [ <position1>, <position2>, ... ] } }
+  /// ```
+  /// The field value must be either numeric or a BinData instance. Otherwise,
+  /// $bitsAnyClear will not match the current document.
+  ///
+  /// __Numeric Bitmask__
+  /// You can provide a numeric bitmask to be matched against the operand field.
+  /// It must be representable as a non-negative 32-bit signed integer.
+  /// Otherwise, $bitsAnyClear will return an error.
+  ///
+  /// __BinData Bitmask__
+  ///     You can also use an arbitrarily large BinData instance as a bitmask.
+  ///
+  /// __Position List__
+  /// If querying a list of bit positions, each <position> must be a
+  /// non-negative integer. Bit positions start at 0 from the least significant
+  /// bit. For example, the decimal number 254 would have the following
+  /// bit positions:
+  ///
+  ///   Bit Value  1  1  1  1  1  1  1  0
+  ///   Position   7  6  5  4  3  2  1  0
+  ///
+  /// ***Behavior***
+  ///
+  /// __Indexes__
+  /// Queries cannot use indexes for the $bitsAnyClear portion of a query,
+  /// although the other portions of a query can use indexes, if applicable.
+  ///
+  /// __Floating Point Values__
+  /// $bitsAnyClear will not match numerical values that cannot be represented
+  /// as a signed 64-bit integer. This can be the case if a value is either too
+  /// large or too small to fit in a signed 64-bit integer, or if it has a
+  /// fractional component.
+  ///
+  /// __Sign Extension__
+  /// Numbers are sign extended. For example, $bitsAnyClear considers bit
+  /// position 200 to be set for the negative number -5, but bit position 200
+  /// to be clear for the positive number +5.
+  /// In contrast, BinData instances are zero-extended. For example, given
+  /// the following document:
+  /// ```
+  /// db.collection.insertOne({ x: BinData(0, "ww=="),
+  ///                       binaryValueofA: "11000011" })
+  /// ```
+  /// $bitsAnyClear will consider all bits outside of x to be clear.
+  ///
+  /// [see](https://www.mongodb.com/docs/rapid/reference/operator/query/bitsAnyClear/)
+  void $bitsAnyClear(String fieldName, bitMask) {
+    if (bitMask is int) {
+      addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$bitsAnyClear, valueToContent(bitMask))));
+    } else if (bitMask is BsonBinary) {
+      addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$bitsAnyClear, valueToContent(bitMask))));
+    } else if (bitMask is List<int>) {
+      addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$bitsAnyClear, valueToContent(bitMask))));
+    } else {
+      throw ArgumentError(
+          'Unexpected type ${bitMask.runtimeType} in operator "bitsAnyClear"');
+    }
+  }
+
+  /// $bitsAnySet matches documents where any of the bit positions given by
+  /// the query are set (i.e. 1) in field.
+  /// ```
+  ///  { <field>: { $bitsAnySet: <numeric bitmask> } }
+  ///  { <field>: { $bitsAnySet: < BinData bitmask> } }
+  ///  { <field>: { $bitsAnySet: [ <position1>, <position2>, ... ] } }
+  /// ```
+  /// The field value must be either numeric or a BinData instance. Otherwise,
+  /// $bitsAnySet will not match the current document.
+  ///
+  /// __Numeric Bitmask__
+  /// You can provide a numeric bitmask to be matched against the operand field.
+  /// It must be representable as a non-negative 32-bit signed integer.
+  /// Otherwise, $bitsAnySet will return an error.
+  ///
+  /// __BinData Bitmask__
+  /// You can also use an arbitrarily large BinData instance as a bitmask.
+  ///
+  /// __Position List__
+  /// If querying a list of bit positions, each <position> must be a
+  /// non-negative integer. Bit positions start at 0 from the least significant
+  /// bit. For example, the decimal number 254 would have the following bit
+  /// positions:
+  ///
+  ///   Bit Value  1  1  1  1  1  1  1  0
+  ///   Position   7  6  5  4  3  2  1  0
+  ///
+  /// ***Behavior***
+  ///
+  /// __Indexes__
+  /// Queries cannot use indexes for the $bitsAnySet portion of a query,
+  /// although the other portions of a query can use indexes, if applicable.
+  ///
+  /// __Floating Point Values__
+  /// $bitsAnySet will not match numerical values that cannot be represented
+  /// as a signed 64-bit integer. This can be the case if a value is either
+  /// too large or too small to fit in a signed 64-bit integer, or if it has
+  /// a fractional component.
+  ///
+  /// __Sign Extension__
+  /// Numbers are sign extended. For example, $bitsAnySet considers bit
+  ///  position 200 to be set for the negative number -5, but bit position 200
+  /// to be clear for the positive number +5.
+  /// In contrast, BinData instances are zero-extended. For example, given the
+  /// following document:
+  /// ```
+  /// db.collection.insertOne({ x: BinData(0, "ww=="),
+  ///                       binaryValueofA: "11000011" })
+  /// ```
+  /// $bitsAnySet will consider all bits outside of x to be clear.
+  ///
+  /// [see](https://www.mongodb.com/docs/rapid/reference/operator/query/bitsAnySet/)
+  void $bitsAnySet(String fieldName, bitMask) {
+    if (bitMask is int) {
+      addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$bitsAnySet, valueToContent(bitMask))));
+    } else if (bitMask is BsonBinary) {
+      addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$bitsAnySet, valueToContent(bitMask))));
+    } else if (bitMask is List<int>) {
+      addFieldOperator(FieldExpression(fieldName,
+          OperatorExpression(op$bitsAnySet, valueToContent(bitMask))));
+    } else {
+      throw ArgumentError(
+          'Unexpected type ${bitMask.runtimeType} in operator "bitsAnySet"');
+    }
+  }
 
   // ***************************************************
   // **************    Miscellaneous query operators
@@ -545,9 +812,20 @@ class FilterExpression
 
   /// The $comment query operator associates a comment to any expression
   /// taking a query predicate.
-  void $comment(String commentStr) {
-    addOperator(OperatorExpression(op$comment, valueToContent(commentStr)));
-  }
-  // TODO Missing $rand
-  // TODO Missing $natural
+  void $comment(String commentStr) =>
+      addOperator(OperatorExpression(op$comment, valueToContent(commentStr)));
+
+  /// $rand returns a random float between 0 and 1.
+  void $rand() => addOperator(OperatorExpression(op$rand, valueToContent({})));
+
+  /// Use in conjunction with cursor.hint() to perform a collection scan to
+  /// return documents in natural order.
+  ///
+  /// For usage, see Force Collection Scans example in the cursor.hint()
+  /// reference page.
+  ///
+  /// You can specify a $natural sort when running a find operation against a
+  /// view.
+  void $natural({bool ascending = true}) => addOperator(
+      OperatorExpression(op$natural, valueToContent({ascending ? 1 : -1})));
 }

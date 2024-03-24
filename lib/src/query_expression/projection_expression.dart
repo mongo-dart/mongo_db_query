@@ -6,17 +6,13 @@ import '../base/expression_container.dart';
 import '../base/map_expression.dart';
 import 'filter_expression.dart';
 
-class ProjectionExpression
-    implements ExpressionContainer, Builder /* MapExpression */ {
-  ProjectionExpression() /*  : super.empty() */;
+class ProjectionExpression implements ExpressionContainer, Builder {
+  ProjectionExpression();
 
   final _expression = MapExpression.empty();
 
   bool expressionProcessed = false;
   final _sequence = <MapExpression>[];
-
-  @Deprecated('Use isNotEmpty() instead')
-  bool get notEmpty => _sequence.isNotEmpty;
 
   @override
   bool get isEmpty =>
@@ -26,8 +22,6 @@ class ProjectionExpression
   bool get isNotEmpty =>
       expressionProcessed ? _expression.isNotEmpty : _sequence.isNotEmpty;
 
-  /* ProjectionDocument get content =>
-      expressionProcessed ? <String, Object>{...valueMap} : rawContent; */
   @override
   @Deprecated('use build() instead')
   MongoDocument get rawContent => build();
@@ -37,19 +31,27 @@ class ProjectionExpression
       processExpression();
     }
     return <String, Object>{..._expression.rawContent};
-/*     return content; */
   }
-
-  //@override
-  //String toString() => 'ProjectionExpression($rawContent)';
 
   void processExpression() {
     expressionProcessed = true;
     _expression.setMap({});
     for (var element in _sequence) {
-      /*    var insertMap = <String, Object>{...element.rawContent}; */
       _expression.addMapExpression(element);
-      /*  _expression.addAll(insertMap); */
+    }
+  }
+
+  void selectMetaTextScore(String fieldName) => add$metaTextScore(fieldName);
+
+  void selectFields(List<String> fieldList) {
+    for (var field in fieldList) {
+      includeField(field);
+    }
+  }
+
+  void excludeFields(List<String> fieldList) {
+    for (var field in fieldList) {
+      excludeField(field);
     }
   }
 

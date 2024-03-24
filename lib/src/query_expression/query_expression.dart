@@ -248,10 +248,225 @@ class QueryExpression {
   // **************    Bit wise operators
   // ***************************************************
 
-  // TODO Missing  $bitsAllClear
-  // TODO Missing $bitsAllSet
-  // TODO Missing $bitsAnyClear
-  // TODO Missing $bitsAnySet
+  /// $bitsAllClear matches documents where all of the bit positions given by
+  /// the query are clear (i.e. 0) in field.
+  /// ```
+  ///  { <field>: { $bitsAllClear: <numeric bitmask> } }
+  ///  { <field>: { $bitsAllClear: < BsonBinary bitmask> } }
+  ///  { <field>: { $bitsAllClear: [ <position1>, <position2>, ... ] } }
+  /// ```
+  /// The field value must be either numeric or a BinData instance. Otherwise,
+  /// $bitsAllClear will not match the current document.
+  ///
+  /// __Numeric Bitmask__
+  /// You can provide a numeric bitmask to be matched against the operand field.
+  /// It must be representable as a non-negative 32-bit signed integer.
+  /// Otherwise, $bitsAllClear will return an error.
+  ///
+  /// __BinData Bitmask__
+  /// You can also use an arbitrarily large BinData instance as a bitmask.
+  ///
+  /// __Position List__
+  /// If querying a list of bit positions, each <position> must be a
+  /// non-negative integer. Bit positions start at 0 from the least significant
+  /// bit. For example, the decimal number 254 would have the following
+  /// bit positions:
+  ///
+  ///   Bit Value  1  1  1  1  1  1  1  0
+  ///   Position   7  6  5  4  3  2  1  0
+  ///
+  /// ***Behavior***
+  ///
+  /// __Indexes__
+  /// Queries cannot use indexes for the $bitsAllClear portion of a query,
+  /// although the other portions of a query can use indexes, if applicable.
+  ///
+  /// __Floating Point Values__
+  /// $bitsAllClear will not match numerical values that cannot be represented as
+  /// a signed 64-bit integer. This can be the case if a value is either too
+  /// large or too small to fit in a signed 64-bit integer, or if it has a
+  /// fractional component.
+  ///
+  /// __Sign Extension__
+  /// Numbers are sign extended. For example, $bitsAllClear considers bit
+  /// position 200 to be set for the negative number -5, but bit position 200 to
+  /// be clear for the positive number +5.
+  /// In contrast, BinData instances are zero-extended. For example, given the
+  /// following document:
+  /// ```
+  /// db.collection.insertOne({ x:  BsonBinary.fromHexString('11'),
+  ///            binaryValueofA: "00010001" })
+  /// ```
+  /// $bitsAllClear will consider all bits outside of x to be clear.
+  ///
+  /// [see](https://www.mongodb.com/docs/rapid/reference/operator/query/bitsAllClear/)
+  void $bitsAllClear(String fieldName, bitMask) =>
+      filter.$bitsAllClear(fieldName, bitMask);
+
+  /// $bitsAllSet matches documents where all of the bit positions given by
+  /// the query are set (i.e. 1) in field.
+  /// ```
+  ///  { <field>: { $bitsAllSet: <numeric bitmask> } }
+  ///  {  <field>: { $bitsAllSet: < BinData bitmask> } }
+  ///  { <field>: { $bitsAllSet: [ <position1>, <position2>, ... ] } }
+  /// ```
+  /// The field value must be either numeric or a BinData instance. Otherwise,
+  /// $bitsAllSet will not match the current document.
+  ///
+  /// __Numeric Bitmask__
+  /// You can provide a numeric bitmask to be matched against the operand
+  /// field. It must be representable as a non-negative 32-bit signed integer.
+  /// Otherwise, $bitsAllSet will return an error.
+  ///
+  /// __BinData Bitmask__
+  /// You can also use an arbitrarily large BinData instance as a bitmask.
+  ///
+  /// __Position List__
+  /// If querying a list of bit positions, each <position> must be a
+  /// non-negative integer. Bit positions start at 0 from the least significant
+  /// bit. For example, the decimal number 254 would have the following bit
+  /// positions:
+  ///
+  ///   Bit Value  1  1  1  1  1  1  1  0
+  ///   Position   7  6  5  4  3  2  1  0
+  ///
+  /// ***Behavior***
+  ///
+  /// __Indexes__
+  /// Queries cannot use indexes for the $bitsAllSet portion of a query,
+  /// although the other portions of a query can use indexes, if applicable.
+  ///
+  /// __Floating Point Values__
+  /// $bitsAllSet will not match numerical values that cannot be represented
+  /// as a signed 64-bit integer. This can be the case if a value is either
+  /// too large or too small to fit in a signed 64-bit integer, or if it has
+  /// a fractional component.
+  ///
+  /// __Sign Extension__
+  /// Numbers are sign extended. For example, $bitsAllSet considers bit
+  /// position 200 to be set for the negative number -5, but bit position 200
+  /// to be clear for the positive number +5.
+  /// In contrast, BinData instances are zero-extended. For example, given the
+  /// following document:
+  /// ```
+  /// db.collection.insertOne({ x: BinData(0, "ww=="),
+  ///              binaryValueofA: "11000011" })
+  /// ```
+  /// $bitsAllSet will consider all bits outside of x to be clear.
+  ///
+  /// [see](https://www.mongodb.com/docs/rapid/reference/operator/query/bitsAllSet/)
+  void $bitsAllSet(String fieldName, bitMask) =>
+      filter.$bitsAllSet(fieldName, bitMask);
+
+  /// $bitsAnyClear matches documents where any of the bit positions given by
+  /// the query are clear (i.e. 0) in field.
+  /// ```
+  ///  { <field>: { $bitsAnyClear: <numeric bitmask> } }
+  ///  {  <field>: { $bitsAnyClear: < BinData bitmask> } }
+  ///  { <field>: { $bitsAnyClear: [ <position1>, <position2>, ... ] } }
+  /// ```
+  /// The field value must be either numeric or a BinData instance. Otherwise,
+  /// $bitsAnyClear will not match the current document.
+  ///
+  /// __Numeric Bitmask__
+  /// You can provide a numeric bitmask to be matched against the operand field.
+  /// It must be representable as a non-negative 32-bit signed integer.
+  /// Otherwise, $bitsAnyClear will return an error.
+  ///
+  /// __BinData Bitmask__
+  ///     You can also use an arbitrarily large BinData instance as a bitmask.
+  ///
+  /// __Position List__
+  /// If querying a list of bit positions, each <position> must be a
+  /// non-negative integer. Bit positions start at 0 from the least significant
+  /// bit. For example, the decimal number 254 would have the following
+  /// bit positions:
+  ///
+  ///   Bit Value  1  1  1  1  1  1  1  0
+  ///   Position   7  6  5  4  3  2  1  0
+  ///
+  /// ***Behavior***
+  ///
+  /// __Indexes__
+  /// Queries cannot use indexes for the $bitsAnyClear portion of a query,
+  /// although the other portions of a query can use indexes, if applicable.
+  ///
+  /// __Floating Point Values__
+  /// $bitsAnyClear will not match numerical values that cannot be represented
+  /// as a signed 64-bit integer. This can be the case if a value is either too
+  /// large or too small to fit in a signed 64-bit integer, or if it has a
+  /// fractional component.
+  ///
+  /// __Sign Extension__
+  /// Numbers are sign extended. For example, $bitsAnyClear considers bit
+  /// position 200 to be set for the negative number -5, but bit position 200
+  /// to be clear for the positive number +5.
+  /// In contrast, BinData instances are zero-extended. For example, given
+  /// the following document:
+  /// ```
+  /// db.collection.insertOne({ x: BinData(0, "ww=="),
+  ///                       binaryValueofA: "11000011" })
+  /// ```
+  /// $bitsAnyClear will consider all bits outside of x to be clear.
+  ///
+  /// [see](https://www.mongodb.com/docs/rapid/reference/operator/query/bitsAnyClear/)
+  void $bitsAnyClear(String fieldName, bitMask) =>
+      filter.$bitsAnyClear(fieldName, bitMask);
+
+  /// $bitsAnySet matches documents where any of the bit positions given by
+  /// the query are set (i.e. 1) in field.
+  /// ```
+  ///  { <field>: { $bitsAnySet: <numeric bitmask> } }
+  ///  { <field>: { $bitsAnySet: < BinData bitmask> } }
+  ///  { <field>: { $bitsAnySet: [ <position1>, <position2>, ... ] } }
+  /// ```
+  /// The field value must be either numeric or a BinData instance. Otherwise,
+  /// $bitsAnySet will not match the current document.
+  ///
+  /// __Numeric Bitmask__
+  /// You can provide a numeric bitmask to be matched against the operand field.
+  /// It must be representable as a non-negative 32-bit signed integer.
+  /// Otherwise, $bitsAnySet will return an error.
+  ///
+  /// __BinData Bitmask__
+  /// You can also use an arbitrarily large BinData instance as a bitmask.
+  ///
+  /// __Position List__
+  /// If querying a list of bit positions, each <position> must be a
+  /// non-negative integer. Bit positions start at 0 from the least significant
+  /// bit. For example, the decimal number 254 would have the following bit
+  /// positions:
+  ///
+  ///   Bit Value  1  1  1  1  1  1  1  0
+  ///   Position   7  6  5  4  3  2  1  0
+  ///
+  /// ***Behavior***
+  ///
+  /// __Indexes__
+  /// Queries cannot use indexes for the $bitsAnySet portion of a query,
+  /// although the other portions of a query can use indexes, if applicable.
+  ///
+  /// __Floating Point Values__
+  /// $bitsAnySet will not match numerical values that cannot be represented
+  /// as a signed 64-bit integer. This can be the case if a value is either
+  /// too large or too small to fit in a signed 64-bit integer, or if it has
+  /// a fractional component.
+  ///
+  /// __Sign Extension__
+  /// Numbers are sign extended. For example, $bitsAnySet considers bit
+  ///  position 200 to be set for the negative number -5, but bit position 200
+  /// to be clear for the positive number +5.
+  /// In contrast, BinData instances are zero-extended. For example, given the
+  /// following document:
+  /// ```
+  /// db.collection.insertOne({ x: BinData(0, "ww=="),
+  ///                       binaryValueofA: "11000011" })
+  /// ```
+  /// $bitsAnySet will consider all bits outside of x to be clear.
+  ///
+  /// [see](https://www.mongodb.com/docs/rapid/reference/operator/query/bitsAnySet/)
+  void $bitsAnySet(String fieldName, bitMask) =>
+      filter.$bitsAnySet(fieldName, bitMask);
 
   // ***************************************************
   // **************    Miscellaneous query operators
@@ -260,58 +475,37 @@ class QueryExpression {
   /// The $comment query operator associates a comment to any expression
   /// taking a query predicate.
   void $comment(String commentStr) => filter.$comment(commentStr);
-  // TODO Missing $rand
-  // TODO Missing $natural
+
+  /// $rand returns a random float between 0 and 1.
+  void $rand() => filter.$rand();
+
+  /// Use in conjunction with cursor.hint() to perform a collection scan to
+  /// return documents in natural order.
+  ///
+  /// For usage, see Force Collection Scans example in the cursor.hint()
+  /// reference page.
+  ///
+  /// You can specify a $natural sort when running a find operation against a
+  /// view.
+  void $ranatura({bool ascending = true}) =>
+      filter.$natural(ascending: ascending);
 
   // ***************************************************
   // **************         Sort          **************
   // ***************************************************
-  void sortBy(Object field) {
-    if (field is String) {
-      sortExp.addField(field);
-    } else if (field is IndexDocument) {
-      for (var entry in field.entries) {
-        if (entry.value is int) {
-          if (entry.value == -1) {
-            sortExp.addField(entry.key, descending: true);
-          } else {
-            sortExp.addField(entry.key);
-          }
-        } else if (entry.value is IndexDocument) {
-          if ((entry.value as IndexDocument).length == 1 &&
-              (entry.value as IndexDocument).entries.first.key == r'$meta' &&
-              (entry.value as IndexDocument).entries.first.value ==
-                  'textScore') {
-            sortExp.add$meta(entry.key);
-          } else {
-            throw ArgumentError(
-                'The received document seems to be not correct ("${entry.value}")');
-          }
-        }
-      }
-    } else {
-      throw ArgumentError(
-          'The received field seems to be not correct ("$field")');
-    }
-  }
+
+  void sortBy(Object field) => sortExp.sortBy(field);
+
   // ***************************************************
   // **************        Project        **************
   // ***************************************************
 
   void selectMetaTextScore(String fieldName) =>
-      fields.add$metaTextScore(fieldName);
+      fields.selectMetaTextScore(fieldName);
 
-  void selectFields(List<String> fieldList) {
-    for (var field in fieldList) {
-      fields.includeField(field);
-    }
-  }
+  void selectFields(List<String> fieldList) => fields.selectFields(fieldList);
 
-  void excludeFields(List<String> fields) {
-    for (var field in fields) {
-      this.fields.excludeField(field);
-    }
-  }
+  void excludeFields(List<String> fieldList) => excludeFields(fieldList);
 
   // ***************************************************
   // **************        Limit         **************
@@ -339,7 +533,7 @@ class QueryExpression {
       ..skip(other.getSkip());
   }
 
-  ///
+  /// Duplicate this instance
   QueryExpression clone() => copyWith(this);
 
   // *************************
@@ -370,80 +564,6 @@ class QueryExpression {
     }
   }
 
-  //void _ensureParamFields() => paramFields /* ??= <String, dynamic>{} */;
-
-  /*  void _ensureOrderBy() {
-    rawFilter;
-    if (!filter.rawContent.containsKey('orderby')) {
-      filter.rawContent['orderby'] = <String, dynamic>{};
-    }
-  } */
-/* 
-  void all(String fieldName, List values) =>
-      _addExpression(fieldName, {'\$all': values});
-
-  void nin(String fieldName, List values) =>
-      _addExpression(fieldName, {'\$nin': values});
-
-  void oneFrom(String fieldName, List values) =>
-      _addExpression(fieldName, {'\$in': values});
-
-  void exists(String fieldName) =>
-      _addExpression(fieldName, {'\$exists': true});
-
-  void notExists(String fieldName) =>
-      _addExpression(fieldName, {'\$exists': false});
-
-  void mod(String fieldName, int value) => _addExpression(fieldName, {
-        '\$mod': [value, 0]
-      });
-
-  void match(String fieldName, String pattern,
-          {bool? multiLine,
-          bool? caseInsensitive,
-          bool? dotAll,
-          bool? extended}) =>
-      _addExpression(fieldName, {
-        '\$regex': BsonRegexp(pattern,
-            multiLine: multiLine,
-            caseInsensitive: caseInsensitive,
-            dotAll: dotAll,
-            extended: extended)
-      });
-
-  void inRange(String fieldName, min, max,
-      {bool minInclude = true, bool maxInclude = false}) {
-    var rangeMap = <String, dynamic>{};
-    if (minInclude) {
-      rangeMap['\$gte'] = min;
-    } else {
-      rangeMap['\$gt'] = min;
-    }
-    if (maxInclude) {
-      rangeMap['\$lte'] = max;
-    } else {
-      rangeMap['\$lt'] = max;
-    }
-    _addExpression(fieldName, rangeMap);
-  } */
-
-  // ********* SORT
-
-  /* void sortBy(String fieldName, {bool descending = false}) {
-    _ensureOrderBy();
-    var order = 1;
-    if (descending) {
-      order = -1;
-    }
-    filter.rawContent['orderby'][fieldName] = order;
-  } */
-
-  /*  void sortByMetaTextScore(String fieldName) {
-    _ensureOrderBy();
-    filter.rawContent['orderby']
-        [fieldName] = <String, dynamic>{'\$meta': 'textScore'};
-  } */
-
   void explain() {
     rawFilter;
     filter.build()['\$explain'] = true;
@@ -466,48 +586,4 @@ class QueryExpression {
 
   void jsQuery(String javaScriptCode) =>
       rawFilter['\$where'] = JsCode(javaScriptCode);
-
-  /// Combine current expression with expression in parameter.
-  /// [See MongoDB doc](http://docs.mongodb.org/manual/reference/operator/and/#op._S_and)
-  /// [QueryExpression] provides implicit `and` operator for chained queries so these two expression will produce
-  /// identical MongoDB queries
-  ///
-  ///     where.eq('price', 1.99).lt('qty', 20).eq('sale', true);
-  ///     where.eq('price', 1.99).and(where.lt('qty',20)).and(where.eq('sale', true))
-  ///
-  /// Both these queries would produce json map:
-  ///
-  ///     {'\$query': {'\$and': [{'price':1.99},{'qty': {'\$lt': 20 }}, {'sale': true }]}}
-  QueryExpression and(QueryExpression other) {
-    if (rawFilter.isEmpty) {
-      throw StateError('`And` operation is not supported on empty query');
-    }
-    _addExpressionMap(other.rawFilter);
-    return this;
-  }
-
-  /// Combine current expression with expression in parameter by logical operator **OR**.
-  /// [See MongoDB doc](https://www.mongodb.com/docs/manual/reference/operator/query/or/)
-  /// For example
-  ///    inventory.find(where.eq('price', 1.99).and(where.lt('qty',20).or(where.eq('sale', true))));
-  ///
-  /// This query will select all documents in the inventory collection where:
-  /// * the **price** field value equals 1.99 and
-  /// * either the **qty** field value is less than 20 or the **sale** field value is true
-  /// MongoDB json query from this expression would be
-  ///      {'\$query': {'\$and': [{'price':1.99}, {'\$or': [{'qty': {'\$lt': 20 }}, {'sale': true }]}]}}
-  QueryExpression or(QueryExpression other) {
-    if (rawFilter.isEmpty) {
-      throw StateError('`Or` operation is not supported on empty query');
-    }
-    if (rawFilter.containsKey('\$or')) {
-      var expressions = rawFilter['\$or'] as List;
-      expressions.add(other.rawFilter);
-    } else {
-      var expressions = [rawFilter];
-      expressions.add(other.rawFilter);
-      filter.build()['\$query'] = {'\$or': expressions};
-    }
-    return this;
-  }
 }
