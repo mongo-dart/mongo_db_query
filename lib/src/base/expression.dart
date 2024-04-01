@@ -1,6 +1,6 @@
-import 'builder.dart';
+import 'abstract/builder.dart';
 import 'common/document_types.dart';
-import 'expression_content.dart';
+import 'abstract/expression_content.dart';
 
 class Expression<T extends ExpressionContent> extends ExpressionContent
     implements Builder {

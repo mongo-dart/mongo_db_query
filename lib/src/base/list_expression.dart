@@ -1,8 +1,8 @@
 import 'expression.dart';
 import 'common/document_types.dart';
 import 'common/operators_def.dart';
-import 'expression_container.dart';
-import 'expression_content.dart';
+import 'abstract/expression_container.dart';
+import 'abstract/expression_content.dart';
 import 'field_expression.dart';
 import 'map_expression.dart';
 

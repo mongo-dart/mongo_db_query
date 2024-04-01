@@ -1,8 +1,8 @@
-import '../base/builder.dart';
+import '../base/abstract/builder.dart';
 import '../base/common/constant.dart';
 import '../base/common/document_types.dart';
 import '../base/common/operators_def.dart';
-import '../base/expression_container.dart';
+import '../base/abstract/expression_container.dart';
 import '../base/map_expression.dart';
 import 'filter_expression.dart';
 

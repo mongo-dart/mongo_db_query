@@ -6,7 +6,7 @@ import '../aggregation/support_classes/geo/geo_shape.dart';
 import '../aggregation/support_classes/geo/geometry.dart';
 import '../base/common/constant.dart';
 import '../base/common/document_types.dart';
-import '../base/expression_content.dart';
+import '../base/abstract/expression_content.dart';
 import '../base/list_expression.dart';
 import '../base/map_expression.dart';
 import '../base/operator_expression.dart';
@@ -92,21 +92,21 @@ class QueryExpression {
 
   /// $and performs a logical AND operation and selects the documents that
   /// satisfy all the expressions.
-  void get $and => filter.logicAnd();
+  void get $and => filter.$and;
 
   /// $not Inverts the effect of a query expression and returns documents
   /// that do not match the query expression.
-  void $not(OperatorExpression operatorExp) => filter.logicNot(operatorExp);
+  void $not(OperatorExpression operatorExp) => filter.$not;
 
   /// $nor performs a logical NOR operation on an array of one or
   /// more query expression and selects the documents that fail all the
   /// query expressions in the array.
-  void get $nor => filter.logicNor();
+  void get $nor => filter.$nor;
 
   /// $or operator performs a logical OR operation on an array of one or
   /// more expressions and selects the documents that satisfy at least one
   /// of the expressions.
-  void get $or => filter.logicOr();
+  void get $or => filter.$or;
 
   // ***************************************************
   // ***************** Element Query Operators
@@ -151,7 +151,8 @@ class QueryExpression {
   /// The $jsonSchema operator matches documents that satisfy the
   /// specified JSON Schema.
   // TODO check if String or Map are required
-  void $jsonSchema(String schemaObject) => filter.$jsonSchema(schemaObject);
+  void $jsonSchema(Map<String, dynamic> schemaObject) =>
+      filter.$jsonSchema(schemaObject);
 
   /// Select documents where the value of a field divided by a divisor
   /// has the specified remainder (i.e. perform a modulo operation to
@@ -552,7 +553,7 @@ class QueryExpression {
       _addExpressionMap(exprMap);
     }
   } */
-
+/* 
   void _addExpressionMap(Map<String, dynamic> expr) {
     if (rawFilter.containsKey('\$and')) {
       var expressions = rawFilter['\$and'] as List;
@@ -562,7 +563,7 @@ class QueryExpression {
       expressions.add(expr);
       filter.build()['\$query'] = {'\$and': expressions};
     }
-  }
+  } */
 
   void explain() {
     rawFilter;

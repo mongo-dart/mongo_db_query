@@ -1,6 +1,6 @@
 import 'package:mongo_db_query/src/base/operator_expression.dart';
 
-import '../../base/expression_content.dart';
+import '../../base/abstract/expression_content.dart';
 
 /// Basic accumulation operator
 abstract class Accumulator extends OperatorExpression {

@@ -1,17 +1,21 @@
 import 'package:bson/bson.dart';
+import 'package:mongo_db_query/src/base/not_expression.dart';
+import 'package:mongo_db_query/src/base/abstract/unary_expression.dart';
 
 import '../aggregation/support_classes/geo/geo_shape.dart';
 import '../aggregation/support_classes/geo/geometry.dart';
-import '../base/builder.dart';
+import '../base/abstract/builder.dart';
+import '../base/and_expression.dart';
 import '../base/common/constant.dart';
 import '../base/common/document_types.dart';
 import '../base/common/operators_def.dart';
-import '../base/expression_container.dart';
-import '../base/expression_content.dart';
+import '../base/abstract/expression_container.dart';
+import '../base/abstract/expression_content.dart';
 import '../base/field_expression.dart';
 import '../base/list_expression.dart';
 import '../base/logical_expression.dart';
 import '../base/map_expression.dart';
+import '../base/nor_expression.dart';
 import '../base/operator_expression.dart';
 import '../base/value_expression.dart';
 import 'query_expression.dart';
@@ -74,7 +78,32 @@ class FilterExpression
   void processExpression() {
     LogicalExpression? actualContainer;
     expressionProcessed = true;
+    List<UnaryExpression> unaryExps = <UnaryExpression>[];
+
+    ExpressionContent resolveUnaries(ExpressionContent elementToResolve) {
+      if (elementToResolve is OperatorExpression) {
+        for (var idx = unaryExps.length - 1; idx >= 0; idx--) {
+          elementToResolve = unaryExps
+              .removeLast()
+              .setOperator(elementToResolve as OperatorExpression);
+        }
+      } else if (elementToResolve is FieldExpression &&
+          elementToResolve.content is OperatorExpression) {
+        var fieldContent = elementToResolve.content as OperatorExpression;
+        for (var idx = unaryExps.length - 1; idx >= 0; idx--) {
+          fieldContent = unaryExps.removeLast().setOperator(fieldContent);
+        }
+        elementToResolve =
+            FieldExpression(elementToResolve.fieldName, fieldContent);
+      }
+      return elementToResolve;
+    }
+
     for (var element in _sequence) {
+      if (element is LogicalExpression) {
+        // If any uncompleted unary expression, it is lost.
+        unaryExps.clear();
+      }
       if (element is AndExpression) {
         if (actualContainer == null) {
           actualContainer = element;
@@ -112,23 +141,27 @@ class FilterExpression
           element.add(actualContainer.content);
           actualContainer = element;
         }
+      } else if (element is UnaryExpression) {
+        unaryExps.add(element);
       } else {
         if (actualContainer == null) {
           //content.addAll(element.raw);
-          actualContainer = AndExpression()..add(element);
+          actualContainer = AndExpression()..add(resolveUnaries(element));
         } else if (actualContainer is AndExpression) {
-          actualContainer.add(element);
+          actualContainer.add(resolveUnaries(element));
         } else if (actualContainer is OrExpression) {
           if (actualContainer.content.values.last is AndExpression) {
-            (actualContainer.content.values.last as AndExpression).add(element);
+            (actualContainer.content.values.last as AndExpression)
+                .add(resolveUnaries(element));
           } else {
-            actualContainer.add(AndExpression([element]));
+            actualContainer.add(AndExpression([resolveUnaries(element)]));
           }
         } else if (actualContainer is NorExpression) {
           if (actualContainer.content.values.last is AndExpression) {
-            (actualContainer.content.values.last as AndExpression).add(element);
+            (actualContainer.content.values.last as AndExpression)
+                .add(resolveUnaries(element));
           } else {
-            actualContainer.add(element);
+            actualContainer.add(resolveUnaries(element));
           }
         }
       }
@@ -192,16 +225,38 @@ class FilterExpression
   // ***************** Logical Operators
   // ***************************************************
 
+  ExpressionContent _resolveUnaries(ExpressionContent elementToResolve) {
+    if (elementToResolve is OperatorExpression) {
+      while (_sequence.isNotEmpty && _sequence.last is UnaryExpression) {
+        var unary = _sequence.removeLast() as UnaryExpression;
+        elementToResolve =
+            unary.setOperator(elementToResolve as OperatorExpression);
+      }
+    } else if (elementToResolve is FieldExpression &&
+        elementToResolve.content is OperatorExpression) {
+      var fieldContent = elementToResolve.content as OperatorExpression;
+
+      while (_sequence.isNotEmpty && _sequence.last is UnaryExpression) {
+        var unary = _sequence.removeLast() as UnaryExpression;
+        fieldContent = unary.setOperator(fieldContent);
+      }
+      elementToResolve =
+          FieldExpression(elementToResolve.fieldName, fieldContent);
+    }
+    return elementToResolve;
+  }
+
   /// $not Inverts the effect of a query expression and returns documents
   /// that do not match the query expression.
-  void logicNot(OperatorExpression operatorExp) =>
-      addOperator(OperatorExpression(op$not, operatorExp));
+  void get $not => _sequence.add(NotExpression.placeHolder());
+
+  /*   addOperator(OperatorExpression(op$not, operatorExp)); */
 
   /// $and performs a logical AND operation and selects the documents that
   /// satisfy all the expressions.
-  void logicAnd() {
+  void get $and {
     if (isOpenSublevel) {
-      return _openChild!.logicAnd();
+      return _openChild!.$and;
     }
     // if the previous is a logical expression or there is no previous
     // expression, ignore it.
@@ -221,8 +276,13 @@ class FilterExpression
           last.add(andExp.content);
         }
         andExp = last;
+      } else if (last is UnaryExpression) {
+        if (last.isInvalid) {
+          continue;
+        }
+        assert(true, 'Should never pass by here');
       } else {
-        andExp.add(last);
+        andExp.add(_resolveUnaries(last));
       }
     }
     if (andExp.isEmpty) {
@@ -238,9 +298,9 @@ class FilterExpression
   /// $or operator performs a logical OR operation on an array of one or
   /// more expressions and selects the documents that satisfy at least one
   /// of the expressions.
-  void logicOr() {
+  void get $or {
     if (isOpenSublevel) {
-      return _openChild!.logicOr();
+      return _openChild!.$or;
     }
     // if the previous is a logical expression or there is no previous
     // expression, ignore it.
@@ -256,39 +316,61 @@ class FilterExpression
           last.add(orExp.content);
         }
         orExp = last;
+      } else if (last is UnaryExpression) {
+        if (last.isInvalid) {
+          continue;
+        }
+        assert(true, 'Should never pass by here');
       } else {
-        tempAndExp.add(last);
+        tempAndExp.add(_resolveUnaries(last));
       }
     }
     if (tempAndExp.isNotEmpty) {
-      //if (tempAndExp.content.values.length == 1) {
       orExp.add(MapExpression(tempAndExp.content.content2map));
-      //} else {
-      //  orExp.add(tempAndExp);
-      //}
     }
     if (orExp.isEmpty) {
       return;
     }
-    //if (key == op$And) {
-    //  content.add(andExp.content);
-    //  return;
-    //}
     _sequence.add(orExp);
   }
 
   /// $nor performs a logical NOR operation on an array of one or
   /// more query expression and selects the documents that fail all the
   /// query expressions in the array.
-  void logicNor() {
+  void get $nor {
     if (isOpenSublevel) {
-      return _openChild!.logicNor();
+      return _openChild!.$nor;
     }
     // if the previous is a logical expression or there is no previous
     // expression, ignore it.
-    if (_sequence.isEmpty || _sequence.last is LogicalExpression) {
+    if (_sequence.isEmpty || _sequence.last is NorExpression) {
       return;
     }
+    var norExp = NorExpression();
+    var tempAndExp = AndExpression();
+    while (_sequence.isNotEmpty) {
+      var last = _sequence.removeLast();
+      if (last is NorExpression) {
+        if (norExp.isNotEmpty) {
+          last.add(norExp.content);
+        }
+        norExp = last;
+      } else if (last is UnaryExpression) {
+        if (last.isInvalid) {
+          continue;
+        }
+        assert(true, 'Should never pass by here');
+      } else {
+        tempAndExp.add(_resolveUnaries(last));
+      }
+    }
+    if (tempAndExp.isNotEmpty) {
+      norExp.add(MapExpression(tempAndExp.content.content2map));
+    }
+    if (norExp.isEmpty) {
+      return;
+    }
+    _sequence.add(norExp);
   }
 
   // ***************************************************
@@ -326,8 +408,8 @@ class FilterExpression
       fieldName, OperatorExpression(op$ne, valueToContent(value))));
 
   /// Matches none of the values specified in an array.
-  void $nin(String fieldName, List values) => addOperator(OperatorExpression(
-      op$nin, FieldExpression(fieldName, ListExpression(values))));
+  void $nin(String fieldName, List values) => addFieldOperator(FieldExpression(
+      fieldName, OperatorExpression(op$nin, ListExpression(values))));
 
   // ***************************************************
   // ***************** Element Query Operators
@@ -376,7 +458,7 @@ class FilterExpression
   /// The $jsonSchema operator matches documents that satisfy the
   /// specified JSON Schema.
   // TODO check if String or Map are required
-  void $jsonSchema(String schemaObject) => addOperator(
+  void $jsonSchema(Map<String, dynamic> schemaObject) => addOperator(
       OperatorExpression(op$jsonSchema, valueToContent(schemaObject)));
 
   /// Select documents where the value of a field divided by a divisor

@@ -1,5 +1,5 @@
 import 'common/document_types.dart';
-import 'expression_content.dart';
+import 'abstract/expression_content.dart';
 import 'list_expression.dart';
 import 'map_expression.dart';
 import 'set_expression.dart';

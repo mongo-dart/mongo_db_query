@@ -1,4 +1,4 @@
-import 'package:mongo_db_query/src/base/expression_content.dart';
+import 'package:mongo_db_query/src/base/abstract/expression_content.dart';
 import 'package:mongo_db_query/mongo_db_query.dart';
 import 'package:test/test.dart';
 

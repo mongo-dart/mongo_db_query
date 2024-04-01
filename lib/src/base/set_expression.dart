@@ -1,5 +1,5 @@
-import 'expression_container.dart';
-import 'expression_content.dart';
+import 'abstract/expression_container.dart';
+import 'abstract/expression_content.dart';
 
 class SetExpression extends ExpressionContainer {
   SetExpression(this.values);

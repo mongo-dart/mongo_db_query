@@ -1,6 +1,6 @@
-import '../base/builder.dart';
+import '../base/abstract/builder.dart';
 import '../base/common/document_types.dart';
-import '../base/expression_container.dart';
+import '../base/abstract/expression_container.dart';
 import '../base/map_expression.dart';
 
 class SortExpression implements ExpressionContainer, Builder {

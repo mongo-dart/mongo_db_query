@@ -1,7 +1,7 @@
 import 'package:mongo_db_query/src/base/map_expression.dart';
 
 import '../base/common/operators_def.dart';
-import '../base/expression_content.dart';
+import '../base/abstract/expression_content.dart';
 import '../base/operator_expression.dart';
 import '../query_expression/query_expression.dart';
 

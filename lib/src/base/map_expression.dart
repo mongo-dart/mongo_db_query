@@ -1,7 +1,7 @@
 import 'expression.dart';
 import 'common/document_types.dart';
-import 'expression_container.dart';
-import 'expression_content.dart';
+import 'abstract/expression_container.dart';
+import 'abstract/expression_content.dart';
 import 'value_expression.dart';
 
 /// A container for a Map

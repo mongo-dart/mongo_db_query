@@ -1,4 +1,4 @@
-import '../base/expression_content.dart';
+import '../base/abstract/expression_content.dart';
 import '../base/operator_expression.dart';
 import '../query_expression/query_expression.dart';
 
