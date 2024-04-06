@@ -234,7 +234,7 @@ class QueryExpression {
 
   /// The $elemMatch operator matches documents that contain an array
   /// field with at least one element that matches all the specified query criteria.
-  void $elemMatch(String fieldName, List values) =>
+  void $elemMatch(String fieldName, Map<String, dynamic> values) =>
       filter.$elemMatch(fieldName, values);
 
   void $size(String fieldName, int numElements) =>

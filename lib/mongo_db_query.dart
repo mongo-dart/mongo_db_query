@@ -12,6 +12,12 @@ export 'src/base/logical_expression.dart';
 export 'src/base/common/document_types.dart';
 export 'src/base/common/operators_def.dart';
 
+export 'src/base/shape_operator/box.dart';
+export 'src/base/shape_operator/center.dart';
+export 'src/base/shape_operator/center_sphere.dart';
+export 'src/base/shape_operator/geometry.dart';
+export 'src/base/shape_operator/polygon.dart';
+
 export 'src/aggregation/base/aggregation_base.dart';
 export 'src/aggregation/aggregation_pipeline_builder.dart';
 export 'src/aggregation/aggregation_stages.dart';

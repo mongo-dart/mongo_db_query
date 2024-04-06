@@ -1,11 +1,5 @@
 library test_lib;
 
-import 'package:mongo_db_query/src/base/shape_operator/box.dart';
-import 'package:mongo_db_query/src/base/shape_operator/center.dart';
-import 'package:mongo_db_query/src/aggregation/support_classes/geo/geometry.dart';
-import 'package:mongo_db_query/src/base/shape_operator/center_sphere.dart';
-import 'package:mongo_db_query/src/base/shape_operator/geometry.dart';
-import 'package:mongo_db_query/src/base/shape_operator/polygon.dart';
 import 'package:test/test.dart';
 import 'package:mongo_db_query/mongo_db_query.dart';
 
@@ -98,6 +92,28 @@ void main() {
             equals({
               'quantity': {
                 r'$nin': [5, 15]
+              }
+            }));
+      });
+      test(r'inRange', () {
+        var filter = FilterExpression()..inRange('quantity', 5, 15);
+        expect(
+            filter.build(),
+            equals({
+              'quantity': {
+                r'$gte': 5,
+                r'$lt': 15,
+              }
+            }));
+
+        filter = FilterExpression()
+          ..inRange('quantity', 5, 15, minInclude: false, maxInclude: true);
+        expect(
+            filter.build(),
+            equals({
+              'quantity': {
+                r'$gt': 5,
+                r'$lte': 15,
               }
             }));
       });
@@ -814,6 +830,38 @@ void main() {
                   ]
                 }
               }
+            }));
+      });
+    });
+    group('Array Query Operators', () {
+      test(r'$all', () {
+        var filter = FilterExpression()
+          ..$all('tags', ["appliance", "school", "book"]);
+        expect(
+            filter.build(),
+            equals({
+              'tags': {
+                r'$all': ["appliance", "school", "book"]
+              }
+            }));
+      });
+      test(r'$elemMatch', () {
+        var filter = FilterExpression()
+          ..$elemMatch('results', {r'$gte': 80, r'$lt': 85});
+        expect(
+            filter.build(),
+            equals({
+              'results': {
+                r'$elemMatch': {r'$gte': 80, r'$lt': 85}
+              }
+            }));
+      });
+      test(r'$size', () {
+        var filter = FilterExpression()..$size('field', 1);
+        expect(
+            filter.build(),
+            equals({
+              'field': {r'$size': 1}
             }));
       });
     });

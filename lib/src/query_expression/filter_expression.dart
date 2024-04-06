@@ -412,6 +412,22 @@ class FilterExpression
   void $nin(String fieldName, List values) => addFieldOperator(FieldExpression(
       fieldName, OperatorExpression(op$nin, ListExpression(values))));
 
+  void inRange(String fieldName, min, max,
+      {bool minInclude = true, bool maxInclude = false}) {
+    var mapExp = MapExpression.empty();
+    if (minInclude) {
+      mapExp.addExpression(OperatorExpression(op$gte, valueToContent(min)));
+    } else {
+      mapExp.addExpression(OperatorExpression(op$gt, valueToContent(min)));
+    }
+    if (maxInclude) {
+      mapExp.addExpression(OperatorExpression(op$lte, valueToContent(max)));
+    } else {
+      mapExp.addExpression(OperatorExpression(op$lt, valueToContent(max)));
+    }
+    addFieldOperator(FieldExpression(fieldName, mapExp));
+  }
+
   // ***************************************************
   // ***************** Element Query Operators
   // ***************************************************
@@ -614,43 +630,15 @@ class FilterExpression
       fieldName, OperatorExpression(op$all, ListExpression(values))));
 
   /// The $elemMatch operator matches documents that contain an array
-  /// field with at least one element that matches all the specified query criteria.
-  void $elemMatch(String fieldName, List values) =>
+  /// field with at least one element that matches all the specified
+  /// query criteria.
+  void $elemMatch(String fieldName, Map<String, dynamic> values) =>
       addFieldOperator(FieldExpression(
-          fieldName, OperatorExpression(op$elemMatch, ListExpression(values))));
+          fieldName, OperatorExpression(op$elemMatch, MapExpression(values))));
 
   void $size(String fieldName, int numElements) =>
       addFieldOperator(FieldExpression(
           fieldName, OperatorExpression(op$size, valueToContent(numElements))));
-
-  /*  void match(String fieldName, String pattern,
-          {bool? multiLine,
-          bool? caseInsensitive,
-          bool? dotAll,
-          bool? extended}) =>
-      _addExpression(fieldName, {
-        '\$regex': BsonRegexp(pattern,
-            multiLine: multiLine,
-            caseInsensitive: caseInsensitive,
-            dotAll: dotAll,
-            extended: extended)
-      }); */
-
-  void inRange(String fieldName, min, max,
-      {bool minInclude = true, bool maxInclude = false}) {
-    var mapExp = MapExpression.empty();
-    if (minInclude) {
-      mapExp.addExpression(OperatorExpression(op$gte, valueToContent(min)));
-    } else {
-      mapExp.addExpression(OperatorExpression(op$gt, valueToContent(min)));
-    }
-    if (maxInclude) {
-      mapExp.addExpression(OperatorExpression(op$lte, valueToContent(max)));
-    } else {
-      mapExp.addExpression(OperatorExpression(op$lt, valueToContent(max)));
-    }
-    addFieldOperator(FieldExpression(fieldName, mapExp));
-  }
 
   // ***************************************************
   // **************    Bit wise operators
