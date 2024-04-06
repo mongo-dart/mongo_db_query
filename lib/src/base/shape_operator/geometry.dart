@@ -1,7 +1,7 @@
-import '../../base/common/operators_def.dart';
+import '../common/operators_def.dart';
 import '../../query_expression/query_expression.dart';
-import '../base/shape_operator.dart';
-import '../support_classes/geo/geometry.dart';
+import '../abstract/shape_operator.dart';
+import '../../aggregation/support_classes/geo/geometry.dart';
 
 /// https://docs.mongodb.com/manual/reference/operator/query/geometry/#mongodb-query-op.-geometry
 class $geometry extends ShapeOperator {

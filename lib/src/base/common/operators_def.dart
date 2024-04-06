@@ -53,6 +53,8 @@ const op$setIntersection = r'$setIntersection';
 const op$center = r'$center';
 const op$centerSphere = r'$centerSphere';
 const op$geometry = r'$geometry';
+const op$polygon = r'$polygon';
+
 //const op$box = r'$box';
 
 // ************* Logical

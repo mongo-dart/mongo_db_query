@@ -1,5 +1,11 @@
 library test_lib;
 
+import 'package:mongo_db_query/src/base/shape_operator/box.dart';
+import 'package:mongo_db_query/src/base/shape_operator/center.dart';
+import 'package:mongo_db_query/src/aggregation/support_classes/geo/geometry.dart';
+import 'package:mongo_db_query/src/base/shape_operator/center_sphere.dart';
+import 'package:mongo_db_query/src/base/shape_operator/geometry.dart';
+import 'package:mongo_db_query/src/base/shape_operator/polygon.dart';
 import 'package:test/test.dart';
 import 'package:mongo_db_query/mongo_db_query.dart';
 
@@ -26,6 +32,14 @@ void main() {
         expect(filter.build(), {
           'qty': {r'$eq': 20}
         });
+      });
+      test(r'id', () {
+        var filter = FilterExpression()..id(995);
+        expect(
+            filter.build(),
+            equals({
+              '_id': {r'$eq': 995}
+            }));
       });
       test(r'$gt', () {
         var filter = FilterExpression()..$gt('quantity', 20);
@@ -409,6 +423,397 @@ void main() {
                   'quantity': {r'$exists': true}
                 }
               ]
+            }));
+      });
+    });
+    group('Element Query Operators', () {
+      test(r'$exists', () {
+        var filter = FilterExpression()..$exists('quantity');
+        expect(
+            filter.build(),
+            equals({
+              'quantity': {r'$exists': true}
+            }));
+      });
+      test('notExists', () {
+        var filter = FilterExpression()..notExists('quantity');
+        expect(
+            filter.build(),
+            equals({
+              'quantity': {r'$exists': false}
+            }));
+      });
+      test(r'$type', () {
+        var filter = FilterExpression()..$type('zipCode', 2);
+        expect(
+            filter.build(),
+            equals({
+              'zipCode': {r'$type': 2}
+            }));
+        filter = FilterExpression()..$type('zipCode', 'string');
+        expect(
+            filter.build(),
+            equals({
+              'zipCode': {r'$type': 'string'}
+            }));
+        filter = FilterExpression()..$type('zipCode', [3, 'string']);
+        expect(
+            filter.build(),
+            equals({
+              'zipCode': {
+                r'$type': [3, 'string']
+              }
+            }));
+      });
+    });
+    group('Evaluation Query Operators', () {
+      test(r'$expr', () {
+        var filter = FilterExpression()..$expr($gt(Field('spent'), r'$budget'));
+        expect(
+            filter.build(),
+            equals({
+              r'$expr': {
+                r'$gt': [r'$spent', r'$budget']
+              }
+            }));
+      });
+      test(r'$jsonSchema', () {
+        var schemaMap = {
+          'required': ["name", "major", "gpa", "address"],
+          'properties': {
+            'name': {
+              'bsonType': "string",
+              'description': "must be a string and is required"
+            },
+            'address': {
+              'bsonType': "object",
+              'required': ["zipcode"],
+              'properties': {
+                "street": {'bsonType': "string"},
+                "zipcode": {'bsonType': "string"}
+              }
+            }
+          }
+        };
+        var filter = FilterExpression()..$jsonSchema(schemaMap);
+        expect(filter.build(), equals({r'$jsonSchema': schemaMap}));
+      });
+      test(r'$mod', () {
+        var filter = FilterExpression()..$mod('qty', 4);
+        expect(
+            filter.build(),
+            equals({
+              'qty': {
+                r'$mod': [4, 0]
+              }
+            }));
+        filter = FilterExpression()..$mod('qty', 4, reminder: 1);
+        expect(
+            filter.build(),
+            equals({
+              'qty': {
+                r'$mod': [4, 1]
+              }
+            }));
+      });
+      test(r'$regex', () {
+        var filter = FilterExpression()
+          ..$regex('name', 'acme.*corp', caseInsensitive: true);
+        expect(
+            filter.build(),
+            equals({
+              'name': {r'$regex': 'acme.*corp', r'$options': 'i'}
+            }));
+        filter = FilterExpression()
+          ..$regex('name', 'acme.*corp',
+              caseInsensitive: true,
+              multiLineAnchorMatch: true,
+              extendedIgnoreWhiteSpace: true,
+              dotMatchAll: true,
+              escapePattern: true);
+        expect(
+            filter.build(),
+            equals({
+              'name': {r'$regex': 'acme\\.\\*corp', r'$options': 'imxs'}
+            }));
+      });
+      test(r'$text', () {
+        var filter = FilterExpression()
+          ..$text('Coffee -shop', caseSensitive: true);
+        expect(
+            filter.build(),
+            equals({
+              r'$text': {r'$search': 'Coffee -shop', r'$caseSensitive': true}
+            }));
+        filter = FilterExpression()
+          ..$text('Coffee -shop',
+              language: 'es', diacriticSensitive: true, caseSensitive: true);
+        expect(
+            filter.build(),
+            equals({
+              r'$text': {
+                r'$search': 'Coffee -shop',
+                r'$language': 'es',
+                r'$diacriticSensitive': true,
+                r'$caseSensitive': true
+              }
+            }));
+      });
+      test(r'$where', () {
+        var filter = FilterExpression()
+          ..$where('function() { return (hex_md5(this.name) == '
+              '"9b53e667f30cd329dca1ec9e6a83e994")}');
+        expect(filter.build(), {
+          r'$where': 'function() { return (hex_md5(this.name) == '
+              '"9b53e667f30cd329dca1ec9e6a83e994")}'
+        });
+      });
+    });
+    group('Geospatial Query Operators', () {
+      test(r'$geoIntersects', () {
+        var filter = FilterExpression()
+          ..$geoIntersects(
+              'loc',
+              GeoPolygon.coordinates([
+                [
+                  [0, 0],
+                  [3, 6],
+                  [6, 1],
+                  [0, 0]
+                ]
+              ]));
+        expect(
+            filter.build(),
+            equals({
+              'loc': {
+                r'$geoIntersects': {
+                  r'$geometry': {
+                    'type': "Polygon",
+                    'coordinates': [
+                      [
+                        [0, 0],
+                        [3, 6],
+                        [6, 1],
+                        [0, 0]
+                      ]
+                    ]
+                  }
+                }
+              }
+            }));
+      });
+      test(r'$geoWithin', () {
+        var filter = FilterExpression()
+          ..$geoWithin(
+              'loc',
+              GeoPolygon.coordinates([
+                [
+                  [0, 0],
+                  [3, 6],
+                  [6, 1],
+                  [0, 0]
+                ]
+              ]));
+        expect(
+            filter.build(),
+            equals({
+              'loc': {
+                r'$geoWithin': {
+                  r'$geometry': {
+                    'type': "Polygon",
+                    'coordinates': [
+                      [
+                        [0, 0],
+                        [3, 6],
+                        [6, 1],
+                        [0, 0]
+                      ]
+                    ]
+                  }
+                }
+              }
+            }));
+
+        filter = FilterExpression()
+          ..$geoWithin('loc', $box(bottomLeft: [0, 0], upperRight: [100, 100]));
+        expect(
+            filter.build(),
+            equals({
+              'loc': {
+                r'$geoWithin': {
+                  r'$box': [
+                    [0, 0],
+                    [100, 100]
+                  ]
+                }
+              }
+            }));
+      });
+      test(r'$near', () {
+        var filter = FilterExpression()
+          ..$near('location', GeoPoint.coordinates([-73.9667, 40.78]),
+              maxDistance: 5000, minDistance: 1000);
+        expect(
+            filter.build(),
+            equals({
+              'location': {
+                r'$near': {
+                  r'$geometry': {
+                    'type': "Point",
+                    'coordinates': [-73.9667, 40.78]
+                  },
+                  r'$minDistance': 1000,
+                  r'$maxDistance': 5000
+                }
+              }
+            }));
+      });
+      test(r'nearLegacy', () {
+        var filter = FilterExpression()
+          ..nearLegacy('location', [-73.9667, 40.78], maxDistance: 5000);
+        expect(
+            filter.build(),
+            equals({
+              'location': {
+                r'$near': [-73.9667, 40.78],
+                r'$maxDistance': 5000
+              }
+            }));
+      });
+      test(r'$nearSphere', () {
+        var filter = FilterExpression()
+          ..$nearSphere('location', GeoPoint.coordinates([-73.9667, 40.78]),
+              maxDistance: 5000, minDistance: 1000);
+        expect(
+            filter.build(),
+            equals({
+              'location': {
+                r'$nearSphere': {
+                  r'$geometry': {
+                    'type': "Point",
+                    'coordinates': [-73.9667, 40.78]
+                  },
+                  r'$minDistance': 1000,
+                  r'$maxDistance': 5000
+                }
+              }
+            }));
+      });
+      test(r'nearSphereLegacy', () {
+        var filter = FilterExpression()
+          ..nearSphereLegacy('location', [-73.9667, 40.78], maxDistance: 5000);
+        expect(
+            filter.build(),
+            equals({
+              'location': {
+                r'$nearSphere': [-73.9667, 40.78],
+                r'$maxDistance': 5000
+              }
+            }));
+      });
+      test(r'$box - ShapeOperator', () {
+        var filter = FilterExpression()
+          ..$geoWithin('loc', $box(bottomLeft: [0, 0], upperRight: [100, 100]));
+        expect(
+            filter.build(),
+            equals({
+              'loc': {
+                r'$geoWithin': {
+                  r'$box': [
+                    [0, 0],
+                    [100, 100]
+                  ]
+                }
+              }
+            }));
+      });
+      test(r'$center - ShapeOperator', () {
+        var filter = FilterExpression()
+          ..$geoWithin('loc', $center(center: [-74, 40.74], radius: 10));
+        expect(
+            filter.build(),
+            equals({
+              'loc': {
+                r'$geoWithin': {
+                  r'$center': [
+                    [-74, 40.74],
+                    10
+                  ]
+                }
+              }
+            }));
+      });
+      test(r'$centerSphere - ShapeOperator', () {
+        var filter = FilterExpression()
+          ..$geoWithin('loc', $centerSphere(center: [-74, 40.74], radius: 10));
+        expect(
+            filter.build(),
+            equals({
+              'loc': {
+                r'$geoWithin': {
+                  r'$centerSphere': [
+                    [-74, 40.74],
+                    10
+                  ]
+                }
+              }
+            }));
+      });
+      test(r'$geometry - ShapeOperator', () {
+        var filter = FilterExpression()
+          ..$geoWithin(
+              'loc',
+              $geometry(
+                geometry: Geometry.polygon([
+                  [
+                    [0, 0],
+                    [3, 6],
+                    [6, 1],
+                    [0, 0]
+                  ]
+                ]),
+              ));
+        expect(
+            filter.build(),
+            equals({
+              'loc': {
+                r'$geoWithin': {
+                  r'$geometry': {
+                    'type': "Polygon",
+                    'coordinates': [
+                      [
+                        [0, 0],
+                        [3, 6],
+                        [6, 1],
+                        [0, 0]
+                      ]
+                    ]
+                  }
+                }
+              }
+            }));
+      });
+      test(r'$polygon - ShapeOperator', () {
+        var filter = FilterExpression()
+          ..$geoWithin(
+              'loc',
+              $polygon(points: [
+                [0, 0],
+                [3, 6],
+                [6, 0]
+              ]));
+        expect(
+            filter.build(),
+            equals({
+              'loc': {
+                r'$geoWithin': {
+                  r'$polygon': [
+                    [0, 0],
+                    [3, 6],
+                    [6, 0]
+                  ]
+                }
+              }
             }));
       });
     });

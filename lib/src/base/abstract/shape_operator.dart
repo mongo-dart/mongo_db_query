@@ -1,4 +1,4 @@
-import '../../base/operator_expression.dart';
+import '../operator_expression.dart';
 
 abstract class ShapeOperator extends OperatorExpression {
   ShapeOperator(super.name, super.args);

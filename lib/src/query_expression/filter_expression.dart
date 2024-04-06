@@ -1,4 +1,5 @@
 import 'package:bson/bson.dart';
+import 'package:mongo_db_query/src/base/abstract/shape_operator.dart';
 import 'package:mongo_db_query/src/base/not_expression.dart';
 import 'package:mongo_db_query/src/base/abstract/unary_expression.dart';
 
@@ -444,8 +445,8 @@ class FilterExpression
   ///   Timestamp      17             "timestamp"       bsonDataTimestamp
   ///   64-bit integer 18             "long"            bsonDataLong
   ///   Decimal128     19             "decimal"         bsonDecimal128
-  void $type(String fieldName, List types) => addFieldOperator(FieldExpression(
-      fieldName, OperatorExpression(op$type, ListExpression(types))));
+  void $type(String fieldName, type) => addFieldOperator(FieldExpression(
+      fieldName, OperatorExpression(op$type, valueToContent(type))));
 
   // ***************************************************
   // ***************** Evaluation Query Operators
@@ -457,7 +458,6 @@ class FilterExpression
 
   /// The $jsonSchema operator matches documents that satisfy the
   /// specified JSON Schema.
-  // TODO check if String or Map are required
   void $jsonSchema(Map<String, dynamic> schemaObject) => addOperator(
       OperatorExpression(op$jsonSchema, valueToContent(schemaObject)));
 
@@ -472,12 +472,18 @@ class FilterExpression
   /// Provides regular expression capabilities for pattern matching
   /// strings in queries. MongoDB uses Perl compatible regular expressions
   /// (i.e. "PCRE" ) version 8.42 with UTF-8 support.
+  ///
+  /// Escape Patterns automatically escapes all the key pattern characters
+  /// using RegExp.escape()
   void $regex(String fieldName, String pattern,
       {bool caseInsensitive = false,
       bool multiLineAnchorMatch = false,
       bool extendedIgnoreWhiteSpace = false,
       bool dotMatchAll = false,
       bool escapePattern = false}) {
+    // Supports Unicode (u). This flag is accepted, but is redundant.
+    // UTF is set by default in the $regex operator,
+    //making the u option unnecessary.
     var options = '${caseInsensitive ? 'i' : ''}'
         '${multiLineAnchorMatch ? 'm' : ''}'
         '${extendedIgnoreWhiteSpace ? 'x' : ''}'
@@ -530,21 +536,43 @@ class FilterExpression
   /// within a specified shape.
   /// Only support GeoShape
   /// Available ShapeOperator instances: Box , Center, CenterSphere, Geometry
-  void $geoWithin(String fieldName, GeoShape shape) =>
+  void $geoWithin(String fieldName, shape) {
+    if (shape is GeoShape) {
       addFieldOperator(FieldExpression(
           fieldName,
           OperatorExpression(
               op$geoWithin, MapExpression({op$geometry: shape}))));
+    } else if (shape is ShapeOperator) {
+      addFieldOperator(
+          FieldExpression(fieldName, OperatorExpression(op$geoWithin, shape)));
+    } else {
+      throw ArgumentError('The value is not an expected type '
+          '(GeoPolygon, GeoMultiPolygon, GeoShape, ShapeOperator)');
+    }
+  }
 
   /// Specifies a point for which a geospatial query returns the documents
   /// from nearest to farthest.
-  void $near(String fieldName, var value,
+  void $near(String fieldName, GeoPoint value,
       {double? maxDistance, double? minDistance}) {
     addFieldOperator(FieldExpression(
         fieldName,
         MapExpression({
-          op$near: value,
-          if (minDistance != null) op$minDistance: minDistance,
+          op$near: MapExpression({
+            op$geometry: value,
+            if (minDistance != null) op$minDistance: minDistance,
+            if (maxDistance != null) op$maxDistance: maxDistance
+          }),
+        })));
+  }
+
+  /// Specifies a point point using legacy coordinates.
+  void nearLegacy(String fieldName, List<double> values,
+      {double? maxDistance}) {
+    addFieldOperator(FieldExpression(
+        fieldName,
+        MapExpression({
+          op$near: values,
           if (maxDistance != null) op$maxDistance: maxDistance
         })));
   }
@@ -563,6 +591,18 @@ class FilterExpression
                 if (minDistance != null) op$minDistance: minDistance,
                 if (maxDistance != null) op$maxDistance: maxDistance
               }))));
+
+  /// Specifies a point point using legacy coordinates.
+  void nearSphereLegacy(String fieldName, List<double> values,
+      {double? maxDistance, double? minDistance}) {
+    addFieldOperator(FieldExpression(
+        fieldName,
+        MapExpression({
+          op$nearSphere: values,
+          if (minDistance != null) op$minDistance: minDistance,
+          if (maxDistance != null) op$maxDistance: maxDistance
+        })));
+  }
 
   // ***************************************************
   // ***************** Array Query Operator
