@@ -937,5 +937,5 @@ class FilterExpression
   /// You can specify a $natural sort when running a find operation against a
   /// view.
   void $natural({bool ascending = true}) => addOperator(
-      OperatorExpression(op$natural, valueToContent({ascending ? 1 : -1})));
+      OperatorExpression(op$natural, valueToContent(ascending ? 1 : -1)));
 }

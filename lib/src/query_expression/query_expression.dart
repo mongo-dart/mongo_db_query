@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:bson/bson.dart';
 
-import '../aggregation/support_classes/geo/geo_shape.dart';
 import '../aggregation/support_classes/geo/geometry.dart';
 import '../base/common/constant.dart';
 import '../base/common/document_types.dart';
@@ -139,7 +138,7 @@ class QueryExpression {
   ///   Timestamp      17             "timestamp"       bsonDataTimestamp
   ///   64-bit integer 18             "long"            bsonDataLong
   ///   Decimal128     19             "decimal"         bsonDecimal128
-  void $type(String fieldName, List types) => filter.$type(fieldName, types);
+  void $type(String fieldName, types) => filter.$type(fieldName, types);
 
   // ***************************************************
   // ***************** Evaluation Query Operators
@@ -205,7 +204,7 @@ class QueryExpression {
   /// within a specified shape.
   /// Only support GeoShape
   /// Available ShapeOperator instances: Box , Center, CenterSphere, Geometry
-  void $geoWithin(String fieldName, GeoShape shape) =>
+  void $geoWithin(String fieldName, shape) =>
       filter.$geoWithin(fieldName, shape);
 
   /// Specifies a point for which a geospatial query returns the documents
@@ -216,12 +215,21 @@ class QueryExpression {
         maxDistance: maxDistance, minDistance: minDistance);
   }
 
+  void nearLegacy(String fieldName, var value, {double? maxDistance}) {
+    filter.nearLegacy(fieldName, value, maxDistance: maxDistance);
+  }
+
   /// Specifies a point for which a geospatial query returns the documents
   /// from nearest to farthest.
   /// Only support geometry of point
   void $nearSphere(String fieldName, GeoPoint point,
           {double? maxDistance, double? minDistance}) =>
       filter.$nearSphere(fieldName, point,
+          maxDistance: maxDistance, minDistance: minDistance);
+
+  void nearSphereLegacy(String fieldName, List<double> point,
+          {double? maxDistance, double? minDistance}) =>
+      filter.nearSphereLegacy(fieldName, point,
           maxDistance: maxDistance, minDistance: minDistance);
 
   // ***************************************************
@@ -488,7 +496,7 @@ class QueryExpression {
   ///
   /// You can specify a $natural sort when running a find operation against a
   /// view.
-  void $ranatura({bool ascending = true}) =>
+  void $natural({bool ascending = true}) =>
       filter.$natural(ascending: ascending);
 
   // ***************************************************
@@ -507,6 +515,15 @@ class QueryExpression {
   void selectFields(List<String> fieldList) => fields.selectFields(fieldList);
 
   void excludeFields(List<String> fieldList) => excludeFields(fieldList);
+
+  void $(String fieldName) => fields.$(fieldName);
+
+  void $elemMatchProjection(String fieldName, FilterExpression condition) =>
+      fields.$elemMatch(fieldName, condition);
+
+  void $slice(String fieldName, int elementsToReturn, {int? elementsToSkip}) =>
+      fields.$slice(fieldName, elementsToReturn,
+          elementsToSkip: elementsToSkip);
 
   // ***************************************************
   // **************        Limit         **************

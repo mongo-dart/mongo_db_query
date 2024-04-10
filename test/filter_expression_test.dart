@@ -1,5 +1,6 @@
 library test_lib;
 
+import 'package:bson/bson.dart';
 import 'package:test/test.dart';
 import 'package:mongo_db_query/mongo_db_query.dart';
 
@@ -863,6 +864,129 @@ void main() {
             equals({
               'field': {r'$size': 1}
             }));
+      });
+    });
+    group('Bitwise Query Operators', () {
+      test(r'$bitsAllClear 1', () {
+        var filter = FilterExpression()..$bitsAllClear('bits', [1, 5]);
+        expect(filter.build(), {
+          'bits': {
+            r'$bitsAllClear': [1, 5]
+          }
+        });
+
+        filter = FilterExpression()..$bitsAllClear('bits', 35);
+        expect(filter.build(), {
+          'bits': {r'$bitsAllClear': 35}
+        });
+
+        filter = FilterExpression()
+          ..$bitsAllClear('bits', BsonBinary.fromHexString('23'));
+        expect(filter.build(), {
+          'bits': {
+            r'$bitsAllClear': BsonBinary.from([35])
+          }
+        });
+      });
+      test(r'$bitsAllSet 1', () {
+        var filter = FilterExpression()..$bitsAllSet('bits', [1, 5]);
+        expect(filter.build(), {
+          'bits': {
+            r'$bitsAllSet': [1, 5]
+          }
+        });
+
+        filter = FilterExpression()..$bitsAllSet('bits', 35);
+        expect(filter.build(), {
+          'bits': {r'$bitsAllSet': 35}
+        });
+
+        filter = FilterExpression()
+          ..$bitsAllSet('bits', BsonBinary.fromHexString('23'));
+        expect(filter.build(), {
+          'bits': {
+            r'$bitsAllSet': BsonBinary.from([35])
+          }
+        });
+      });
+      test(r'$bitsAllSet 1', () {
+        var filter = FilterExpression()..$bitsAllSet('bits', [1, 5]);
+        expect(filter.build(), {
+          'bits': {
+            r'$bitsAllSet': [1, 5]
+          }
+        });
+
+        filter = FilterExpression()..$bitsAllSet('bits', 35);
+        expect(filter.build(), {
+          'bits': {r'$bitsAllSet': 35}
+        });
+
+        filter = FilterExpression()
+          ..$bitsAllSet('bits', BsonBinary.fromHexString('23'));
+        expect(filter.build(), {
+          'bits': {
+            r'$bitsAllSet': BsonBinary.from([35])
+          }
+        });
+      });
+      test(r'$bitsAnyClear 1', () {
+        var filter = FilterExpression()..$bitsAnyClear('bits', [1, 5]);
+        expect(filter.build(), {
+          'bits': {
+            r'$bitsAnyClear': [1, 5]
+          }
+        });
+
+        filter = FilterExpression()..$bitsAnyClear('bits', 35);
+        expect(filter.build(), {
+          'bits': {r'$bitsAnyClear': 35}
+        });
+
+        filter = FilterExpression()
+          ..$bitsAnyClear('bits', BsonBinary.fromHexString('23'));
+        expect(filter.build(), {
+          'bits': {
+            r'$bitsAnyClear': BsonBinary.from([35])
+          }
+        });
+      });
+      test(r'$bitsAnySet 1', () {
+        var filter = FilterExpression()..$bitsAnySet('bits', [1, 5]);
+        expect(filter.build(), {
+          'bits': {
+            r'$bitsAnySet': [1, 5]
+          }
+        });
+
+        filter = FilterExpression()..$bitsAnySet('bits', 35);
+        expect(filter.build(), {
+          'bits': {r'$bitsAnySet': 35}
+        });
+
+        filter = FilterExpression()
+          ..$bitsAnySet('bits', BsonBinary.fromHexString('23'));
+        expect(filter.build(), {
+          'bits': {
+            r'$bitsAnySet': BsonBinary.from([35])
+          }
+        });
+      });
+    });
+    group('Miscellaneous Query Operators', () {
+      test(r'$comment', () {
+        var filter = FilterExpression()..$comment('Find even values.');
+        expect(filter.build(), equals({r'$comment': 'Find even values.'}));
+      });
+      test(r'$rand', () {
+        var filter = FilterExpression()..$rand();
+        expect(filter.build(), equals({r'$rand': {}}));
+      });
+      test(r'$natural', () {
+        var filter = FilterExpression()..$natural();
+        expect(filter.build(), equals({r'$natural': 1}));
+        filter = FilterExpression()..$natural(ascending: false);
+        expect(filter.build(), equals({r'$natural': -1}));
       });
     });
   });
