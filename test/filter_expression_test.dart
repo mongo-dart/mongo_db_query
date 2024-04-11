@@ -443,6 +443,173 @@ void main() {
             }));
       });
     });
+    group('Complex Logical Query Operators', () {
+      test(r'$or $and', () {
+        var filter = FilterExpression()
+          ..$eq('price', 1.99)
+          ..$or
+          ..$eq('price', 5)
+          ..$and
+          ..$gt('qty', 100);
+        expect(
+            filter.build(),
+            equals({
+              r'$or': [
+                {
+                  'price': {r'$eq': 1.99}
+                },
+                {
+                  'price': {r'$eq': 5},
+                  'qty': {r'$gt': 100}
+                }
+              ]
+            }));
+      });
+      test(r'$or ($and)', () {
+        var filter = FilterExpression()
+          ..$eq('price', 1.99)
+          ..$or
+          ..open
+          ..$eq('price', 5)
+          ..$and
+          ..$gt('qty', 100)
+          ..close;
+        expect(
+            filter.build(),
+            equals({
+              r'$or': [
+                {
+                  'price': {r'$eq': 1.99}
+                },
+                {
+                  'price': {r'$eq': 5},
+                  'qty': {r'$gt': 100}
+                }
+              ]
+            }));
+      });
+      test(r'($or) $and', () {
+        var filter = FilterExpression()
+          ..open
+          ..$eq('price', 1.99)
+          ..$or
+          ..$eq('price', 5)
+          ..close
+          ..$and
+          ..$gt('qty', 100);
+        expect(
+            filter.build(),
+            equals({
+              r'$or': [
+                {
+                  'price': {r'$eq': 1.99}
+                },
+                {
+                  'price': {r'$eq': 5},
+                }
+              ],
+              'qty': {r'$gt': 100}
+            }));
+      });
+      test(r'$or $and 2', () {
+        var filter = FilterExpression()
+          ..$eq('price', 1.99)
+          ..$or
+          ..$lt('qty', 5)
+          ..$and
+          ..$gt('qty', 100);
+        expect(
+            filter.build(),
+            equals({
+              r'$or': [
+                {
+                  'price': {r'$eq': 1.99}
+                },
+                {
+                  'qty': {r'$lt': 5, r'$gt': 100}
+                }
+              ]
+            }));
+      });
+      test(r'$and $or $or', () {
+        var filter = FilterExpression()
+          ..$eq('price', 5)
+          ..$and
+          ..$gt('qty', 100)
+          ..$or
+          ..$eq('price', 1.99)
+          ..$or
+          ..$eq('score', 100);
+        expect(
+            filter.build(),
+            equals({
+              r'$or': [
+                {
+                  'price': {r'$eq': 5},
+                  'qty': {r'$gt': 100}
+                },
+                {
+                  'price': {r'$eq': 1.99}
+                },
+                {
+                  'score': {r'$eq': 100}
+                },
+              ]
+            }));
+      });
+      test(r'$or $and $or', () {
+        var filter = FilterExpression()
+          ..$eq('price', 1.99)
+          ..$or
+          ..$eq('price', 5)
+          ..$and
+          ..$gt('qty', 100)
+          ..$or
+          ..$eq('score', 100);
+        expect(
+            filter.build(),
+            equals({
+              r'$or': [
+                {
+                  'price': {r'$eq': 1.99}
+                },
+                {
+                  'price': {r'$eq': 5},
+                  'qty': {r'$gt': 100}
+                },
+                {
+                  'score': {r'$eq': 100}
+                },
+              ]
+            }));
+      });
+      test(r'$or $or $and', () {
+        var filter = FilterExpression()
+          ..$eq('price', 1.99)
+          ..$or
+          ..$eq('score', 100)
+          ..$or
+          ..$eq('price', 5)
+          ..$and
+          ..$gt('qty', 100);
+        expect(
+            filter.build(),
+            equals({
+              r'$or': [
+                {
+                  'price': {r'$eq': 1.99}
+                },
+                {
+                  'score': {r'$eq': 100}
+                },
+                {
+                  'price': {r'$eq': 5},
+                  'qty': {r'$gt': 100}
+                },
+              ]
+            }));
+      });
+    });
     group('Element Query Operators', () {
       test(r'$exists', () {
         var filter = FilterExpression()..$exists('quantity');

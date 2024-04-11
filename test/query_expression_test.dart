@@ -63,7 +63,21 @@ void main() {
       'my_field': {r'$eq': 17}
     });
     expect(selector.fields.build(), {'str_field': 1});
-
+    selector = where
+      ..selectFields(['str_field'])
+      ..$slice('check', 3);
+    expect(selector.filter.build(), {});
+    expect(selector.fields.build(), {
+      'str_field': 1,
+      'check': {r'$slice': 3}
+    });
+    selector = where..$slice('check', 3, elementsToSkip: 2);
+    expect(selector.filter.build(), {});
+    expect(selector.fields.build(), {
+      'check': {
+        r'$slice': [3, 2]
+      }
+    });
     selector = where
       ..sortBy('a')
       ..skip(300);

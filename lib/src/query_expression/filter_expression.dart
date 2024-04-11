@@ -251,8 +251,6 @@ class FilterExpression
   /// that do not match the query expression.
   void get $not => _sequence.add(NotExpression.placeHolder());
 
-  /*   addOperator(OperatorExpression(op$not, operatorExp)); */
-
   /// $and performs a logical AND operation and selects the documents that
   /// satisfy all the expressions.
   void get $and {

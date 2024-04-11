@@ -95,7 +95,7 @@ class QueryExpression {
 
   /// $not Inverts the effect of a query expression and returns documents
   /// that do not match the query expression.
-  void $not(OperatorExpression operatorExp) => filter.$not;
+  void get $not => filter.$not;
 
   /// $nor performs a logical NOR operation on an array of one or
   /// more query expression and selects the documents that fail all the
