@@ -198,7 +198,48 @@ class FilterExpression implements ExpressionContainer, Builder {
       }
     } else {
       LogicalExpression selected;
-      for (int idx = 0; idx < newSequence.length; idx++) {
+      while (newSequence.length > 1) {
+        for (int idx = 0; idx < newSequence.length - 1; idx++) {
+          if (newSequence[idx] is! LogicalExpression) {
+            throw StateError('Expected a LogicalExpression');
+          }
+          selected = newSequence[idx] as LogicalExpression;
+          next = newSequence[idx + 1] as LogicalExpression;
+          if (selected.sameType(next)) {
+            selected.add(MapExpression(next.content.mergeContent2map));
+            newSequence.removeAt(idx + 1);
+            break;
+          }
+          if ((next).hasHigherPrecedenceThan(selected)) {
+            if (identical(next, newSequence.last)) {
+              selected.add(next);
+              newSequence.removeAt(idx + 1);
+              break;
+            } else {
+              later = newSequence[idx + 2] as LogicalExpression;
+              if (next.sameType(later)) {
+                next.add(MapExpression(later.content.mergeContent2map));
+                newSequence.removeAt(idx + 2);
+                break;
+              }
+              if (later.hasHigherPrecedenceThan(next)) {
+                continue;
+              } else {
+                selected.add(next);
+                newSequence.removeAt(idx + 1);
+                break;
+              }
+            }
+          } else {
+            next.inject(selected);
+            newSequence.removeAt(idx);
+            break;
+          }
+        }
+      }
+      actualElement =
+          newSequence.isEmpty ? null : newSequence[0] as LogicalExpression;
+      /*    for (int idx = 0; idx < newSequence.length; idx++) {
         if (newSequence[idx] is! LogicalExpression) {
           throw StateError('Expected a LogicalExpression');
         }
@@ -217,7 +258,7 @@ class FilterExpression implements ExpressionContainer, Builder {
           selected.inject(actualElement);
           actualElement = selected;
         }
-      }
+      } */
     }
     _expression.setMap(actualElement?.build() ?? emptyMongoDocument);
     return actualElement ?? AndExpression();
