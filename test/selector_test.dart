@@ -98,7 +98,7 @@ void main() {
     });
     selector = where
       ..$gt('a', 995)
-      //..and
+      //..$and
       ..open
       ..$lt('b', 1000)
       ..$or

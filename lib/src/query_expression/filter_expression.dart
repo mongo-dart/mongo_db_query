@@ -1,23 +1,25 @@
 import 'package:bson/bson.dart';
-import 'package:mongo_db_query/src/base/abstract/shape_operator.dart';
-import 'package:mongo_db_query/src/base/not_expression.dart';
-import 'package:mongo_db_query/src/base/abstract/unary_expression.dart';
+import '../aggregation/support_classes/geo/geometry.dart';
+import '../base/abstract/shape_operator.dart';
+import '../base/common/document_types.dart';
+import '../base/common/operators_def.dart';
+import '../base/expression.dart';
+import '../base/field_expression.dart';
+import '../base/logical_expression.dart';
+import '../base/not_expression.dart';
+import '../base/abstract/unary_expression.dart';
 
 import '../aggregation/support_classes/geo/geo_shape.dart';
-import '../aggregation/support_classes/geo/geometry.dart';
 import '../base/abstract/builder.dart';
 import '../base/and_expression.dart';
 import '../base/common/constant.dart';
-import '../base/common/document_types.dart';
-import '../base/common/operators_def.dart';
 import '../base/abstract/expression_container.dart';
 import '../base/abstract/expression_content.dart';
-import '../base/field_expression.dart';
 import '../base/list_expression.dart';
-import '../base/logical_expression.dart';
 import '../base/map_expression.dart';
 import '../base/nor_expression.dart';
 import '../base/operator_expression.dart';
+import '../base/or_expression.dart';
 import '../base/value_expression.dart';
 import 'query_expression.dart';
 
@@ -25,9 +27,8 @@ enum LogicType { and, or, nor }
 
 // a = 5 and b = 6 or a = 7 and (b = 9 or c = 4) or c = 2
 
-class FilterExpression
-    implements ExpressionContainer, Builder /* MapExpression */ {
-  FilterExpression({this.level = 0}) /* : super.empty() */;
+class FilterExpression implements ExpressionContainer, Builder {
+  FilterExpression({this.level = 0});
 
   final _expression = MapExpression.empty();
 
@@ -71,103 +72,155 @@ class FilterExpression
     return _expression.rawContent; //valueMap;
   }
 
-  // TODO Revert after debug
-  //@override
-  //String toString() => 'UpdateExpression($raw)';
-
-  // TODO check
-  void processExpression() {
-    LogicalExpression? actualContainer;
+  LogicalExpression processExpression() {
+    /// Resolve Operators
     expressionProcessed = true;
-    List<UnaryExpression> unaryExps = <UnaryExpression>[];
 
-    ExpressionContent resolveUnaries(ExpressionContent elementToResolve) {
-      if (elementToResolve is OperatorExpression) {
-        for (var idx = unaryExps.length - 1; idx >= 0; idx--) {
-          elementToResolve = unaryExps
-              .removeLast()
-              .setOperator(elementToResolve as OperatorExpression);
-        }
-      } else if (elementToResolve is FieldExpression &&
-          elementToResolve.content is OperatorExpression) {
-        var fieldContent = elementToResolve.content as OperatorExpression;
-        for (var idx = unaryExps.length - 1; idx >= 0; idx--) {
-          fieldContent = unaryExps.removeLast().setOperator(fieldContent);
-        }
-        elementToResolve =
-            FieldExpression(elementToResolve.fieldName, fieldContent);
+    // Adjust unaries
+    for (int idx = _sequence.length - 1; idx > -1; idx--) {
+      var element = _sequence[idx];
+      if (element is UnaryExpression && element.isInvalid) {
+        _sequence.removeAt(idx);
+        continue;
       }
-      return elementToResolve;
+      if (idx == 0) {
+        break;
+      }
+      var previous = _sequence[idx - 1];
+      if (previous is UnaryExpression) {
+        if (element is OperatorExpression) {
+          _sequence.removeAt(idx);
+          _sequence[idx - 1] = previous.setOperator(element);
+        } else if (element is FieldExpression &&
+            element.content is OperatorExpression<ExpressionContent>) {
+          var fieldContent =
+              element.content as OperatorExpression<ExpressionContent>;
+          var previousContent = previous.setOperator(fieldContent);
+          if (previousContent is! OperatorExpression) {
+            throw StateError('Expected an OperatorExpression');
+          }
+          _sequence[idx] = FieldExpression(element.fieldName, previousContent);
+          _sequence.removeAt(idx - 1);
+        } else {
+          // Residual case, can it happen?
+          throw StateError(
+              'Unexpected expression foe \$not (${element.rawContent})');
+        }
+      }
     }
 
-    for (var element in _sequence) {
-      if (element is LogicalExpression) {
-        // If any uncompleted unary expression, it is lost.
-        unaryExps.clear();
+    // Insert missing And Expression
+    List andIndexes = <int>[];
+    for (int idx = 0; idx < _sequence.length - 1; idx++) {
+      if (_sequence[idx] is! LogicalExpression &&
+          _sequence[idx + 1] is! LogicalExpression) {
+        andIndexes.add(idx + 1);
       }
-      if (element is AndExpression) {
-        if (actualContainer == null) {
-          actualContainer = element;
-          continue;
-        } else if (actualContainer is AndExpression) {
-          actualContainer.add(element.content);
-        } else if (actualContainer is OrExpression) {
-          actualContainer.add(element.content);
-        } else if (actualContainer is NorExpression) {
-          actualContainer.add(element.content);
+    }
+    for (int idx = andIndexes.length - 1; idx > -1; idx--) {
+      _sequence.insert(andIndexes[idx], AndExpression());
+    }
+
+    // Assign vacant operators
+    List<ExpressionContent> newSequence = <ExpressionContent>[];
+    ExpressionContent actual;
+    ExpressionContent? next;
+    ExpressionContent? later;
+
+    for (int idx = 0; idx < _sequence.length; idx++) {
+      actual = _sequence[idx];
+      if (actual is LogicalExpression) {
+        next = (idx + 1 >= _sequence.length) ? null : _sequence[idx + 1];
+        if (next == null) {
+          if (actual.isNotEmpty) {
+            newSequence.add(actual);
+          }
+          break;
+          //throw StateError('Expected an Operator');
         }
-      } else if (element is OrExpression) {
-        if (actualContainer == null) {
-          actualContainer = element;
+        later = (idx + 2 >= _sequence.length) ? null : _sequence[idx + 2];
+        if (later == null) {
+          if (next is LogicalExpression && next.isEmpty) {
+            //throw StateError('Expected a valid Operator');
+          } else {
+            actual.add(next);
+          }
+          idx++;
+          newSequence.add(actual);
+        } else {
+          if (next is LogicalExpression) {
+            newSequence.add(actual);
+            continue;
+          }
+          if (later is! LogicalExpression) {
+            throw StateError('Expected a LogicalExpression');
+          }
+          if (actual.runtimeType == later.runtimeType) {
+            actual.add(next);
+            actual.add(later.content);
+            _sequence[idx + 2] = actual;
+            idx += 1;
+            continue;
+          }
+          newSequence.add(actual);
+
+          if (later.hasHigherPrecedenceThan(actual)) {
+            later.add(next);
+          } else {
+            actual.add(next);
+          }
+          idx += 1;
           continue;
-        } else if (actualContainer is AndExpression) {
-          element.add(actualContainer.content);
-          actualContainer = element;
-        } else if (actualContainer is OrExpression) {
-          actualContainer.add(element.content);
-        } else if (actualContainer is NorExpression) {
-          element.add(actualContainer.content);
-          actualContainer = element;
         }
-      } else if (element is NorExpression) {
-        if (actualContainer == null) {
-          actualContainer = element;
-          continue;
-        } else if (actualContainer is AndExpression) {
-          element.add(actualContainer.content);
-          actualContainer = element;
-        } else if (actualContainer is NorExpression) {
-          actualContainer.add(element.content);
-        } else if (actualContainer is OrExpression) {
-          element.add(actualContainer.content);
-          actualContainer = element;
-        }
-      } else if (element is UnaryExpression) {
-        unaryExps.add(element);
       } else {
-        if (actualContainer == null) {
-          //content.addAll(element.raw);
-          actualContainer = AndExpression()..add(resolveUnaries(element));
-        } else if (actualContainer is AndExpression) {
-          actualContainer.add(resolveUnaries(element));
-        } else if (actualContainer is OrExpression) {
-          if (actualContainer.content.values.last is AndExpression) {
-            (actualContainer.content.values.last as AndExpression)
-                .add(resolveUnaries(element));
+        if (idx == 0) {
+          if (_sequence.length > 1) {
+            if (_sequence[idx + 1] is LogicalExpression) {
+              (_sequence[idx + 1] as LogicalExpression).add(actual);
+            } else {
+              throw StateError('Expected a LogicalExpression');
+            }
           } else {
-            actualContainer.add(AndExpression([resolveUnaries(element)]));
+            newSequence.add(actual);
           }
-        } else if (actualContainer is NorExpression) {
-          if (actualContainer.content.values.last is AndExpression) {
-            (actualContainer.content.values.last as AndExpression)
-                .add(resolveUnaries(element));
-          } else {
-            actualContainer.add(resolveUnaries(element));
-          }
+        } else {
+          throw StateError('Operator not Expected');
         }
       }
     }
-    _expression.setMap(actualContainer?.build() ?? emptyMongoDocument);
+
+    LogicalExpression? actualElement;
+    if (newSequence.length == 1) {
+      if (newSequence.first is LogicalExpression) {
+        actualElement = newSequence.first as LogicalExpression;
+      } else {
+        actualElement = AndExpression()..add(newSequence.first);
+      }
+    } else {
+      LogicalExpression selected;
+      for (int idx = 0; idx < newSequence.length; idx++) {
+        if (newSequence[idx] is! LogicalExpression) {
+          throw StateError('Expected a LogicalExpression');
+        }
+        selected = newSequence[idx] as LogicalExpression;
+        if (actualElement == null) {
+          actualElement = selected;
+          continue;
+        }
+        if (actualElement.sameType(selected)) {
+          actualElement.add(MapExpression(selected.content.mergeContent2map));
+          continue;
+        }
+        if ((selected).hasHigherPrecedenceThan(actualElement)) {
+          actualElement.add(selected);
+        } else {
+          selected.inject(actualElement);
+          actualElement = selected;
+        }
+      }
+    }
+    _expression.setMap(actualElement?.build() ?? emptyMongoDocument);
+    return actualElement ?? AndExpression();
   }
 
   void addDocument(MongoDocument document) {
@@ -215,8 +268,26 @@ class FilterExpression
       throw StateError('No open parenthesis found');
     }
     if (_openChild!.isNotEmpty) {
-      _openChild!.processExpression();
-      _sequence.add(MapExpression(_openChild!.build()));
+      LogicalExpression childExpression = _openChild!.processExpression();
+      if (childExpression.isNotEmpty) {
+        /*       if (childExpression is AndExpression &&
+            childExpression.length == 1 &&
+            (childExpression.content.values.first is OperatorExpression ||
+                childExpression.content.values.first is FieldExpression)) {
+          _sequence.add(childExpression.content.values.first);
+        } else { */
+        if (_sequence.isNotEmpty &&
+            _sequence.last is! LogicalExpression &&
+            _sequence.last is! UnaryExpression) {
+          _sequence.add(AndExpression());
+        }
+        _sequence.add(childExpression..isLowerLevel = true);
+        // This is because we do not know if an implict and
+        // (directly an operator) will be added immediately after.
+        // An empty and should be discarded
+        _sequence.add(AndExpression());
+        //}
+      }
     }
 
     _openChild = null;
@@ -234,17 +305,62 @@ class FilterExpression
             unary.setOperator(elementToResolve as OperatorExpression);
       }
     } else if (elementToResolve is FieldExpression &&
-        elementToResolve.content is OperatorExpression) {
-      var fieldContent = elementToResolve.content as OperatorExpression;
-
+        elementToResolve.content is OperatorExpression<ExpressionContent>) {
+      var fieldContent =
+          elementToResolve.content as OperatorExpression<ExpressionContent>;
+      Expression? contentValue;
       while (_sequence.isNotEmpty && _sequence.last is UnaryExpression) {
         var unary = _sequence.removeLast() as UnaryExpression;
-        fieldContent = unary.setOperator(fieldContent);
+        contentValue = unary.setOperator(fieldContent);
       }
-      elementToResolve =
-          FieldExpression(elementToResolve.fieldName, fieldContent);
+      elementToResolve = FieldExpression(
+          elementToResolve.fieldName, contentValue ?? fieldContent);
     }
     return elementToResolve;
+  }
+
+  void _processLogical(LogicalExpression expression) {
+    if (_sequence.isNotEmpty) {
+      var last = _sequence.removeLast();
+      //if (last is LogicalExpression) {
+      //  throw StateError('Logical operator not expected');
+      //}
+      if (last is UnaryExpression) {
+        throw StateError(
+            'Missing Expression between a Unary operator and this logical one');
+      }
+      var operatorToAdd = _resolveUnaries(last);
+
+      if (_sequence.isEmpty) {
+        expression.add(operatorToAdd);
+        _sequence.add(expression);
+        return;
+      }
+      last = _sequence.last;
+      if (last is! LogicalExpression) {
+        last = AndExpression();
+        _sequence.add(last);
+      }
+
+      if (last.runtimeType == expression.runtimeType) {
+        if (expression.isNotEmpty) {
+          assert(expression.isEmpty, 'Expression should not be empty here ...');
+          last.add(expression.content);
+        }
+        last.add(operatorToAdd);
+        return;
+      }
+      _sequence.add(expression);
+
+      if (operatorToAdd is LogicalExpression && operatorToAdd.isEmpty) {
+        return;
+      }
+      if (expression.hasHigherPrecedenceThan(last)) {
+        expression.add(operatorToAdd);
+      } else {
+        last.add(operatorToAdd);
+      }
+    }
   }
 
   /// $not Inverts the effect of a query expression and returns documents
@@ -257,41 +373,9 @@ class FilterExpression
     if (isOpenSublevel) {
       return _openChild!.$and;
     }
-    // if the previous is a logical expression or there is no previous
-    // expression, ignore it.
+
     var andExp = AndExpression();
-    while (_sequence.isNotEmpty) {
-      var last = _sequence.removeLast();
-      if (last is OrExpression || last is NorExpression) {
-        if (andExp.isNotEmpty) {
-          (last as LogicalExpression).content.add(andExp);
-          andExp = AndExpression();
-          _sequence.add(last);
-          break;
-        }
-      }
-      if (last is AndExpression) {
-        if (andExp.isNotEmpty) {
-          last.add(andExp.content);
-        }
-        andExp = last;
-      } else if (last is UnaryExpression) {
-        if (last.isInvalid) {
-          continue;
-        }
-        assert(true, 'Should never pass by here');
-      } else {
-        andExp.add(_resolveUnaries(last));
-      }
-    }
-    if (andExp.isEmpty) {
-      return;
-    }
-    //if (key == op$And) {
-    //  content.add(andExp.content);
-    //  return;
-    //}
-    _sequence.add(andExp);
+    _processLogical(andExp);
   }
 
   /// $or operator performs a logical OR operation on an array of one or
@@ -301,36 +385,9 @@ class FilterExpression
     if (isOpenSublevel) {
       return _openChild!.$or;
     }
-    // if the previous is a logical expression or there is no previous
-    // expression, ignore it.
-    if (_sequence.isEmpty || _sequence.last is OrExpression) {
-      return;
-    }
+
     var orExp = OrExpression();
-    var tempAndExp = AndExpression();
-    while (_sequence.isNotEmpty) {
-      var last = _sequence.removeLast();
-      if (last is OrExpression) {
-        if (orExp.isNotEmpty) {
-          last.add(orExp.content);
-        }
-        orExp = last;
-      } else if (last is UnaryExpression) {
-        if (last.isInvalid) {
-          continue;
-        }
-        assert(true, 'Should never pass by here');
-      } else {
-        tempAndExp.add(_resolveUnaries(last));
-      }
-    }
-    if (tempAndExp.isNotEmpty) {
-      orExp.add(MapExpression(tempAndExp.content.content2map));
-    }
-    if (orExp.isEmpty) {
-      return;
-    }
-    _sequence.add(orExp);
+    _processLogical(orExp);
   }
 
   /// $nor performs a logical NOR operation on an array of one or
@@ -340,38 +397,10 @@ class FilterExpression
     if (isOpenSublevel) {
       return _openChild!.$nor;
     }
-    // if the previous is a logical expression or there is no previous
-    // expression, ignore it.
-    if (_sequence.isEmpty || _sequence.last is NorExpression) {
-      return;
-    }
-    var norExp = NorExpression();
-    var tempAndExp = AndExpression();
-    while (_sequence.isNotEmpty) {
-      var last = _sequence.removeLast();
-      if (last is NorExpression) {
-        if (norExp.isNotEmpty) {
-          last.add(norExp.content);
-        }
-        norExp = last;
-      } else if (last is UnaryExpression) {
-        if (last.isInvalid) {
-          continue;
-        }
-        assert(true, 'Should never pass by here');
-      } else {
-        tempAndExp.add(_resolveUnaries(last));
-      }
-    }
-    if (tempAndExp.isNotEmpty) {
-      norExp.add(MapExpression(tempAndExp.content.content2map));
-    }
-    if (norExp.isEmpty) {
-      return;
-    }
-    _sequence.add(norExp);
-  }
 
+    var norExp = NorExpression();
+    _processLogical(norExp);
+  }
   // ***************************************************
   // ***************** Comparison Operators
   // ***************************************************

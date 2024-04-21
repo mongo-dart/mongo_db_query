@@ -770,15 +770,19 @@ void main() {
             equals({
               r'$not': {r'$jsonSchema': schemaMap}
             }));
-        query = where
+      });
+      test(r'$not 7', () {
+        var filter = where
           ..$gt('price', 1.99)
           ..$not;
         expect(
-            query.rawFilter,
+            filter.rawFilter,
             equals({
               'price': {r'$gt': 1.99}
             }));
-        query = where
+      });
+      test(r'$not 8', () {
+        var query = where
           ..$gt('price', 1.99)
           ..$and
           ..$not;
@@ -787,144 +791,87 @@ void main() {
             equals({
               'price': {r'$gt': 1.99}
             }));
+      });
 
-        query = where
+      test(r'$not 10', () {
+        var filter = where
           ..$gt('price', 1.99)
           ..$not
+          ..open
           ..$and
-          ..$eq('quantity', 20);
+          ..$eq('quantity', 20)
+          ..close;
         expect(
-            query.rawFilter,
+            filter.rawFilter,
             equals({
               'price': {r'$gt': 1.99},
-              'quantity': {r'$eq': 20}
+              'quantity': {
+                r'$not': {r'$eq': 20}
+              }
             }));
       });
       test(r'$not - excluded and', () {
-        var query = where
+        var filter = where
           ..$gt('price', 1.99)
-          ..$not
-          ..$and;
-
-        expect(
-            query.rawFilter,
-            equals({
-              'price': {r'$gt': 1.99}
-            }));
+          ..$not;
+        expect(() => filter..$and, throwsStateError);
       });
 
       test(r'$not - excluded - and - 2', () {
-        var query = where
+        var filter = where
           ..$not
           ..$gt('price', 1.99)
-          ..$not
-          ..$and;
-
-        expect(
-            query.rawFilter,
-            equals({
-              'price': {
-                r'$not': {r'$gt': 1.99}
-              }
-            }));
+          ..$not;
+        expect(() => filter..$and, throwsStateError);
       });
       test(r'$not - excluded - and - 3', () {
         var query = where
           ..$not
-          ..$not
-          ..$and;
-
-        expect(query.rawFilter, equals({}));
+          ..$not;
+        expect(query.rawFilter, {});
       });
 
       test(r'$not - excluded or', () {
         var query = where
           ..$gt('price', 1.99)
-          ..$not
-          ..$or;
-
-        expect(
-            query.rawFilter,
-            equals({
-              r'$or': [
-                {
-                  'price': {r'$gt': 1.99}
-                }
-              ]
-            }));
+          ..$not;
+        expect(() => query..$or, throwsStateError);
       });
 
       test(r'$not - excluded - or - 2', () {
         var query = where
           ..$not
           ..$gt('price', 1.99)
-          ..$not
-          ..$or;
-
-        expect(
-            query.rawFilter,
-            equals({
-              r'$or': [
-                {
-                  'price': {
-                    r'$not': {r'$gt': 1.99}
-                  }
-                }
-              ]
-            }));
+          ..$not;
+        expect(() => query..$or, throwsStateError);
       });
       test(r'$not - excluded - or - 3', () {
         var query = where
           ..$not
-          ..$not
-          ..$or;
-
-        expect(query.rawFilter, equals({}));
+          ..$not;
+        expect(() => query..$or, throwsStateError);
       });
 
       test(r'$not - excluded nor', () {
         var query = where
           ..$gt('price', 1.99)
-          ..$not
-          ..$nor;
+          ..$not;
 
-        expect(
-            query.rawFilter,
-            equals({
-              r'$nor': [
-                {
-                  'price': {r'$gt': 1.99}
-                }
-              ]
-            }));
+        expect(() => query..$nor, throwsStateError);
       });
 
       test(r'$not - excluded - nor - 2', () {
         var query = where
           ..$not
           ..$gt('price', 1.99)
-          ..$not
-          ..$nor;
-
-        expect(
-            query.rawFilter,
-            equals({
-              r'$nor': [
-                {
-                  'price': {
-                    r'$not': {r'$gt': 1.99}
-                  }
-                }
-              ]
-            }));
+          ..$not;
+        expect(() => query..$nor, throwsStateError);
       });
       test(r'$not - excluded - nor - 3', () {
         var query = where
           ..$not
-          ..$not
-          ..$nor;
-
-        expect(query.rawFilter, equals({}));
+          ..$not;
+        expect(() => query..$nor, throwsStateError);
       });
 
       test(r'$nor', () {

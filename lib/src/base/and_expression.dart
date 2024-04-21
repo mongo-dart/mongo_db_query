@@ -11,10 +11,10 @@ class AndExpression extends LogicalExpression {
   AndExpression([List<ExpressionContent>? values])
       : super(op$and, ListExpression(values ?? <ExpressionContent>[]));
 
-  void add(ExpressionContent operatorExp) {
+  void _joinOperator(ExpressionContent operatorExp, {bool addMethod = true}) {
     var keyList = content.keysList;
     if (keyList == null) {
-      content.add(operatorExp);
+      addMethod ? content.add(operatorExp) : content.inject(operatorExp);
       return;
     }
     if (operatorExp is Expression) {
@@ -22,14 +22,14 @@ class AndExpression extends LogicalExpression {
         var index = keyList.indexOf(operatorExp.key);
         content.mergeAtElement(operatorExp, index);
       } else {
-        content.add(operatorExp);
+        addMethod ? content.add(operatorExp) : content.inject(operatorExp);
       }
       return;
     } else if (operatorExp is FilterExpression) {
-      content.add(operatorExp);
+      addMethod ? content.add(operatorExp) : content.inject(operatorExp);
       return;
     } else if (operatorExp is MapExpression) {
-      content.add(operatorExp);
+      addMethod ? content.add(operatorExp) : content.inject(operatorExp);
       return;
     } else if (operatorExp is ListExpression) {
       for (var entry in operatorExp.content2map.entries) {
@@ -38,12 +38,23 @@ class AndExpression extends LogicalExpression {
           content.mergeAtElement(MapExpression(entry.value), index);
         } else {
           content.add(MapExpression({entry.key: entry.value}));
+          addMethod
+              ? content.add(MapExpression({entry.key: entry.value}))
+              : content.inject(MapExpression({entry.key: entry.value}));
         }
       }
       return;
     }
-    content.add(operatorExp);
+    addMethod ? content.add(operatorExp) : content.inject(operatorExp);
   }
+
+  @override
+  void add(ExpressionContent operatorExp) => _joinOperator(operatorExp);
+
+  /// Adds the value at the beginning of the list (index 0)
+  @override
+  void inject(ExpressionContent operatorExp) =>
+      _joinOperator(operatorExp, addMethod: false);
 
   @override
   MongoDocument build() => {

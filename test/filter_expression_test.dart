@@ -185,7 +185,9 @@ void main() {
             equals({
               r'$not': {r'$jsonSchema': schemaMap}
             }));
-        filter = FilterExpression()
+      });
+      test(r'$not 7', () {
+        var filter = FilterExpression()
           ..$gt('price', 1.99)
           ..$not;
         expect(
@@ -193,7 +195,9 @@ void main() {
             equals({
               'price': {r'$gt': 1.99}
             }));
-        filter = FilterExpression()
+      });
+      test(r'$not 08', () {
+        var filter = FilterExpression()
           ..$gt('price', 1.99)
           ..$and
           ..$not;
@@ -202,144 +206,87 @@ void main() {
             equals({
               'price': {r'$gt': 1.99}
             }));
+      });
 
-        filter = FilterExpression()
+      test(r'$not 10', () {
+        var filter = FilterExpression()
           ..$gt('price', 1.99)
           ..$not
+          ..open
           ..$and
-          ..$eq('quantity', 20);
+          ..$eq('quantity', 20)
+          ..close;
         expect(
             filter.build(),
             equals({
               'price': {r'$gt': 1.99},
-              'quantity': {r'$eq': 20}
+              'quantity': {
+                r'$not': {r'$eq': 20}
+              }
             }));
       });
       test(r'$not - excluded and', () {
         var filter = FilterExpression()
           ..$gt('price', 1.99)
-          ..$not
-          ..$and;
-
-        expect(
-            filter.build(),
-            equals({
-              'price': {r'$gt': 1.99}
-            }));
+          ..$not;
+        expect(() => filter..$and, throwsStateError);
       });
 
       test(r'$not - excluded - and - 2', () {
         var filter = FilterExpression()
           ..$not
           ..$gt('price', 1.99)
-          ..$not
-          ..$and;
-
-        expect(
-            filter.build(),
-            equals({
-              'price': {
-                r'$not': {r'$gt': 1.99}
-              }
-            }));
+          ..$not;
+        expect(() => filter..$and, throwsStateError);
       });
       test(r'$not - excluded - and - 3', () {
         var filter = FilterExpression()
           ..$not
-          ..$not
-          ..$and;
-
-        expect(filter.build(), equals({}));
+          ..$not;
+        expect(filter.build(), <String, dynamic>{});
       });
 
       test(r'$not - excluded or', () {
         var filter = FilterExpression()
           ..$gt('price', 1.99)
-          ..$not
-          ..$or;
-
-        expect(
-            filter.build(),
-            equals({
-              r'$or': [
-                {
-                  'price': {r'$gt': 1.99}
-                }
-              ]
-            }));
+          ..$not;
+        expect(() => filter..$or, throwsStateError);
       });
 
       test(r'$not - excluded - or - 2', () {
         var filter = FilterExpression()
           ..$not
           ..$gt('price', 1.99)
-          ..$not
-          ..$or;
-
-        expect(
-            filter.build(),
-            equals({
-              r'$or': [
-                {
-                  'price': {
-                    r'$not': {r'$gt': 1.99}
-                  }
-                }
-              ]
-            }));
+          ..$not;
+        expect(() => filter..$or, throwsStateError);
       });
       test(r'$not - excluded - or - 3', () {
         var filter = FilterExpression()
           ..$not
-          ..$not
-          ..$or;
-
-        expect(filter.build(), equals({}));
+          ..$not;
+        expect(() => filter..$or, throwsStateError);
       });
 
       test(r'$not - excluded nor', () {
         var filter = FilterExpression()
           ..$gt('price', 1.99)
-          ..$not
-          ..$nor;
+          ..$not;
 
-        expect(
-            filter.build(),
-            equals({
-              r'$nor': [
-                {
-                  'price': {r'$gt': 1.99}
-                }
-              ]
-            }));
+        expect(() => filter..$nor, throwsStateError);
       });
 
       test(r'$not - excluded - nor - 2', () {
         var filter = FilterExpression()
           ..$not
           ..$gt('price', 1.99)
-          ..$not
-          ..$nor;
-
-        expect(
-            filter.build(),
-            equals({
-              r'$nor': [
-                {
-                  'price': {
-                    r'$not': {r'$gt': 1.99}
-                  }
-                }
-              ]
-            }));
+          ..$not;
+        expect(() => filter..$nor, throwsStateError);
       });
       test(r'$not - excluded - nor - 3', () {
         var filter = FilterExpression()
           ..$not
-          ..$not
-          ..$nor;
-
-        expect(filter.build(), equals({}));
+          ..$not;
+        expect(() => filter..$nor, throwsStateError);
       });
 
       test(r'$nor', () {
@@ -444,6 +391,76 @@ void main() {
       });
     });
     group('Complex Logical Query Operators', () {
+      test(r'$and $and', () {
+        var filter = FilterExpression()
+          ..$gt('price', 1.99)
+          ..$and
+          ..$lt('price', 5)
+          ..$and
+          ..$gt('qty', 100);
+        expect(
+            filter.build(),
+            equals({
+              'price': {r'$gt': 1.99, r'$lt': 5},
+              'qty': {r'$gt': 100}
+            }));
+      });
+      test(r'$and ($and)', () {
+        var filter = FilterExpression()
+          ..$eq('price', 1.99)
+          ..$and
+          ..open
+          ..$eq('price', 5)
+          ..$and
+          ..$gt('qty', 100)
+          ..close;
+        expect(
+            filter.build(),
+            equals({
+              r'$and': [
+                {
+                  'price': {r'$eq': 1.99}
+                },
+                {
+                  'price': {r'$eq': 5},
+                  'qty': {r'$gt': 100}
+                }
+              ]
+            }));
+      });
+      test(r'($and) $and', () {
+        var filter = FilterExpression()
+          ..open
+          ..$gt('price', 1.99)
+          ..$and
+          ..$lt('price', 5)
+          ..close
+          ..$and
+          ..$gt('qty', 100);
+        expect(
+            filter.build(),
+            equals({
+              'price': {r'$gt': 1.99, r'$lt': 5},
+              'qty': {r'$gt': 100}
+            }));
+      });
+      test(r'($and) $and 2', () {
+        var filter = FilterExpression()
+          ..open
+          ..$gt('price', 1.99)
+          ..$and
+          ..$gt('qty', 100)
+          ..close
+          ..$and
+          ..$lt('price', 5);
+        expect(
+            filter.build(),
+            equals({
+              'price': {r'$gt': 1.99, r'$lt': 5},
+              'qty': {r'$gt': 100}
+            }));
+      });
+
       test(r'$or $and', () {
         var filter = FilterExpression()
           ..$eq('price', 1.99)

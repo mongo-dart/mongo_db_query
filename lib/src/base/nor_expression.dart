@@ -6,5 +6,6 @@ import 'logical_expression.dart';
 class NorExpression extends LogicalExpression {
   NorExpression([List<ExpressionContent>? values])
       : super(op$nor, ListExpression(values ?? <ExpressionContent>[]));
+  @override
   void add(ExpressionContent operatorExp) => content.add(operatorExp);
 }

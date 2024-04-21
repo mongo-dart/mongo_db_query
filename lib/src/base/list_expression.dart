@@ -33,37 +33,9 @@ class ListExpression extends ExpressionContainer {
       }
       if (keys.sublist(pos + 1).contains(keys[pos])) return false;
     }
-    /* var value = keys..(
-        (element) => element != '' && keys.contains(element),
-        orElse: () => '');
-    return value == ''; */
+
     return true;
   }
-
-  /* {
-    var rawTemp = raw;
-    var localKeys = <String>[];
-    for (var element in rawTemp) {
-      if (element is! Map) {
-        return false;
-      }
-      if (element.keys.length > 1) {
-        return false;
-      }
-      if (element.isEmpty) {
-        continue;
-      }
-      var key = element.keys.first;
-      if (key is! String) {
-        return false;
-      }
-      if (localKeys.contains(key)) {
-        return false;
-      }
-      localKeys.add(key);
-    }
-    return true;
-  } */
 
   List<String>? get keysList {
     var rawTemp = rawContent;
@@ -89,6 +61,9 @@ class ListExpression extends ExpressionContainer {
   }
 
   void add(value) => values.add(value);
+
+  /// Adds the value at the beginning of the list (index 0)
+  void inject(value) => values.insert(0, value);
 
   @override
   List get rawContent => [
