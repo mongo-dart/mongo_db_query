@@ -3,7 +3,7 @@ version: 0.1.0-1.0.dev
 description: Query and aggregation utilities for working with MongoDb
 homepage: https://github.com/mongo-dart/mongo_db_query
 environment:
-  sdk: ">=3.2.0 <4.0.0"
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   bson: ^5.0.3

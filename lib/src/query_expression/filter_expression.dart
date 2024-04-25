@@ -42,8 +42,6 @@ class FilterExpression implements ExpressionContainer, Builder {
   FilterExpression? _openChild;
 
   bool get isOpenSublevel => _openChild != null;
-  @Deprecated('use isNotEmpty() instead')
-  bool get notEmpty => _sequence.isNotEmpty;
 
   @override
   bool get isEmpty =>
@@ -136,7 +134,6 @@ class FilterExpression implements ExpressionContainer, Builder {
             newSequence.add(actual);
           }
           break;
-          //throw StateError('Expected an Operator');
         }
         later = (idx + 2 >= _sequence.length) ? null : _sequence[idx + 2];
         if (later == null) {
@@ -239,26 +236,6 @@ class FilterExpression implements ExpressionContainer, Builder {
       }
       actualElement =
           newSequence.isEmpty ? null : newSequence[0] as LogicalExpression;
-      /*    for (int idx = 0; idx < newSequence.length; idx++) {
-        if (newSequence[idx] is! LogicalExpression) {
-          throw StateError('Expected a LogicalExpression');
-        }
-        selected = newSequence[idx] as LogicalExpression;
-        if (actualElement == null) {
-          actualElement = selected;
-          continue;
-        }
-        if (actualElement.sameType(selected)) {
-          actualElement.add(MapExpression(selected.content.mergeContent2map));
-          continue;
-        }
-        if ((selected).hasHigherPrecedenceThan(actualElement)) {
-          actualElement.add(selected);
-        } else {
-          selected.inject(actualElement);
-          actualElement = selected;
-        }
-      } */
     }
     _expression.setMap(actualElement?.build() ?? emptyMongoDocument);
     return actualElement ?? AndExpression();
@@ -311,12 +288,6 @@ class FilterExpression implements ExpressionContainer, Builder {
     if (_openChild!.isNotEmpty) {
       LogicalExpression childExpression = _openChild!.processExpression();
       if (childExpression.isNotEmpty) {
-        /*       if (childExpression is AndExpression &&
-            childExpression.length == 1 &&
-            (childExpression.content.values.first is OperatorExpression ||
-                childExpression.content.values.first is FieldExpression)) {
-          _sequence.add(childExpression.content.values.first);
-        } else { */
         if (_sequence.isNotEmpty &&
             _sequence.last is! LogicalExpression &&
             _sequence.last is! UnaryExpression) {
@@ -363,9 +334,7 @@ class FilterExpression implements ExpressionContainer, Builder {
   void _processLogical(LogicalExpression expression) {
     if (_sequence.isNotEmpty) {
       var last = _sequence.removeLast();
-      //if (last is LogicalExpression) {
-      //  throw StateError('Logical operator not expected');
-      //}
+
       if (last is UnaryExpression) {
         throw StateError(
             'Missing Expression between a Unary operator and this logical one');
