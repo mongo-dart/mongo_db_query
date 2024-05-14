@@ -2,6 +2,8 @@ name: mongo_db_query
 version: 0.1.0-1.0.dev
 description: Query and aggregation utilities for working with MongoDb
 homepage: https://github.com/mongo-dart/mongo_db_query
+funding:
+  - https://www.paypal.com/donate?hosted_button_id=YRUNF9YWKX2NW
 environment:
   sdk: ">=3.3.0 <4.0.0"
 

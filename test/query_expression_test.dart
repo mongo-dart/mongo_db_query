@@ -654,6 +654,12 @@ void main() {
             equals({
               'quantity': {r'$lt': 20}
             }));
+        query = where..$lt('age', 40);
+        expect(
+            query.rawFilter,
+            equals({
+              'age': {r'$lt': 40}
+            }));
       });
       test(r'$lte', () {
         var query = where..$lte('quantity', 20);
