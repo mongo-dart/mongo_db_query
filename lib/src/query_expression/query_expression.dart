@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:bson/bson.dart';
-
 import '../aggregation/support_classes/geo/geometry.dart';
 import '../base/common/constant.dart';
 import '../base/common/document_types.dart';
@@ -561,47 +559,30 @@ class QueryExpression {
   //@override
   //String toString() => 'QueryExpresion($filter.raw)';
 
-  /*  void _addExpression(String fieldName, value) {
-    var exprMap = emptyMongoDocument;
-    exprMap[fieldName] = value;
-    if (rawFilter.isEmpty) {
-      rawFilter[fieldName] = value;
-    } else {
-      _addExpressionMap(exprMap);
-    }
-  } */
-/* 
-  void _addExpressionMap(Map<String, dynamic> expr) {
-    if (rawFilter.containsKey('\$and')) {
-      var expressions = rawFilter['\$and'] as List;
-      expressions.add(expr);
-    } else {
-      var expressions = [rawFilter];
-      expressions.add(expr);
-      filter.build()['\$query'] = {'\$and': expressions};
-    }
-  } */
-
+  // TODO
   void explain() {
     rawFilter;
     filter.build()['\$explain'] = true;
   }
 
+  // TODO
   void snapshot() {
     rawFilter;
     filter.build()['\$snapshot'] = true;
   }
 
+  // TODO
   void showDiskLoc() {
     rawFilter;
     filter.build()['\$showDiskLoc'] = true;
   }
 
+  // TODO
   void returnKey() {
     rawFilter;
     filter.build()['\$sreturnKey'] = true;
   }
 
-  void jsQuery(String javaScriptCode) =>
-      rawFilter['\$where'] = JsCode(javaScriptCode);
+  @Deprecated('Use \$where instead')
+  void jsQuery(String javaScriptCode) => $where(javaScriptCode);
 }
