@@ -1,5 +1,5 @@
 name: mongo_db_query
-version: 0.1.0-1.1.dev
+version: 0.1.0-1.2.dev
 description: Query and aggregation utilities for working with MongoDb
 homepage: https://github.com/mongo-dart/mongo_db_query
 funding:
