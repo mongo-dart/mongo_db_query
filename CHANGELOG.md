@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0-1.3.dev
+
+- Timeseries object for timeseries key fields definition
+- updated $out stage to manage also Timeseries def.
+
 ## 0.1.0-1.2.dev
 
 - changed return type of AggregationPipelineBuilder.build()

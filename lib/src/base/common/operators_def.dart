@@ -297,3 +297,9 @@ const expLog1p = 'log1p';
 const expMultiply = 'multiply';
 const expPath = 'path';
 const expScore = 'score';
+
+// ***** Constants
+const coTimeSeries = 'timeseries';
+const coTimeField = 'timeField';
+const coMetaField = 'metaField';
+const coGranularity = 'granularity';

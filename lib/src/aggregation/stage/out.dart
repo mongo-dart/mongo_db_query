@@ -2,6 +2,7 @@ import '../../base/common/document_types.dart';
 import '../../base/common/operators_def.dart';
 import '../../query_expression/query_expression.dart';
 import '../base/aggregation_stage.dart';
+import '../support_classes/timeseries.dart';
 
 /// `$out` aggregation stage
 ///
@@ -52,12 +53,15 @@ class $out extends AggregationStage {
   /// exist, $out also creates the database.
   /// - For a sharded cluster, the specified output database must already exist.
   /// * [coll] - The output collection name.
-  $out({String? db, required String coll})
+  $out({String? db, required String coll, Timeseries? timeseries})
       : super(
             st$out,
-            valueToContent({
-              if (db != null) 'db': db,
-              'coll': coll,
-            }));
+            db == null
+                ? valueToContent(coll)
+                : valueToContent({
+                    'db': db,
+                    'coll': coll,
+                    if (timeseries != null) ...timeseries.toMap()
+                  }));
   $out.raw(MongoDocument raw) : super.raw(st$out, raw);
 }
