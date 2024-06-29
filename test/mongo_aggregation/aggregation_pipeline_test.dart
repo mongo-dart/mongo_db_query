@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 void main() {
   group('pipeline', () {
     test('add', () {
-      var builder = pipeline
+      var builder = pipelineBuilder
         ..addStage($match($expr($and([
           $eq(Field('stock_item'), Var('order_item')),
           $gte(Field('instock'), Var('order_qty'))

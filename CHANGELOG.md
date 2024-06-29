@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0-1.4.dev
+
+- Changed default AggragationPipelineBuilder name from "pipeline" to "pipelineBuilder".
+
 ## 0.1.0-1.3.dev
 
 - Timeseries object for timeseries key fields definition
