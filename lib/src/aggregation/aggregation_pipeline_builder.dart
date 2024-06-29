@@ -5,7 +5,7 @@ import 'base/aggregation_stage.dart';
 
 typedef AggregationPipeline = List<AggregationStage>;
 
-AggregationPipelineBuilder pipelineBuilder = AggregationPipelineBuilder();
+AggregationPipelineBuilder get pipelineBuilder => AggregationPipelineBuilder();
 
 /// Aggregation pipeline builder
 class AggregationPipelineBuilder implements Builder {

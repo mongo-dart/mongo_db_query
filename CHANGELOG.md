@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0-1.5.dev
+
+- Fix pieplineBuilder was not returning a new instance each time.
+
 ## 0.1.0-1.4.dev
 
 - Changed default AggragationPipelineBuilder name from "pipeline" to "pipelineBuilder".
