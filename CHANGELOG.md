@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.1.0-1.6.beta
+
+- Exports riorganization
+
 ## 0.1.0-1.5.dev
 
-- Fix pieplineBuilder was not returning a new instance each time.
+- Fix pipelineBuilder was not returning a new instance each time.
 
 ## 0.1.0-1.4.dev
 

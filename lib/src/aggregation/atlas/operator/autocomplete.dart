@@ -1,8 +1,7 @@
 import '../../../base/common/operators_def.dart';
 import '../../../query_expression/query_expression.dart';
-import '../../atlas_operator_collector.dart';
+import '../../atlas/atlas_exp.dart';
 import '../../base/atlas_operator.dart';
-import '../options/score_modify.dart';
 
 /// The `autocomplete` operator performs a search for a word or phrase that
 /// contains a sequence of characters from an incomplete input string.

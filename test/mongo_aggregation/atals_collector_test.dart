@@ -1,5 +1,5 @@
-import 'package:mongo_db_query/src/aggregation/atlas_operator_collector.dart';
 import 'package:test/test.dart';
+import 'package:mongo_db_query/mongo_db_query.dart';
 
 void main() {
   group('Atlas collector', () {

@@ -1,10 +1,4 @@
-import 'package:mongo_db_query/src/base/expression.dart';
-import 'package:mongo_db_query/src/base/common/operators_def.dart';
-import 'package:mongo_db_query/src/base/field_expression.dart';
-import 'package:mongo_db_query/src/base/list_expression.dart';
-import 'package:mongo_db_query/src/base/map_expression.dart';
-import 'package:mongo_db_query/src/base/operator_expression.dart';
-import 'package:mongo_db_query/src/base/value_expression.dart';
+import 'package:mongo_db_query/mongo_db_query.dart';
 import 'package:test/test.dart';
 
 void main() {

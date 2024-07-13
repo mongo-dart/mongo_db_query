@@ -1,12 +1,5 @@
-import 'package:mongo_db_query/src/aggregation/atlas/expression/add.dart';
-import 'package:mongo_db_query/src/aggregation/atlas/expression/constant.dart';
-import 'package:mongo_db_query/src/aggregation/atlas/expression/gaussian.dart';
-import 'package:mongo_db_query/src/aggregation/atlas/expression/log.dart';
-import 'package:mongo_db_query/src/aggregation/atlas/expression/log1p.dart';
-import 'package:mongo_db_query/src/aggregation/atlas/expression/multiply.dart';
-import 'package:mongo_db_query/src/aggregation/atlas/expression/path.dart';
-import 'package:mongo_db_query/src/aggregation/atlas/expression/score.dart';
 import 'package:test/test.dart';
+import 'package:mongo_db_query/mongo_db_query.dart';
 
 void main() {
   group('Atlas expression', () {

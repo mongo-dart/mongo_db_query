@@ -1,10 +1,5 @@
-import 'package:mongo_db_query/src/base/expression.dart';
-import 'package:mongo_db_query/src/base/field_expression.dart';
-import 'package:mongo_db_query/src/base/list_expression.dart';
-import 'package:mongo_db_query/src/base/map_expression.dart';
-import 'package:mongo_db_query/src/base/set_expression.dart';
-import 'package:mongo_db_query/src/base/value_expression.dart';
 import 'package:test/test.dart';
+import 'package:mongo_db_query/mongo_db_query.dart';
 
 void main() {
   group('Value Expression', () {

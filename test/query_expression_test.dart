@@ -2,7 +2,6 @@ library test_lib;
 
 import 'dart:convert';
 
-import 'package:mongo_db_query/src/aggregation/support_classes/geo/geo_json_type.dart';
 import 'package:test/test.dart';
 import 'package:bson/bson.dart';
 

@@ -4,7 +4,7 @@ import '../../base/common/document_types.dart';
 import '../../base/common/operators_def.dart';
 import '../../base/map_expression.dart';
 import '../../query_expression/query_expression.dart';
-import '../atlas_operator_collector.dart';
+import '../atlas/atlas_exp.dart';
 import '../base/aggregation_stage.dart';
 
 /// `$search` aggregation stage

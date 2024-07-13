@@ -10,11 +10,11 @@ import '../../base/atlas_score_options.dart';
 /// ```
 ///
 /// https://www.mongodb.com/docs/atlas/atlas-search/score/modify-score/#constant
-class Constant extends AtlasScoreOption {
+class ConstantOption extends AtlasScoreOption {
   /// [value] - replace the score  with the specified constant value
   ///
 
-  Constant({required double value})
+  ConstantOption({required double value})
       : super(optConstant, {
           'value': valueToContent(value),
         });
