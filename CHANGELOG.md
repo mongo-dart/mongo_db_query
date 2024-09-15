@@ -1,6 +1,11 @@
 # Changelog
 
+## 0.1.0
+
+- Updated dependencies
+
 ## 0.1.0-1.6.beta
+
 
 - Exports riorganization
 
